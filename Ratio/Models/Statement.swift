@@ -29,6 +29,10 @@ class Statement: Identifiable {
         self.formula = formula
     }
     
+    func copy() -> Statement {
+        return Statement(content: self.content, formula: self.formula)
+    }
+    
 }
 
 
@@ -77,6 +81,10 @@ class JunctureStatement: Statement {
         type = junction
         
     }
+    
+    override func copy() -> JunctureStatement {
+        return JunctureStatement(firstStatement: self.firstChild.copy(), secondStatement: self.secondChild.copy(), junction: self.type)
+    }
 }
 
 class Negation: Statement {
@@ -100,11 +108,19 @@ class Negation: Statement {
         
         type = .negation
     }
+    
+    override func copy() -> Negation {
+        return Negation(self.negatedStatement.copy())
+    }
 }
 
 class Conjunction: JunctureStatement {
     init(_ first: Statement, _ second: Statement) {
         super.init(firstStatement: first, secondStatement: second, junction: .conjunction)
+    }
+    
+    override func copy() -> Conjunction {
+        return Conjunction(self.firstChild.copy(), self.secondChild.copy())
     }
 }
 
@@ -112,10 +128,18 @@ class Disjunction: JunctureStatement {
     init(_ first: Statement, _ second: Statement) {
         super.init(firstStatement: first, secondStatement: second, junction: .disjunction)
     }
+    
+    override func copy() -> Disjunction {
+        return Disjunction(self.firstChild.copy(), self.secondChild.copy())
+    }
 }
 
 class Conditional: JunctureStatement {
     init(_ antecedent: Statement, _ consequent: Statement) {
         super.init(firstStatement: antecedent, secondStatement: consequent, junction: .conditional)
+    }
+    
+    override func copy() -> Conditional {
+        return Conditional(self.firstChild.copy(), self.secondChild.copy())
     }
 }
