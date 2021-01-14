@@ -12,12 +12,11 @@ class Statement: Identifiable {
     var type: StatementType = .simple
     var content: String?
     var symbol: String?
-    var hasNeighbourBlocks = false
     var block: Bool {
-        if hasNeighbourBlocks == true {
-            return true
-        } else {
+        if type == .simple {
             return false
+        } else {
+            return true
         }
     }
     
@@ -27,7 +26,6 @@ class Statement: Identifiable {
     init(_ copy: Statement) {
         self.type = copy.type
         self.content = copy.content
-        self.hasNeighbourBlocks = copy.hasNeighbourBlocks
     }
     
     init(text: String, symbol: String) {

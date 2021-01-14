@@ -241,7 +241,7 @@ struct StatementView: View {
                         }
                         .padding(EdgeInsets(top: 0, leading: 22, bottom: 0, trailing: 0))
             } else {
-                (~nStatement).0
+                (Text(Image("not")).foregroundColor(Color.accentColor) + Text(nStatement.content!))
                     .fixedSize(horizontal: false, vertical: true)
                     .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                         return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
@@ -279,16 +279,16 @@ struct StatementView: View {
 
 
 extension Statement {
-    
+
     static func +(lhs: Statement, rhs: Statement) -> (Text?, Text?) {
             if lhs.type == .simple && rhs.type == .simple {
                 return (Text(lhs.content!)+Text(" ")+Text(Image("and")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.content!), Text(lhs.symbol!)+Text(" ")+Text(Image("and")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.symbol!))
             } else {
                 return cViewUnion(type: .and, leftStatement: lhs, rightStatement: rhs)
             }
-        
+
     }
-    
+
     static func /(lhs: Statement, rhs: Statement) -> (Text?, Text?) {
             if lhs.type == .simple && rhs.type == .simple {
                 return (Text(lhs.content!)+Text(" ")+Text(Image("or")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.content!), Text(lhs.symbol!)+Text(" ")+Text(Image("or")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.symbol!))
@@ -296,7 +296,7 @@ extension Statement {
                 return cViewUnion(type: .or, leftStatement: lhs, rightStatement: rhs) // lhs = B, rhs = (C -> D)
             }
     }
-    
+
     static func >(lhs: Statement, rhs: Statement) -> (Text?, Text?) {
         if lhs.type == .simple && rhs.type == .simple {
             return (Text(lhs.content!)+Text(" ")+Text(Image("then")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.content!), Text(lhs.symbol!)+Text(" ")+Text(Image("then")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.symbol!))
@@ -304,7 +304,7 @@ extension Statement {
                 return cViewUnion(type: .ifthen, leftStatement: lhs, rightStatement: rhs) // lhs = B, rhs = (C -> D)
             }
     }
-    
+
     static prefix func ~(value: Statement) -> (Text?, Text?) {
         if value.type == .simple {
             return (Text(" ")+Text(Image("not")).foregroundColor(Color.accentColor)+Text(" ")+Text(value.content!), Text(" ")+Text(Image("not")).foregroundColor(Color.accentColor)+Text(" ")+Text(value.symbol!))
@@ -312,35 +312,35 @@ extension Statement {
                 return cViewUnion(type: .negation, leftStatement: value, rightStatement: value) // lhs = B, rhs = (C -> D)
             }
     }
-    
+
     static func cViewUnion(type: ComplexStatementType, leftStatement: Statement, rightStatement: Statement) -> (Text?, Text?) {
         //one or both are complex statements
         var finalLeft:(Text?, Text?)
         var finalRight:(Text?, Text?)
-        
+
         if let lCStatement = leftStatement as? ComplexStatement { //A, not a complex statement //B, not complex
             //create statement views for the left two terms:
             let oneLeft = lCStatement.childStatements.first!
             let twoLeft = lCStatement.childStatements.last!
-            
+
             finalLeft = statementTextViewUnion(type: lCStatement.csType, first: oneLeft, second: twoLeft)
         } else {
             finalLeft = (Text(leftStatement.content!), Text(leftStatement.symbol!))
             //this triggers for A and B
         }
-        
+
         if let rCStatement = rightStatement as? ComplexStatement { //(B · (C -> D)), //(C -> D)
             //create statement views for the right two terms:
             let oneRight = rCStatement.childStatements.first! //B //C
             let twoRight = rCStatement.childStatements.last! //(C -> D) //D
-    
+
             finalRight = statementTextViewUnion(type: rCStatement.csType, first: oneRight, second: twoRight) //
         } else {
             finalRight = (Text(rightStatement.content!), Text(rightStatement.symbol!))
         }
-        
+
         var op = Text(" ")+Text(Image("and"))+Text(" ")
-        
+
         switch type {
         case .and:
             op = Text(" ")+Text(Image("and"))+Text(" ")
@@ -353,13 +353,13 @@ extension Statement {
         default:
             op = Text(" ")+Text(Image("and"))+Text(" ")
         }
-        
+
         op = op.foregroundColor(Color.accentColor).font(Font.body.weight(.heavy))
-        
+
         var finalText: Text?
         var finalSymbol: Text?
-    
-        
+
+
         if let uFinalLeft = finalLeft.0 {
             finalText = uFinalLeft
         }
@@ -370,7 +370,7 @@ extension Statement {
                 finalText = finalText! + op + uFinalRight
             }
         }
-        
+
         if let uFinalLeft = finalLeft.1 {
             finalSymbol = Text("(") + uFinalLeft + Text(")")
         }
@@ -381,21 +381,21 @@ extension Statement {
                 finalSymbol = finalSymbol! + op + Text("(")+uFinalRight+Text(")")
             }
         }
-        
+
         return (finalText, finalSymbol)
     }
-    
+
     static func statementTextViewUnion(type: ComplexStatementType, first: Statement, second: Statement) -> (Text?, Text?) {
         switch type {
         case .and:
             return (first + second) // B + (C -> D)
-            
+
         case .or:
             return (first / second)
-            
+
         case .negation:
             return (~first)
-            
+
         case .ifthen:
             return (first > second)
 
@@ -403,8 +403,8 @@ extension Statement {
            return (nil, nil)
         }
     }
-    
-    
+
+
 }
 
 struct StatementPreferenceData: Identifiable {

@@ -10,24 +10,6 @@ import Foundation
 class ComplexStatement: Statement {
     let csType: ComplexStatementType
     let childStatements: [Statement]
-    override var block: Bool {
-        if hasNeighbourBlocks == true {
-            return true
-        }else if csType == .ifthen {
-            return true
-        } else {
-            for statement in childStatements {
-                if statement.block {
-                    for tStatement in childStatements {
-                        tStatement.hasNeighbourBlocks = true
-                    }
-                    return true
-                }
-            }
-            
-            return false
-        }
-    }
     
     var leftContent: String {
         let leftStatement = childStatements.first
