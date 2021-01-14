@@ -104,7 +104,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     }
     
     func stringFromStatement(_ theStatement: Statement) -> NSMutableAttributedString {
-        if let cTheStatement = theStatement as? ComplexStatement {
+        if let cTheStatement = theStatement as? JunctureStatement {
             let attributedBase = NSMutableAttributedString(string: cTheStatement.leftContent)
             let attachment = NSTextAttachment()
             attachment.image = UIImage(named: "and")?.withTintColor(UIColor(Color.accentColor))
@@ -224,9 +224,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
         }
         
         func updateStatement(_ ogStatement: Statement, forText finishedText: NSAttributedString) -> Statement {
-            let statementA = Statement(text: "hello", symbol: "A")
-            let statementB = Statement(text: "hello again", symbol: "B")
-            var cStatement = ComplexStatement(type: .and, blocks: [statementA, statementB])
+            
+            var cStatement = Conjunction(Statement(content: "work in progress", formula: "W"), Statement(content: "junction not supported", formula: "N"))
             
             if finishedText.string != "" || finishedText.string != " " || finishedText.string != "  " {
                 //the text contains something
@@ -239,10 +238,10 @@ private struct UITextViewWrapper: UIViewRepresentable {
                             print(range.debugDescription)
                             //the code that follows is extremely unsafe. It rests on the assumption that all written text contains only 2 simple statements and that the junction type is always "and"
                             let middleBound = finishedText.string.index(finishedText.string.startIndex, offsetBy: range.location)
-                            let firstStatement = Statement(text: String(finishedText.string[..<middleBound]), symbol: "A")
-                            let secondStatement = Statement(text: String(finishedText.string[middleBound..<finishedText.string.endIndex]), symbol: "B")
+                            let firstStatement = Statement(content: String(finishedText.string[..<middleBound]), formula: "A")
+                            let secondStatement = Statement(content: String(finishedText.string[middleBound..<finishedText.string.endIndex]), formula: "B")
                             
-                            cStatement = ComplexStatement(type: .and, blocks: [firstStatement, secondStatement])
+                            cStatement = Conjunction(firstStatement, secondStatement)
                         }
                     }
 
@@ -251,7 +250,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 }
             } else {
                 //the text is empty or meaningless
-                return Statement(text: "this should be deleted somehow", symbol: "A")
+                return Statement(content: "this should be deleted somehow", formula: "A")
             }
             
             

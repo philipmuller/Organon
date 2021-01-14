@@ -15,54 +15,36 @@ struct StatementView: View {
     
     
     var body: some View {
-        
         VStack {
-            //Text("text: \(text), deletecount: \(deleteCount)")
-            //Text("statement text: \(statement.content ?? "complex")")
-            
-            if let cStatement = statement as? ComplexStatement {
-                switch cStatement.csType {
-                case .ifthen:
-                        ifThenStatement
-                            .transition(.scale)// C -> E
-                            .onAppear() {
-                                //text = cStatement.complexContent
-                            }
-                case .and:
-                        andStatement
-                            .transition(.scale)
-                            .onAppear() {
-                                //text = cStatement.complexContent
-                            }
-                case .or:
-                        orStatement
-                            .transition(.scale)
-                            .onAppear() {
-                                //text = cStatement.complexContent
-                            }
-                case .negation:
-                        notStatement
-                            .transition(.scale)
-                            .onAppear() {
-                                //text = cStatement.complexContent
-                            }
-                }
+            switch statement.type {
+            case .conditional:
+                ifThenStatement
+                    .transition(.scale)
                 
-            } else {
-                Text(statement.content ?? "error")
+            case .conjunction:
+                andStatement
+                    .transition(.scale)
+                
+            case .disjunction:
+                orStatement
+                    .transition(.scale)
+                
+            case .negation:
+                notStatement
+                    .transition(.scale)
+                
+            default:
+                Text(statement.content)
                     .transition(.scale)
                     .fixedSize(horizontal: false, vertical: true)
-                    .onAppear() {
-                        //text = statement.content!
-                    }
             }
         }
     }
     
     var ifThenStatement: some View {
-        let statement = self.statement as! ComplexStatement
-        let first = statement.childStatements.first!
-        let second = statement.childStatements.last!
+        let statement = self.statement as! Conditional
+        let first = statement.firstChild
+        let second = statement.secondChild
         let firstView = StatementView(statement: first, deleteCount: $deleteCount, editable: editable)
         let secondView = StatementView(statement: second, deleteCount: $deleteCount, editable: editable)
             
@@ -123,11 +105,11 @@ struct StatementView: View {
     }
     
     var andStatement: some View {
-        let statement = self.statement as! ComplexStatement
-        let firstStatement = statement.childStatements.first!
-        let lastStatement = statement.childStatements.last!
-        let firstView = StatementView(statement: firstStatement, text: statement.complexContent, deleteCount: $deleteCount, editable: editable)
-        let secondView = StatementView(statement: lastStatement, text: statement.complexContent, deleteCount: $deleteCount, editable: editable)
+        let statement = self.statement as! Conjunction
+        let firstStatement = statement.firstChild
+        let lastStatement = statement.secondChild
+        let firstView = StatementView(statement: firstStatement, text: statement.content, deleteCount: $deleteCount, editable: editable)
+        let secondView = StatementView(statement: lastStatement, text: statement.content, deleteCount: $deleteCount, editable: editable)
         
         return HStack {
             if statement.block && firstStatement.block {
@@ -173,11 +155,11 @@ struct StatementView: View {
     }
     
     var orStatement: some View {
-        let statement = self.statement as! ComplexStatement
-        let firstStatement = statement.childStatements.first!
-        let lastStatement = statement.childStatements.last!
-        let firstView = StatementView(statement: firstStatement, text: statement.complexContent, deleteCount: $deleteCount, editable: editable)
-        let secondView = StatementView(statement: lastStatement, text: statement.complexContent, deleteCount: $deleteCount, editable: editable)
+        let statement = self.statement as! Disjunction
+        let firstStatement = statement.firstChild
+        let lastStatement = statement.secondChild
+        let firstView = StatementView(statement: firstStatement, text: statement.content, deleteCount: $deleteCount, editable: editable)
+        let secondView = StatementView(statement: lastStatement, text: statement.content, deleteCount: $deleteCount, editable: editable)
         
         return HStack {
             if statement.block && firstStatement.block {
@@ -219,9 +201,9 @@ struct StatementView: View {
     }
     
     var notStatement: some View {
-        let statement = self.statement as! ComplexStatement
-        let nStatement = statement.childStatements.first!
-        let nView = StatementView(statement: nStatement, text: statement.complexContent, deleteCount: $deleteCount, editable: editable)
+        let statement = self.statement as! Negation
+        let nStatement = statement.negatedStatement
+        let nView = StatementView(statement: nStatement, text: statement.negatedStatementContent, deleteCount: $deleteCount, editable: editable)
         
         return VStack {
             if statement.block {
@@ -241,7 +223,7 @@ struct StatementView: View {
                         }
                         .padding(EdgeInsets(top: 0, leading: 22, bottom: 0, trailing: 0))
             } else {
-                (Text(Image("not")).foregroundColor(Color.accentColor) + Text(nStatement.content!))
+                (Text(Image("not")).foregroundColor(Color.accentColor) + Text(nStatement.content))
                     .fixedSize(horizontal: false, vertical: true)
                     .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                         return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
@@ -275,136 +257,6 @@ struct StatementView: View {
     }
     
     
-}
-
-
-extension Statement {
-
-    static func +(lhs: Statement, rhs: Statement) -> (Text?, Text?) {
-            if lhs.type == .simple && rhs.type == .simple {
-                return (Text(lhs.content!)+Text(" ")+Text(Image("and")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.content!), Text(lhs.symbol!)+Text(" ")+Text(Image("and")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.symbol!))
-            } else {
-                return cViewUnion(type: .and, leftStatement: lhs, rightStatement: rhs)
-            }
-
-    }
-
-    static func /(lhs: Statement, rhs: Statement) -> (Text?, Text?) {
-            if lhs.type == .simple && rhs.type == .simple {
-                return (Text(lhs.content!)+Text(" ")+Text(Image("or")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.content!), Text(lhs.symbol!)+Text(" ")+Text(Image("or")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.symbol!))
-            } else {
-                return cViewUnion(type: .or, leftStatement: lhs, rightStatement: rhs) // lhs = B, rhs = (C -> D)
-            }
-    }
-
-    static func >(lhs: Statement, rhs: Statement) -> (Text?, Text?) {
-        if lhs.type == .simple && rhs.type == .simple {
-            return (Text(lhs.content!)+Text(" ")+Text(Image("then")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.content!), Text(lhs.symbol!)+Text(" ")+Text(Image("then")).foregroundColor(Color.accentColor)+Text(" ")+Text(rhs.symbol!))
-            } else {
-                return cViewUnion(type: .ifthen, leftStatement: lhs, rightStatement: rhs) // lhs = B, rhs = (C -> D)
-            }
-    }
-
-    static prefix func ~(value: Statement) -> (Text?, Text?) {
-        if value.type == .simple {
-            return (Text(" ")+Text(Image("not")).foregroundColor(Color.accentColor)+Text(" ")+Text(value.content!), Text(" ")+Text(Image("not")).foregroundColor(Color.accentColor)+Text(" ")+Text(value.symbol!))
-            } else {
-                return cViewUnion(type: .negation, leftStatement: value, rightStatement: value) // lhs = B, rhs = (C -> D)
-            }
-    }
-
-    static func cViewUnion(type: ComplexStatementType, leftStatement: Statement, rightStatement: Statement) -> (Text?, Text?) {
-        //one or both are complex statements
-        var finalLeft:(Text?, Text?)
-        var finalRight:(Text?, Text?)
-
-        if let lCStatement = leftStatement as? ComplexStatement { //A, not a complex statement //B, not complex
-            //create statement views for the left two terms:
-            let oneLeft = lCStatement.childStatements.first!
-            let twoLeft = lCStatement.childStatements.last!
-
-            finalLeft = statementTextViewUnion(type: lCStatement.csType, first: oneLeft, second: twoLeft)
-        } else {
-            finalLeft = (Text(leftStatement.content!), Text(leftStatement.symbol!))
-            //this triggers for A and B
-        }
-
-        if let rCStatement = rightStatement as? ComplexStatement { //(B · (C -> D)), //(C -> D)
-            //create statement views for the right two terms:
-            let oneRight = rCStatement.childStatements.first! //B //C
-            let twoRight = rCStatement.childStatements.last! //(C -> D) //D
-
-            finalRight = statementTextViewUnion(type: rCStatement.csType, first: oneRight, second: twoRight) //
-        } else {
-            finalRight = (Text(rightStatement.content!), Text(rightStatement.symbol!))
-        }
-
-        var op = Text(" ")+Text(Image("and"))+Text(" ")
-
-        switch type {
-        case .and:
-            op = Text(" ")+Text(Image("and"))+Text(" ")
-        case .negation:
-            op = Text(" ")+Text(Image("not"))+Text(" ")
-        case .or:
-            op = Text(" ")+Text(Image("or"))+Text(" ")
-        case .ifthen:
-            op = Text(" ")+Text(Image("then"))+Text(" ")
-        default:
-            op = Text(" ")+Text(Image("and"))+Text(" ")
-        }
-
-        op = op.foregroundColor(Color.accentColor).font(Font.body.weight(.heavy))
-
-        var finalText: Text?
-        var finalSymbol: Text?
-
-
-        if let uFinalLeft = finalLeft.0 {
-            finalText = uFinalLeft
-        }
-        if let uFinalRight = finalRight.0 {
-            if finalText == nil {
-                finalText = op+uFinalRight
-            } else {
-                finalText = finalText! + op + uFinalRight
-            }
-        }
-
-        if let uFinalLeft = finalLeft.1 {
-            finalSymbol = Text("(") + uFinalLeft + Text(")")
-        }
-        if let uFinalRight = finalRight.1 {
-            if finalSymbol == nil || type == .negation {
-                finalSymbol = op+Text("(")+uFinalRight+Text(")")
-            } else {
-                finalSymbol = finalSymbol! + op + Text("(")+uFinalRight+Text(")")
-            }
-        }
-
-        return (finalText, finalSymbol)
-    }
-
-    static func statementTextViewUnion(type: ComplexStatementType, first: Statement, second: Statement) -> (Text?, Text?) {
-        switch type {
-        case .and:
-            return (first + second) // B + (C -> D)
-
-        case .or:
-            return (first / second)
-
-        case .negation:
-            return (~first)
-
-        case .ifthen:
-            return (first > second)
-
-        default:
-           return (nil, nil)
-        }
-    }
-
-
 }
 
 struct StatementPreferenceData: Identifiable {

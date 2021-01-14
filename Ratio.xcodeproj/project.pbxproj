@@ -52,7 +52,6 @@
 		85C75205255A103000A4FF60 /* ArgumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85C75204255A103000A4FF60 /* ArgumentView.swift */; };
 		85ED3BAE257EDAE7009CCC7C /* Argument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ED3BAD257EDAE7009CCC7C /* Argument.swift */; };
 		85ED3BB2257EDC43009CCC7C /* Proposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ED3BB1257EDC43009CCC7C /* Proposition.swift */; };
-		85ED3BB6257EDCB5009CCC7C /* ComplexStatement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ED3BB5257EDCB5009CCC7C /* ComplexStatement.swift */; };
 		85ED3BB9257EDDEF009CCC7C /* Statement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ED3BB8257EDDEF009CCC7C /* Statement.swift */; };
 		85ED3BBC257EE0A5009CCC7C /* Justification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85ED3BBB257EE0A5009CCC7C /* Justification.swift */; };
 /* End PBXBuildFile section */
@@ -105,7 +104,6 @@
 		85C75204255A103000A4FF60 /* ArgumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArgumentView.swift; sourceTree = "<group>"; };
 		85ED3BAD257EDAE7009CCC7C /* Argument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Argument.swift; sourceTree = "<group>"; };
 		85ED3BB1257EDC43009CCC7C /* Proposition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Proposition.swift; sourceTree = "<group>"; };
-		85ED3BB5257EDCB5009CCC7C /* ComplexStatement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplexStatement.swift; sourceTree = "<group>"; };
 		85ED3BB8257EDDEF009CCC7C /* Statement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Statement.swift; sourceTree = "<group>"; };
 		85ED3BBB257EE0A5009CCC7C /* Justification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Justification.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -212,7 +210,6 @@
 				85ED3BB1257EDC43009CCC7C /* Proposition.swift */,
 				85ED3BBB257EE0A5009CCC7C /* Justification.swift */,
 				85ED3BB8257EDDEF009CCC7C /* Statement.swift */,
-				85ED3BB5257EDCB5009CCC7C /* ComplexStatement.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -334,7 +331,6 @@
 				85C751F62559EE7D00A4FF60 /* Bracket.swift in Sources */,
 				85ED3BAE257EDAE7009CCC7C /* Argument.swift in Sources */,
 				8590FDA225571A1E00B8DA1A /* FormalArgumentView.swift in Sources */,
-				85ED3BB6257EDCB5009CCC7C /* ComplexStatement.swift in Sources */,
 				85347B72258FB3D9002C4142 /* test.swift in Sources */,
 				85C751FF2559F70C00A4FF60 /* BracketView.swift in Sources */,
 				85C751EF2559ED3C00A4FF60 /* PropositionView.swift in Sources */,

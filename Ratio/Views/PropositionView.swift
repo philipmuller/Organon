@@ -69,22 +69,7 @@ struct PropositionView: View {
                 .font(.custom("AvenirNext-Medium", size: 14))
                 .foregroundColor(Color("BoxGrey"))
             
-            Group {
-                if let cStatement = proposition.content as? ComplexStatement {
-                    switch cStatement.csType {
-                    case .ifthen:
-                        (cStatement.childStatements.first! > cStatement.childStatements.last!).1
-                    case .and:
-                        (cStatement.childStatements.first! > cStatement.childStatements.last!).1
-                    case .or:
-                        (cStatement.childStatements.first! > cStatement.childStatements.last!).1
-                    case .negation:
-                        (~cStatement.childStatements.first!).1
-                    }
-                } else {
-                    Text(proposition.content.symbol!)
-                }
-            }.font(.custom("SabonBold", size: 18))
+            Text(proposition.content.formula).font(.custom("SabonBold", size: 18))
             
         }
     }
@@ -137,31 +122,7 @@ struct PropositionView: View {
 
 struct PropositionView_Previews: PreviewProvider {
     static var previews: some View {
-        
-        let sl = Statement(text: "Socrates is lying", symbol: "L")
-        let sr = Statement(text: "Socrates is reasonable", symbol: "R")
-        let pw = Statement(text: "Plato is wrong", symbol: "P")
-        let aw = Statement(text: "Aristotele is wrong", symbol: "A")
-        
-        let conditional = ComplexStatement(type: .ifthen, blocks: [Statement(pw), Statement(aw)])
-        let conditional2 = ComplexStatement(type: .ifthen, blocks: [Statement(sl), Statement(sr)])
-        let conjunction2 = ComplexStatement(type: .and, blocks: [ComplexStatement(conditional), Statement(sl)])
-        let negation = ComplexStatement(type: .negation, blocks: [ComplexStatement(conjunction2)])
-        let conjunction = ComplexStatement(type: .and, blocks: [ComplexStatement(conditional), ComplexStatement(negation)])
-        let newNegation = ComplexStatement(type: .negation, blocks: [ComplexStatement(conjunction)])
-        
-        let disjunction = ComplexStatement(type: .or, blocks: [Statement(sl), ComplexStatement(conjunction)])
-        
-       
-        
-        let sNegation = ComplexStatement(type: .negation, blocks: [aw])
-        let lConditional = ComplexStatement(type: .ifthen, blocks: [sl, sr])
-        
-        let hConditional = ComplexStatement(type: .ifthen, blocks: [lConditional, disjunction])
-        //let negation = ComplexStatement(type: .negation, blocks: [hConditional])
-        
-        //(StatementView(statement: sNegation) + StatementView(statement: disjunction)).0
-        
-        PropositionView(proposition: Proposition(content: disjunction, type: .step, justification: Justification(type: .MT, references: [1, 2])), expanded: false, faded: false, editable: false).accentColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+        let whatever = Statement(content: "Hello", formula: "B")
+        PropositionView(proposition: Proposition(content: whatever, type: .step, justification: Justification(type: .MT, references: [1, 2])), expanded: false, faded: false, editable: false).accentColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
     }
 }

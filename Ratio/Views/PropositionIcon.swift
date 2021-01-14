@@ -61,6 +61,6 @@ struct PropositionIcon: View {
 
 struct PropositionIcon_Previews: PreviewProvider {
     static var previews: some View {
-        PropositionIcon(state: false, proposition: Proposition(content: Statement(text: "bla", symbol: "B"), type: .premise))
+        PropositionIcon(state: false, proposition: Proposition(content: Statement(content: "bla", formula: "B"), type: .premise))
     }
 }

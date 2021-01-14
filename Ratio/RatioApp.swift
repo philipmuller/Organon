@@ -14,26 +14,26 @@ struct RatioApp: App {
     var body: some Scene {
         WindowGroup {
             
-            let h = Statement(text: "Something is a human", symbol: "H")
-            let a = Statement(text: "Something is an animal", symbol: "A")
-            let s = Statement(text: "Something is stupid", symbol: "S")
-            let k = Statement(text: "Something can be ethically killed for food", symbol: "K")
+            let h = Statement(content: "Something is a human", formula: "H")
+            let a = Statement(content: "Something is an animal", formula: "A")
+            let s = Statement(content: "Something is stupid", formula: "S")
+            let k = Statement(content: "Something can be ethically killed for food", formula: "K")
             
             //First proposition
-            let ifHthenA = ComplexStatement(type: .ifthen, blocks: [h, a])
+            let ifHthenA = Conditional(h, a)
             
             let first = Proposition(content: ifHthenA, type: .premise, position: 1)
             
             //Second proposition
-            let sAndH = ComplexStatement(type: .and, blocks: [s, h])
-            let ifSandHthenK = ComplexStatement(type: .ifthen, blocks: [sAndH, k])
-            let notIfSandHthenK = ComplexStatement(type: .negation, blocks: [ifSandHthenK])
+            let sAndH = Conjunction(s, h)
+            let ifSandHthenK = Conditional(sAndH, k)
+            let notIfSandHthenK = Negation(ifSandHthenK)
             
             let second = Proposition(content: notIfSandHthenK, type: .premise, position: 2)
             
             //Third proposition
-            let sAndA = ComplexStatement(type: .and, blocks: [s, a])
-            let ifSandAthenK = ComplexStatement(type: .ifthen, blocks: [sAndA, k])
+            let sAndA = Conjunction(s, a)
+            let ifSandAthenK = Conditional(sAndA, k)
             
             let third = Proposition(content: ifSandAthenK, type: .step, justification: Justification(type: .AIP), position: 3)
             
@@ -59,11 +59,11 @@ struct RatioApp: App {
             let tenth = Proposition(content: ifSandHthenK, type: .step, justification: Justification(type: .CP, references: [4, 9]), position: 10)
             
             //Eleventh proposition
-            let contradiction = ComplexStatement(type: .and, blocks: [notIfSandHthenK, ifSandHthenK])
+            let contradiction = Conjunction(notIfSandHthenK, ifSandHthenK)
             let eleventh = Proposition(content: contradiction, type: .step, justification: Justification(type: .CN, references: [2, 10]), position: 11)
             
             //Twelfth proposition
-            let notIfSandAthenK = ComplexStatement(type: .negation, blocks: [ifSandAthenK])
+            let notIfSandAthenK = Negation(ifSandAthenK)
             let twelfth = Proposition(content: notIfSandAthenK, type: .conclusion, justification: Justification(type: .IP, references: [3, 11]), position: 12, alias: "Therefore, it is not the case that if an animal is stupid, it can be ethically killed for food")
             
             
