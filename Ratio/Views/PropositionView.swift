@@ -9,8 +9,11 @@ import SwiftUI
 
 struct PropositionView: View {
     @Binding var proposition: Proposition
-    @Namespace var namespace
+    @Binding var propositions: [Proposition]
+    let onDelete: (IndexSet) -> ()
+    let position: Int
     
+    @Namespace var namespace
     
     let expanded: Bool
     let faded: Bool
@@ -20,6 +23,14 @@ struct PropositionView: View {
     
     var body: some View {
         HStack(alignment: .top) {
+            Button(action: {
+                if let index = propositions.firstIndex(of: proposition) {
+                    self.onDelete(IndexSet(integer: index))
+                }
+            }) {
+                Image(systemName: "minus.circle")
+            }
+            
             if !expanded {
                 iconAndNumber
             }
@@ -27,7 +38,7 @@ struct PropositionView: View {
                 if expanded {
                     iconAndNumber
                 }
-                propositionView
+                content
                     .padding(.top, expanded ? 7 : 0)
             }
         }
@@ -35,12 +46,11 @@ struct PropositionView: View {
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
         .background(generateBackground(expanded: expanded))
         .opacity(faded ? 0.2 : 1)
-        //.animation(.default)
     }
     
-    var propositionView: some View {
+    var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
-            StatementView(statement: proposition.content, deleteCount: $count, editable: editable)
+            StatementView(statement: $proposition.content, deleteCount: $count, editable: editable)
             
             propositionDetailView
                 .frame(width: expanded ? nil : 0, height: expanded ? nil : 0)
@@ -77,7 +87,7 @@ struct PropositionView: View {
     var iconAndNumber: some View {
         HStack {
             if expanded {
-                Text("\(proposition.number).")
+                Text("\(position).")
                     .matchedGeometryEffect(id: "number", in: namespace)
                     .opacity(0.3)
                     .alignmentGuide(.basePropositionAlignment) { d in
@@ -97,7 +107,7 @@ struct PropositionView: View {
                         return [PropositionPreferenceData(bounds: $0, proposition: proposition)]
                     }
                 
-                Text("\(proposition.number).")
+                Text("\(position).")
                     .matchedGeometryEffect(id: "number", in: namespace)
                     .opacity(0.3)
                     .alignmentGuide(.basePropositionAlignment) { d in

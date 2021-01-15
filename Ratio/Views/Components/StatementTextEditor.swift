@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-struct MultilineTextField: View {
-
+struct StatementTextEditor: View {
     private var placeholder: String
     private var onCommit: (() -> Void)?
     @State private var viewHeight: CGFloat = 40 //start with one line

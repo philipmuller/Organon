@@ -6,10 +6,28 @@
 //
 
 import Foundation
+import Combine
 
-class Argument: ObservableObject {
+class Argument: ObservableObject, DeletableDelegate {
     var title: String
-    @Published var propositions: [Proposition]
+    @Published var propositions: [Proposition] {
+        didSet {
+            
+            var deletedProposition: Proposition? = oldValue.first
+            
+            for oProposition in oldValue {
+                var matches = 0
+                for nProposition in propositions {
+                    if oProposition == nProposition {
+                        matches += 1
+                    }
+                }
+                if matches == 0 {
+                    deletedProposition = oProposition
+                }
+            }
+        }
+    }
     var numberOfSteps: Int {
         propositions.count
     }
@@ -17,7 +35,6 @@ class Argument: ObservableObject {
     init(title: String, propositions: [Proposition]) {
         
         var indent = 0
-        var count = 1
         
         for proposition in propositions {
             if let t = proposition.justification?.type {
@@ -29,14 +46,39 @@ class Argument: ObservableObject {
                     indent -= 1
                 }
             }
-
-            proposition.level = indent
-            proposition.number = count
             
-            count += 1
+            proposition.level = indent
         }
         
         self.title = title
         self.propositions = propositions
+        
+        for proposition in self.propositions {
+            proposition.manager = self
+        }
     }
+    
+    func removeProposition(id: UUID) -> Void {
+        
+        var deletedNumber: Int = propositions.count
+        
+        propositions.removeAll() { proposition in
+            if proposition.id == id {
+                return true
+            }
+            
+            return false
+        }
+    }
+    
+    func requestDeletion(_ item: Deletable) {
+        print("deletion requested. item: \(item)")
+        removeProposition(id: item.id)
+    }
+    
+    
+}
+
+protocol DeletableDelegate: AnyObject {
+    func requestDeletion(_ item: Deletable)
 }

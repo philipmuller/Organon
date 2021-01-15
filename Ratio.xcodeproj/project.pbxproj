@@ -14,8 +14,7 @@
 		850C6E2D258A6850006FF747 /* Sabon_Roman.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 850C6E27258A6850006FF747 /* Sabon_Roman.ttf */; };
 		850C6E2E258A6850006FF747 /* Sabon_CE_Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 850C6E28258A6850006FF747 /* Sabon_CE_Bold.ttf */; };
 		850C6E32258B7664006FF747 /* StatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850C6E31258B7664006FF747 /* StatementView.swift */; };
-		85347B72258FB3D9002C4142 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85347B71258FB3D9002C4142 /* test.swift */; };
-		85347B75258FE828002C4142 /* TextViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85347B74258FE828002C4142 /* TextViewTest.swift */; };
+		85347B72258FB3D9002C4142 /* StatementTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85347B71258FB3D9002C4142 /* StatementTextEditor.swift */; };
 		853F4FB42581617B00D98CBE /* ConnectiveLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853F4FB32581617B00D98CBE /* ConnectiveLines.swift */; };
 		856470B92556BF1900FD6EA2 /* RatioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470B82556BF1900FD6EA2 /* RatioApp.swift */; };
 		856470BB2556BF1900FD6EA2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470BA2556BF1900FD6EA2 /* ContentView.swift */; };
@@ -64,8 +63,7 @@
 		850C6E27258A6850006FF747 /* Sabon_Roman.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sabon_Roman.ttf; sourceTree = "<group>"; };
 		850C6E28258A6850006FF747 /* Sabon_CE_Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sabon_CE_Bold.ttf; sourceTree = "<group>"; };
 		850C6E31258B7664006FF747 /* StatementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatementView.swift; sourceTree = "<group>"; };
-		85347B71258FB3D9002C4142 /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
-		85347B74258FE828002C4142 /* TextViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewTest.swift; sourceTree = "<group>"; };
+		85347B71258FB3D9002C4142 /* StatementTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatementTextEditor.swift; sourceTree = "<group>"; };
 		853F4FB32581617B00D98CBE /* ConnectiveLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectiveLines.swift; sourceTree = "<group>"; };
 		856470B52556BF1800FD6EA2 /* Ratio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ratio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		856470B82556BF1900FD6EA2 /* RatioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatioApp.swift; sourceTree = "<group>"; };
@@ -220,8 +218,7 @@
 				8590FDA125571A1E00B8DA1A /* FormalView.swift */,
 				85C751EE2559ED3C00A4FF60 /* PropositionView.swift */,
 				850C6E31258B7664006FF747 /* StatementView.swift */,
-				85347B71258FB3D9002C4142 /* test.swift */,
-				85347B74258FE828002C4142 /* TextViewTest.swift */,
+				85347B71258FB3D9002C4142 /* StatementTextEditor.swift */,
 				85C751F22559EDFB00A4FF60 /* PropositionIcon.swift */,
 				85C751FE2559F70C00A4FF60 /* BracketView.swift */,
 				853F4FB32581617B00D98CBE /* ConnectiveLines.swift */,
@@ -331,13 +328,12 @@
 				85C751F62559EE7D00A4FF60 /* Bracket.swift in Sources */,
 				85ED3BAE257EDAE7009CCC7C /* Argument.swift in Sources */,
 				8590FDA225571A1E00B8DA1A /* FormalView.swift in Sources */,
-				85347B72258FB3D9002C4142 /* test.swift in Sources */,
+				85347B72258FB3D9002C4142 /* StatementTextEditor.swift in Sources */,
 				85C751FF2559F70C00A4FF60 /* BracketView.swift in Sources */,
 				85C751EF2559ED3C00A4FF60 /* PropositionView.swift in Sources */,
 				85ED3BB9257EDDEF009CCC7C /* Statement.swift in Sources */,
 				853F4FB42581617B00D98CBE /* ConnectiveLines.swift in Sources */,
 				85ED3BBC257EE0A5009CCC7C /* Justification.swift in Sources */,
-				85347B75258FE828002C4142 /* TextViewTest.swift in Sources */,
 				85C751F32559EDFB00A4FF60 /* PropositionIcon.swift in Sources */,
 				856470C52556BF1B00FD6EA2 /* Ratio.xcdatamodeld in Sources */,
 				85ED3BB2257EDC43009CCC7C /* Proposition.swift in Sources */,

@@ -16,32 +16,39 @@ struct FormalView: View {
     var body: some View {
         VStack(alignment: selectedProposition == nil ? .basePropositionAlignment : .leading, spacing: 20) {
             let somethingSelected = selectedProposition != nil ? true : false
-            
-            ForEach(0..<propositions.count) { index in
-                let selected = selectedProposition?.id == propositions[index].id ? true : false
-                let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == propositions[index].number || selectedProposition?.justification?.references?.last == propositions[index].number) || selected) ? false : true
+            Print(propositions.count)
+            ForEach(propositions) { proposition in
+                Print(index)
+                let selected = selectedProposition?.id == proposition.id ? true : false
+                let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == propositions.firstIndex(of: proposition) || selectedProposition?.justification?.references?.last == propositions.firstIndex(of: proposition)) || selected) ? false : true
                 
-                PropositionView(proposition: $propositions[index], expanded: selected, faded: faded, editable: selected ? isEditing : false)
+                PropositionView(proposition: $propositions[propositions.firstIndex(of: proposition) ?? 0], propositions: $propositions, onDelete: removeRows(at:), position: propositions.firstIndex(of: proposition)!, expanded: selected, faded: faded, editable: selected ? isEditing : false)
                     .onTapGesture {
                         withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
-                            if selectedProposition?.id == propositions[index].id {
+                            if selectedProposition?.id == proposition.id {
                                 isEditing = true
                             } else {
-                                selectedProposition = propositions[index]
+                                selectedProposition = proposition
                                 isEditing = false
                             }
                         }
                     }
                     .alignmentGuide(HorizontalAlignment.leading) { d in
-                        return (selectedProposition?.id == propositions[index].id || (selectedProposition?.justification?.references?.first == propositions[index].number || selectedProposition?.justification?.references?.last == propositions[index].number)) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
+                        return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == propositions.firstIndex(of: proposition) || selectedProposition?.justification?.references?.last == propositions.firstIndex(of: proposition))) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
                     }
-            }
+            }.onDelete(perform: removeRows(at:))
         }
         .backgroundPreferenceValue(PropositionPreferenceKey.self) { preferences in
             GeometryReader { geometry in
                 LBracketView(geometry: geometry, preferences: preferences)
                     .opacity(selectedProposition == nil ? 1 : 0)
             }
+        }
+    }
+    
+    func removeRows(at offsets: IndexSet) {
+        withAnimation {
+            propositions.remove(atOffsets: offsets)
         }
     }
 }
@@ -54,6 +61,13 @@ extension HorizontalAlignment {
     }
     
     static let basePropositionAlignment = HorizontalAlignment(BasePropositionAlignment.self)
+}
+
+extension View {
+    func Print(_ vars: Any...) -> some View {
+        for v in vars { print(v) }
+        return EmptyView()
+    }
 }
 
 struct PropositionPreferenceData: Identifiable {
