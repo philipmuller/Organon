@@ -37,7 +37,7 @@
 		856470E72556F29E00FD6EA2 /* Silk Serif SemiBold Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 856470D92556F29D00FD6EA2 /* Silk Serif SemiBold Italic.otf */; };
 		856470E82556F29E00FD6EA2 /* Silk Serif Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 856470DA2556F29D00FD6EA2 /* Silk Serif Black.otf */; };
 		856470E92556F29E00FD6EA2 /* Silk Serif Regular Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 856470DB2556F29D00FD6EA2 /* Silk Serif Regular Italic.otf */; };
-		8590FDA225571A1E00B8DA1A /* FormalArgumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8590FDA125571A1E00B8DA1A /* FormalArgumentView.swift */; };
+		8590FDA225571A1E00B8DA1A /* FormalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8590FDA125571A1E00B8DA1A /* FormalView.swift */; };
 		8590FDAF255749CF00B8DA1A /* LegacyProposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8590FDAE255749CF00B8DA1A /* LegacyProposition.swift */; };
 		85A0DF6225830B1900991C23 /* Avenir Next.ttc in Resources */ = {isa = PBXBuildFile; fileRef = 85A0DF6125830B1900991C23 /* Avenir Next.ttc */; };
 		85A0DF6825830CEF00991C23 /* SabonLTStd-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 85A0DF6425830CEF00991C23 /* SabonLTStd-BoldItalic.otf */; };
@@ -89,7 +89,7 @@
 		856470D92556F29D00FD6EA2 /* Silk Serif SemiBold Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Silk Serif SemiBold Italic.otf"; sourceTree = "<group>"; };
 		856470DA2556F29D00FD6EA2 /* Silk Serif Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Silk Serif Black.otf"; sourceTree = "<group>"; };
 		856470DB2556F29D00FD6EA2 /* Silk Serif Regular Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Silk Serif Regular Italic.otf"; sourceTree = "<group>"; };
-		8590FDA125571A1E00B8DA1A /* FormalArgumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormalArgumentView.swift; sourceTree = "<group>"; };
+		8590FDA125571A1E00B8DA1A /* FormalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormalView.swift; sourceTree = "<group>"; };
 		8590FDAE255749CF00B8DA1A /* LegacyProposition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyProposition.swift; sourceTree = "<group>"; };
 		85A0DF6125830B1900991C23 /* Avenir Next.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Avenir Next.ttc"; sourceTree = "<group>"; };
 		85A0DF6425830CEF00991C23 /* SabonLTStd-BoldItalic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SabonLTStd-BoldItalic.otf"; sourceTree = "<group>"; };
@@ -217,7 +217,7 @@
 		85C751ED2559ECFC00A4FF60 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				8590FDA125571A1E00B8DA1A /* FormalArgumentView.swift */,
+				8590FDA125571A1E00B8DA1A /* FormalView.swift */,
 				85C751EE2559ED3C00A4FF60 /* PropositionView.swift */,
 				850C6E31258B7664006FF747 /* StatementView.swift */,
 				85347B71258FB3D9002C4142 /* test.swift */,
@@ -330,7 +330,7 @@
 				8590FDAF255749CF00B8DA1A /* LegacyProposition.swift in Sources */,
 				85C751F62559EE7D00A4FF60 /* Bracket.swift in Sources */,
 				85ED3BAE257EDAE7009CCC7C /* Argument.swift in Sources */,
-				8590FDA225571A1E00B8DA1A /* FormalArgumentView.swift in Sources */,
+				8590FDA225571A1E00B8DA1A /* FormalView.swift in Sources */,
 				85347B72258FB3D9002C4142 /* test.swift in Sources */,
 				85C751FF2559F70C00A4FF60 /* BracketView.swift in Sources */,
 				85C751EF2559ED3C00A4FF60 /* PropositionView.swift in Sources */,

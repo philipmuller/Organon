@@ -8,54 +8,44 @@
 import SwiftUI
 
 struct ArgumentView: View {
-    var title: String
-    var argument: Argument
+    @ObservedObject var argument: Argument
+    @State var selectedProposition: Proposition? = nil
+    @State var isEditing: Bool = false
     
     var body: some View {
-       // ScrollView{
-        
-        GeometryReader { geometry in
-            VStack(alignment: .leading) {
-                
-                Text(title)
-                    .font(.custom("Silk Serif SemiBold", size: 30))
-                    .foregroundColor(Color("MainText"))
-                    .padding(.bottom, 15)
-                    .padding(.trailing, 80)
-                
-                Divider()
-                
-                FormalArgumentView(propositions: argument.propositions)
-                    //.padding(EdgeInsets(top: 25, leading: 5, bottom: 25, trailing: 5))
-                    //.layoutPriority(1)
-                    .font(.custom("AvenirNext-Medium", size: 16))
-                    //.background(Color.red)
-                
-                
-                
-                Spacer()
-            //}.frame(width: geometry.size.width)
-            //.padding(EdgeInsets(top: 0, leading: 35, bottom: 0, trailing: 30))
+        ScrollView {
+            header
+            FormalView(propositions: $argument.propositions, selectedProposition: $selectedProposition, isEditing: $isEditing)
+                .frame(maxWidth: 300)
+                .accentColor(Color("AccentColor"))
         }
-    
+        .onTapGesture {
+            withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
+                selectedProposition = nil
+                isEditing = false
+            }
+        }
     }
+    
+    var header: some View {
+        VStack(alignment: .leading) {
+            Text(argument.title)
+                .lineSpacing(5)
+                .fixedSize(horizontal: false, vertical: true)
+                .font(.custom("SabonBold", size: 30))
+                .foregroundColor(Color("MainText"))
+                .padding(.bottom, 15)
             
-  }
+            Divider()
+        }
+        .padding(EdgeInsets(top: 0, leading: 30, bottom: 30, trailing: 80))
+        
+    }
 }
 
 
 struct ArgumentView_Previews: PreviewProvider {
     static var previews: some View {
-        
-        let title = "Kalam \nCosmological \nArgument"
-        
-        let firstPremise = LegacyProposition(type: .premise, text: "Everything that begins to exist has a cause.")
-        let secondPremise = LegacyProposition(type: .premise, text: "The universe began to exist.")
-        let conclusion = LegacyProposition(type: .conclusion, text: "Therefore, the universe has a cause.")
-        
-        let propositions = [firstPremise, secondPremise, conclusion]
-        
-        
-        //ArgumentView(title: title, propositions: propositions)
+        Text("Hello world!")
     }
 }

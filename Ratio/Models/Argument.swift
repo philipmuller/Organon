@@ -7,13 +7,14 @@
 
 import Foundation
 
-struct Argument {
-    var propositions: [Proposition]
+class Argument: ObservableObject {
+    var title: String
+    @Published var propositions: [Proposition]
     var numberOfSteps: Int {
         propositions.count
     }
     
-    init(propositions: [Proposition]) {
+    init(title: String, propositions: [Proposition]) {
         
         var indent = 0
         var count = 1
@@ -35,6 +36,7 @@ struct Argument {
             count += 1
         }
         
+        self.title = title
         self.propositions = propositions
     }
 }

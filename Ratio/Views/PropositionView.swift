@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PropositionView: View {
-    let proposition: Proposition
+    @Binding var proposition: Proposition
     @Namespace var namespace
     
     
@@ -122,7 +122,6 @@ struct PropositionView: View {
 
 struct PropositionView_Previews: PreviewProvider {
     static var previews: some View {
-        let whatever = Statement(content: "Hello", formula: "B")
-        PropositionView(proposition: Proposition(content: whatever, type: .step, justification: Justification(type: .MT, references: [1, 2])), expanded: false, faded: false, editable: false).accentColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
+        Text("Hello world!")
     }
 }
