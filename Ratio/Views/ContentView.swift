@@ -46,30 +46,30 @@ struct ContentView: View {
         let fourth = Proposition(content: sAndH.copy(), type: .step, justification: Justification.init(type: .ACP))
         
         //Fifth proposition
-        let fifth = Proposition(content: s.copy(), type: .step, justification: Justification(type: .SM, references: [4]))
+        let fifth = Proposition(content: s.copy(), type: .step, justification: Justification(type: .SM, references: [fourth.id]))
         
         //Sixth proposition
-        let sixth = Proposition(content: h.copy(), type: .step, justification: Justification(type: .SM, references: [4]))
+        let sixth = Proposition(content: h.copy(), type: .step, justification: Justification(type: .SM, references: [fourth.id]))
         
         //Seventh proposition
-        let seventh = Proposition(content: a.copy(), type: .step, justification: Justification(type: .MP, references: [1, 6]))
+        let seventh = Proposition(content: a.copy(), type: .step, justification: Justification(type: .MP, references: [first.id, sixth.id]))
         
         //Eight proposition
-        let eight = Proposition(content: sAndA.copy(), type: .step, justification: Justification(type: .CN, references: [5, 7]))
+        let eight = Proposition(content: sAndA.copy(), type: .step, justification: Justification(type: .CN, references: [fifth.id, seventh.id]))
         
         //Ninth proposition
-        let ninth = Proposition(content: k.copy(), type: .step, justification: Justification(type: .MP, references: [3, 8]))
+        let ninth = Proposition(content: k.copy(), type: .step, justification: Justification(type: .MP, references: [third.id, eight.id]))
         
         //Tenth proposition
-        let tenth = Proposition(content: ifSandHthenK.copy(), type: .step, justification: Justification(type: .CP, references: [4, 9]))
+        let tenth = Proposition(content: ifSandHthenK.copy(), type: .step, justification: Justification(type: .CP, references: [fourth.id, ninth.id]))
         
         //Eleventh proposition
         let contradiction = Conjunction(notIfSandHthenK, ifSandHthenK)
-        let eleventh = Proposition(content: contradiction.copy(), type: .step, justification: Justification(type: .CN, references: [2, 10]))
+        let eleventh = Proposition(content: contradiction.copy(), type: .step, justification: Justification(type: .CN, references: [second.id, tenth.id]))
         
         //Twelfth proposition
         let notIfSandAthenK = Negation(ifSandAthenK)
-        let twelfth = Proposition(content: notIfSandAthenK.copy(), type: .conclusion, justification: Justification(type: .IP, references: [3, 11]), alias: "Therefore, it is not the case that if an animal is stupid, it can be ethically killed for food")
+        let twelfth = Proposition(content: notIfSandAthenK.copy(), type: .conclusion, justification: Justification(type: .IP, references: [third.id, eleventh.id]), alias: "Therefore, it is not the case that if an animal is stupid, it can be ethically killed for food")
         
         return [first, second, third, fourth, fifth, sixth, seventh, eight, ninth, tenth, eleventh, twelfth]
     }

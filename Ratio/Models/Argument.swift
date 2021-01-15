@@ -13,11 +13,6 @@ class Argument: ObservableObject {
     @Published var formalData: FormalData
     
     init(title: String, propositions: [Proposition]) {
-        
-        var indent = 0
-        
-        
-        
         self.title = title
         self.formalData = FormalData(propositions: propositions)
     }
@@ -28,12 +23,41 @@ class Argument: ObservableObject {
 struct FormalData {
     var propositions: [Proposition]
     
+    mutating func remove(proposition: Proposition) {
+        propositions.remove(at: propositions.firstIndex(of: proposition)!)
+    }
+    
     func position(of input: Proposition) -> Int {
         return propositions.firstIndex(of: input)! + 1
     }
     
     var numberOfSteps: Int {
         propositions.count
+    }
+    
+    func proposition(for id: UUID) -> Proposition? {
+        for proposition in propositions {
+            if proposition.id == id {
+                return proposition
+            }
+        }
+        
+        return nil
+    }
+    
+    func references(of input: Proposition) -> [Int]? {
+        if let idReferences = input.justification?.references {
+            var numericalReferences: [Int] = []
+            for id in idReferences {
+                if let desiredProposition = proposition(for: id) {
+                    numericalReferences.append(position(of: desiredProposition))
+                }
+            }
+            
+            return numericalReferences
+        }
+        
+        return nil
     }
     
     var numberOfLevels: Int {

@@ -9,14 +9,15 @@ import SwiftUI
 
 struct PropositionIcon: View {
     let state: Bool
-    let proposition: Proposition
+    let type: PropositionType
+    let justification: (Justification?, [Int]?)
     
     var body: some View {
         ZStack {
             let background = RoundedRectangle(cornerRadius: 3)
-                .foregroundColor(boxColor(type: proposition.type))
+                .foregroundColor(boxColor(type: type))
     
-            Text(justificationText(proposition: proposition, state: state))
+            Text(justificationText(data: justification, state: state))
                 .padding(EdgeInsets(top: 1, leading: 5, bottom: 1, trailing: 5))
                 .background(background)
                 .font(.custom("AvenirNext-DemiBold", size: 12))
@@ -24,12 +25,12 @@ struct PropositionIcon: View {
         }
     }
     
-    func justificationText(proposition: Proposition, state: Bool) -> String {
-        if let j = proposition.justification {
-            if let references = j.references {
+    func justificationText(data: (Justification?, [Int]?), state: Bool) -> String {
+        if let j = data.0 {
+            if let r = data.1 {
                 if state == true {
                     if let eText = j.type?.extendedText() {
-                        return references.count < 2 ? eText + ": \(references.first!)" : eText + ": \(references.first!), \(references.last!)"
+                        return r.count < 2 ? eText + ": \(r.first!)" : eText + ": \(r.first!), \(r.last!)"
                     }
                 } else {
                     if let cText = j.type?.text() {
@@ -61,6 +62,7 @@ struct PropositionIcon: View {
 
 struct PropositionIcon_Previews: PreviewProvider {
     static var previews: some View {
-        PropositionIcon(state: false, proposition: Proposition(content: Statement(content: "bla", formula: "B"), type: .premise))
+        Text("Not available ATM")
+        //PropositionIcon(state: false, proposition: Proposition(content: Statement(content: "bla", formula: "B"), type: .premise))
     }
 }

@@ -9,14 +9,14 @@ import Foundation
 
 struct Justification {
     let type: JustificationType?
-    let references: [Int]?
+    let references: [UUID]?
     
     init(type: JustificationType) {
         self.type = type
         references = nil
     }
     
-    init(type: JustificationType, references: [Int]) {
+    init(type: JustificationType, references: [UUID]) {
         self.type = type
         self.references = references
     }

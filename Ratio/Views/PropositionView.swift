@@ -9,10 +9,10 @@ import SwiftUI
 
 struct PropositionView: View {
     @Binding var proposition: Proposition
-    @Binding var propositions: [Proposition]
-    let onDelete: (IndexSet) -> ()
+    let onDelete: (Proposition) -> ()
     let position: Int
     let level: Int
+    let references: [Int]?
     
     @Namespace var namespace
     
@@ -25,9 +25,7 @@ struct PropositionView: View {
     var body: some View {
         HStack(alignment: .top) {
             Button(action: {
-                if let index = propositions.firstIndex(of: proposition) {
-                    self.onDelete(IndexSet(integer: index))
-                }
+                self.onDelete(proposition)
             }) {
                 Image(systemName: "minus.circle")
             }
@@ -95,14 +93,14 @@ struct PropositionView: View {
                         -CGFloat(self.level * 30)
                     }
                 
-                PropositionIcon(state: expanded, proposition: proposition)
+                PropositionIcon(state: expanded, type: proposition.type, justification: (proposition.justification, references))
                     .matchedGeometryEffect(id: "icon", in: namespace)
                     .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
                         return [PropositionPreferenceData(bounds: $0, proposition: proposition)]
                     }
                 
             } else {
-                PropositionIcon(state: expanded, proposition: proposition)
+                PropositionIcon(state: expanded, type: proposition.type, justification: (proposition.justification, references))
                     .matchedGeometryEffect(id: "icon", in: namespace)
                     .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
                         return [PropositionPreferenceData(bounds: $0, proposition: proposition)]
