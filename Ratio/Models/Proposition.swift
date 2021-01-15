@@ -7,14 +7,12 @@
 
 import Foundation
 
-class Proposition: Identifiable, Deletable, Equatable {
+class Proposition: Identifiable, Equatable {
     
     var id = UUID()
     var type: PropositionType
     var justification: Justification?
-    var level = 0
     var alias: String?
-    weak var manager: DeletableDelegate?
     
     var content: Statement
     
@@ -69,10 +67,6 @@ class Proposition: Identifiable, Deletable, Equatable {
         self.alias = alias
     }
     
-    func delete() {
-        manager?.requestDeletion(self)
-    }
-    
     static func == (lhs: Proposition, rhs: Proposition) -> Bool {
         if lhs.id == rhs.id {
             return true
@@ -80,11 +74,6 @@ class Proposition: Identifiable, Deletable, Equatable {
         return false
     }
     
-}
-
-protocol Deletable {
-    var id: UUID { get }
-    func delete()
 }
 
 enum PropositionType {

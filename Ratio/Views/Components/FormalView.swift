@@ -9,20 +9,20 @@ import SwiftUI
 
 struct FormalView: View {
     
-    @Binding var propositions: [Proposition]
+    @Binding var formalData: FormalData
     @Binding var selectedProposition: Proposition?
     @Binding var isEditing: Bool
     
     var body: some View {
         VStack(alignment: selectedProposition == nil ? .basePropositionAlignment : .leading, spacing: 20) {
             let somethingSelected = selectedProposition != nil ? true : false
-            Print(propositions.count)
-            ForEach(propositions) { proposition in
+            Print(formalData.numberOfSteps)
+            ForEach(formalData.propositions) { proposition in
                 Print(index)
                 let selected = selectedProposition?.id == proposition.id ? true : false
-                let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == propositions.firstIndex(of: proposition) || selectedProposition?.justification?.references?.last == propositions.firstIndex(of: proposition)) || selected) ? false : true
+                let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == formalData.propositions.firstIndex(of: proposition) || selectedProposition?.justification?.references?.last == formalData.propositions.firstIndex(of: proposition)) || selected) ? false : true
                 
-                PropositionView(proposition: $propositions[propositions.firstIndex(of: proposition) ?? 0], propositions: $propositions, onDelete: removeRows(at:), position: propositions.firstIndex(of: proposition)!, expanded: selected, faded: faded, editable: selected ? isEditing : false)
+                PropositionView(proposition: $formalData.propositions[formalData.propositions.firstIndex(of: proposition) ?? 0], propositions: $formalData.propositions, onDelete: removeRows(at:), position: formalData.position(of: proposition), level: formalData.level(of: proposition), expanded: selected, faded: faded, editable: selected ? isEditing : false)
                     .onTapGesture {
                         withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
                             if selectedProposition?.id == proposition.id {
@@ -34,7 +34,7 @@ struct FormalView: View {
                         }
                     }
                     .alignmentGuide(HorizontalAlignment.leading) { d in
-                        return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == propositions.firstIndex(of: proposition) || selectedProposition?.justification?.references?.last == propositions.firstIndex(of: proposition))) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
+                        return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == formalData.propositions.firstIndex(of: proposition) || selectedProposition?.justification?.references?.last == formalData.propositions.firstIndex(of: proposition))) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
                     }
             }.onDelete(perform: removeRows(at:))
         }
@@ -48,7 +48,7 @@ struct FormalView: View {
     
     func removeRows(at offsets: IndexSet) {
         withAnimation {
-            propositions.remove(atOffsets: offsets)
+            formalData.propositions.remove(atOffsets: offsets)
         }
     }
 }

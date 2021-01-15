@@ -15,7 +15,7 @@ struct ArgumentView: View {
     var body: some View {
         ScrollView {
             header
-            FormalView(propositions: $argument.propositions, selectedProposition: $selectedProposition, isEditing: $isEditing)
+            FormalView(formalData: $argument.formalData, selectedProposition: $selectedProposition, isEditing: $isEditing)
                 .frame(maxWidth: 300)
                 .accentColor(Color("AccentColor"))
         }

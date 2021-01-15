@@ -8,77 +8,127 @@
 import Foundation
 import Combine
 
-class Argument: ObservableObject, DeletableDelegate {
+class Argument: ObservableObject {
     var title: String
-    @Published var propositions: [Proposition] {
-        didSet {
-            
-            var deletedProposition: Proposition? = oldValue.first
-            
-            for oProposition in oldValue {
-                var matches = 0
-                for nProposition in propositions {
-                    if oProposition == nProposition {
-                        matches += 1
-                    }
-                }
-                if matches == 0 {
-                    deletedProposition = oProposition
-                }
-            }
-        }
-    }
-    var numberOfSteps: Int {
-        propositions.count
-    }
+    @Published var formalData: FormalData
     
     init(title: String, propositions: [Proposition]) {
         
         var indent = 0
         
-        for proposition in propositions {
-            if let t = proposition.justification?.type {
-                if t == .ACP || t == .AIP {
-                    indent += 1
-                }
-                
-                if t == .IP || t == .CP {
-                    indent -= 1
-                }
-            }
-            
-            proposition.level = indent
-        }
+        
         
         self.title = title
-        self.propositions = propositions
-        
-        for proposition in self.propositions {
-            proposition.manager = self
-        }
-    }
-    
-    func removeProposition(id: UUID) -> Void {
-        
-        var deletedNumber: Int = propositions.count
-        
-        propositions.removeAll() { proposition in
-            if proposition.id == id {
-                return true
-            }
-            
-            return false
-        }
-    }
-    
-    func requestDeletion(_ item: Deletable) {
-        print("deletion requested. item: \(item)")
-        removeProposition(id: item.id)
+        self.formalData = FormalData(propositions: propositions)
     }
     
     
 }
 
-protocol DeletableDelegate: AnyObject {
-    func requestDeletion(_ item: Deletable)
+struct FormalData {
+    var propositions: [Proposition]
+    
+    func position(of input: Proposition) -> Int {
+        return propositions.firstIndex(of: input)! + 1
+    }
+    
+    var numberOfSteps: Int {
+        propositions.count
+    }
+    
+    var numberOfLevels: Int {
+        var levelCount = 0
+        for proposition in propositions {
+            if let t = proposition.justification?.type {
+                if t == .ACP || t == .AIP {
+                    levelCount += 1
+                }
+//                if t == .IP || t == .CP {
+//                    indent -= 1
+//                }
+            }
+        }
+        
+        return levelCount
+    }
+    
+    var levelMap: [Int] {
+        var map: [Int] = []
+        var currentLevel = 0
+        for proposition in propositions {
+            if let t = proposition.justification?.type {
+                if t == .ACP || t == .AIP {
+                    currentLevel += 1
+                }
+                
+                if t == .IP || t == .CP {
+                    currentLevel -= 1
+                }
+            }
+            
+            map.append(currentLevel)
+        }
+        
+        return map
+    }
+    
+    func boundsFor(level: Int) -> (Int, Int?)? {
+        if level > numberOfLevels {
+            return nil
+        } else if level == 0 {
+            return numberOfSteps == 0 ? nil : (1, numberOfSteps)
+        } else {
+            var lowerFound = false
+            var upperFound = false
+            var isOpen = false
+            
+            var count = 0
+            
+            var currentLevel = 0
+            var lowerBound = 1
+            var upperBound = numberOfSteps
+            for proposition in propositions {
+                count += 1
+                
+                if let t = proposition.justification?.type {
+                    if t == .ACP || t == .AIP {
+                        currentLevel += 1
+                    }
+                    
+                    if t == .IP || t == .CP {
+                        currentLevel -= 1
+                    }
+                }
+                
+                if lowerFound == false {
+                    lowerBound += 1
+                }
+                
+                if currentLevel == level {
+                    lowerFound = true
+                }
+                
+                if lowerFound == true && currentLevel < level {
+                    upperFound = true
+                }
+                
+                if upperFound == false {
+                    upperBound += 1
+                }
+                
+                if count == numberOfSteps && level == currentLevel {
+                    isOpen = true
+                }
+            }
+            
+            return (lowerBound, isOpen ? nil : upperBound)
+        }
+    }
+    
+    func level(of input: Proposition) -> Int {
+        let propositionIndex = propositions.firstIndex(of: input)!
+        
+        return levelMap[propositionIndex]
+    }
+    
 }

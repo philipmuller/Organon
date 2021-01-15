@@ -12,6 +12,7 @@ struct PropositionView: View {
     @Binding var propositions: [Proposition]
     let onDelete: (IndexSet) -> ()
     let position: Int
+    let level: Int
     
     @Namespace var namespace
     
@@ -91,7 +92,7 @@ struct PropositionView: View {
                     .matchedGeometryEffect(id: "number", in: namespace)
                     .opacity(0.3)
                     .alignmentGuide(.basePropositionAlignment) { d in
-                        -indent(proposition: proposition)
+                        -CGFloat(self.level * 30)
                     }
                 
                 PropositionIcon(state: expanded, proposition: proposition)
@@ -111,7 +112,7 @@ struct PropositionView: View {
                     .matchedGeometryEffect(id: "number", in: namespace)
                     .opacity(0.3)
                     .alignmentGuide(.basePropositionAlignment) { d in
-                        -indent(proposition: proposition)
+                        -CGFloat(self.level * 30)
                     }
             }
             
@@ -122,10 +123,6 @@ struct PropositionView: View {
         return RoundedRectangle(cornerRadius: 10)
             .foregroundColor(.white).opacity(expanded ? 1 : 0)
             .shadow(color: Color("BoxGrey"), radius: expanded ? 10 : 0)
-    }
-    
-    func indent(proposition: Proposition) -> CGFloat {
-        return CGFloat(proposition.level * 30)
     }
     
 }
