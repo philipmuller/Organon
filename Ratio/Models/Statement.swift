@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum StatementType {
+enum StatementType: String, Codable {
     case simple, conjunction, disjunction, conditional, negation
 }
 
-class Statement: Identifiable {
+class Statement: Identifiable, Codable {
     var id = UUID()
     var type: StatementType = .simple
     var content: String
@@ -82,6 +82,10 @@ class JunctureStatement: Statement {
         
     }
     
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    
     override func copy() -> JunctureStatement {
         return JunctureStatement(firstStatement: self.firstChild.copy(), secondStatement: self.secondChild.copy(), junction: self.type)
     }
@@ -109,6 +113,10 @@ class Negation: Statement {
         type = .negation
     }
     
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    
     override func copy() -> Negation {
         return Negation(self.negatedStatement.copy())
     }
@@ -117,6 +125,10 @@ class Negation: Statement {
 class Conjunction: JunctureStatement {
     init(_ first: Statement, _ second: Statement) {
         super.init(firstStatement: first, secondStatement: second, junction: .conjunction)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
     }
     
     override func copy() -> Conjunction {
@@ -129,6 +141,10 @@ class Disjunction: JunctureStatement {
         super.init(firstStatement: first, secondStatement: second, junction: .disjunction)
     }
     
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
+    }
+    
     override func copy() -> Disjunction {
         return Disjunction(self.firstChild.copy(), self.secondChild.copy())
     }
@@ -137,6 +153,10 @@ class Disjunction: JunctureStatement {
 class Conditional: JunctureStatement {
     init(_ antecedent: Statement, _ consequent: Statement) {
         super.init(firstStatement: antecedent, secondStatement: consequent, junction: .conditional)
+    }
+    
+    required init(from decoder: Decoder) throws {
+        fatalError("init(from:) has not been implemented")
     }
     
     override func copy() -> Conditional {

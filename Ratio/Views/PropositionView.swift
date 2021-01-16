@@ -13,6 +13,7 @@ struct PropositionView: View {
     let position: Int
     let level: Int
     let references: [Int]?
+    let stringTest = "hahahahaha"
     
     @Namespace var namespace
     
@@ -40,6 +41,9 @@ struct PropositionView: View {
                 content
                     .padding(.top, expanded ? 7 : 0)
             }
+        }
+        .onDrag() {
+            return NSItemProvider(object: self.proposition)
         }
         .padding(.all, expanded ? 20 : 0)
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
@@ -95,15 +99,15 @@ struct PropositionView: View {
                 
                 PropositionIcon(state: expanded, type: proposition.type, justification: (proposition.justification, references))
                     .matchedGeometryEffect(id: "icon", in: namespace)
-                    .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
-                        return [PropositionPreferenceData(bounds: $0, proposition: proposition)]
+                    .anchorPreference(key: TagPreferenceKey.self, value: .bounds) {
+                        return [TagPreferenceData(bounds: $0, proposition: proposition)]
                     }
                 
             } else {
                 PropositionIcon(state: expanded, type: proposition.type, justification: (proposition.justification, references))
                     .matchedGeometryEffect(id: "icon", in: namespace)
-                    .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
-                        return [PropositionPreferenceData(bounds: $0, proposition: proposition)]
+                    .anchorPreference(key: TagPreferenceKey.self, value: .bounds) {
+                        return [TagPreferenceData(bounds: $0, proposition: proposition)]
                     }
                 
                 Text("\(position).")

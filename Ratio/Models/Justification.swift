@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Justification {
+struct Justification: Codable {
     let type: JustificationType?
     let references: [UUID]?
     
@@ -22,7 +22,8 @@ struct Justification {
     }
 }
 
-enum JustificationType {
+enum JustificationType: String, Codable {
+    
     case MP
     case MT
     case SM

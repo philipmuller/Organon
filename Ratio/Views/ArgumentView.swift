@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MobileCoreServices
 
 struct ArgumentView: View {
     @ObservedObject var argument: Argument
@@ -25,6 +26,7 @@ struct ArgumentView: View {
                 isEditing = false
             }
         }
+        
     }
     
     var header: some View {

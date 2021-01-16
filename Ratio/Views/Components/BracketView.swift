@@ -32,7 +32,7 @@ import SwiftUI
 
 struct LBracketView: View {
     let geometry: GeometryProxy
-    let preferences: [PropositionPreferenceData]
+    let preferences: [TagPreferenceData]
     
     var body: some View {
         let identifiablePointData = generatePointsFromData(geometry: geometry, data: preferences)
@@ -44,7 +44,7 @@ struct LBracketView: View {
         }
     }
     
-    func generatePointsFromData(geometry: GeometryProxy, data: [PropositionPreferenceData]) -> [ForBracketData] {
+    func generatePointsFromData(geometry: GeometryProxy, data: [TagPreferenceData]) -> [ForBracketData] {
         var startingPoints: [CGPoint] = []
         var endPoints: [CGPoint] = []
         

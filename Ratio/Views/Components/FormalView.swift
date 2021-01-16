@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MobileCoreServices
 
 struct FormalView: View {
     
@@ -14,11 +15,11 @@ struct FormalView: View {
     @Binding var isEditing: Bool
     
     var body: some View {
+        //let dropDelegate = MyDropDelegate
+        
         VStack(alignment: selectedProposition == nil ? .basePropositionAlignment : .leading, spacing: 20) {
             let somethingSelected = selectedProposition != nil ? true : false
-            Print(formalData.numberOfSteps)
             ForEach(formalData.propositions) { proposition in
-                Print(index)
                 let selected = selectedProposition?.id == proposition.id ? true : false
                 let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id) || selected) ? false : true
                 
@@ -36,14 +37,32 @@ struct FormalView: View {
                     .alignmentGuide(HorizontalAlignment.leading) { d in
                         return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id)) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
                     }
-            }//.onDelete(perform: removeRows(at:))
+                    .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
+                        return [PropositionPreferenceData(bounds: $0, id: proposition.id)]
+                    }
+                    
+            }
+            
         }
+        .onDrop(of: [kUTTypeData as String], delegate: formalData)
         .backgroundPreferenceValue(PropositionPreferenceKey.self) { preferences in
+            GeometryReader { geometry in
+                Text("")
+                    .onAppear(perform: {
+                        formalData.updatePropositionBounds(with: preferences, context: geometry)
+                    })
+            }
+        }
+        .backgroundPreferenceValue(TagPreferenceKey.self) { preferences in
             GeometryReader { geometry in
                 LBracketView(geometry: geometry, preferences: preferences)
                     .opacity(selectedProposition == nil ? 1 : 0)
             }
         }
+        
+        
+        
+        
     }
     
     func removeView(for proposition: Proposition) {
@@ -68,12 +87,17 @@ extension View {
         for v in vars { print(v) }
         return EmptyView()
     }
+    
+//    func Perform(function: ([PropositionPreferenceData], GeometryProxy) -> Void) {
+//        function
+//        return EmptyView()
+//    }
 }
 
 struct PropositionPreferenceData: Identifiable {
-    let id = UUID()
     let bounds: Anchor<CGRect>
-    let proposition: Proposition
+    let id: UUID
+    //let proposition: Proposition
 }
 
 struct PropositionPreferenceKey: PreferenceKey {
@@ -82,6 +106,22 @@ struct PropositionPreferenceKey: PreferenceKey {
     static var defaultValue: [PropositionPreferenceData] = []
     
     static func reduce(value: inout [PropositionPreferenceData], nextValue: () -> [PropositionPreferenceData]) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+struct TagPreferenceData: Identifiable {
+    let id = UUID()
+    let bounds: Anchor<CGRect>
+    let proposition: Proposition
+}
+
+struct TagPreferenceKey: PreferenceKey {
+    typealias Value = [TagPreferenceData]
+    
+    static var defaultValue: [TagPreferenceData] = []
+    
+    static func reduce(value: inout [TagPreferenceData], nextValue: () -> [TagPreferenceData]) {
         value.append(contentsOf: nextValue())
     }
 }

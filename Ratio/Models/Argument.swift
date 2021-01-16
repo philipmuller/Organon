@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Combine
+import SwiftUI
 
 class Argument: ObservableObject {
     var title: String
@@ -20,8 +20,69 @@ class Argument: ObservableObject {
     
 }
 
-struct FormalData {
+struct FormalData: DropDelegate {
+    func performDrop(info: DropInfo) -> Bool {
+        let gridPosition = getGridPosition(location: info.location)
+        return true
+    }
+    
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        let pr = proposition(for: getHoverID(location: info.location))
+        let index = propositions.firstIndex(of: pr!)!
+        print("preciseLocation: \(info.location.y), propositionIndex: \(index)")
+                    
+        return nil
+    }
+    
+    func map(minRange:CGFloat, maxRange:CGFloat, minDomain:CGFloat, maxDomain:CGFloat, value:CGFloat) -> CGFloat {
+        return minDomain + (maxDomain - minDomain) * (value - minRange) / (maxRange - minRange)
+    }
+    
+    func getHoverID(location: CGPoint) -> UUID {
+        let locationY = location.y
+        
+        var locations: [CGFloat] = []
+        
+        for proposition in propositions {
+            locations.append(boundsMap[proposition.id] ?? 0.0)
+        }
+        
+        var lowerBound: Int = 0
+        
+        for l in locations {
+            if locationY > l {
+                lowerBound += 1
+            }
+        }
+        
+        return propositions[min(lowerBound, propositions.count - 1)].id
+    }
+    
+    func getGridPosition(location: CGPoint) -> Int {
+        if location.x > 150 && location.y > 150 {
+            return 4
+        } else if location.x > 150 && location.y < 150 {
+            return 3
+        } else if location.x < 150 && location.y > 150 {
+            return 2
+        } else if location.x < 150 && location.y < 150 {
+            return 1
+        } else {
+            return 0
+        }
+    }
+
+    
     var propositions: [Proposition]
+    
+    var boundsMap: [UUID : CGFloat] = [:] {
+        didSet {
+            print("New update to locations!")
+            for proposition in propositions {
+                print("proposition numer \(position(of: proposition)): \(boundsMap[proposition.id])")
+            }
+        }
+    }
     
     mutating func remove(proposition: Proposition) {
         //check dependencies of thing you wish to delete
@@ -38,6 +99,13 @@ struct FormalData {
         propositions.remove(at: propositions.firstIndex(of: proposition)!)
         rearrange()
         
+    }
+    
+    mutating func updatePropositionBounds(with preferences: [PropositionPreferenceData], context: GeometryProxy) {
+        for preference in preferences {
+            boundsMap[preference.id] = context[preference.bounds].minY
+            print("View length: \(context[preference.bounds].height)")
+        }
     }
     
     mutating func rearrange() {
