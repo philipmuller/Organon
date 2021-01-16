@@ -24,7 +24,49 @@ struct FormalData {
     var propositions: [Proposition]
     
     mutating func remove(proposition: Proposition) {
+        //check dependencies of thing you wish to delete
+        if let dependencies = propositionsReliantOn(proposition: proposition) {
+            for dependence in dependencies {
+                let dependentProposition = self.proposition(for: dependence)
+                let i = propositions.firstIndex(of: dependentProposition!)!
+                propositions[i].justification = nil
+                propositions[i].type = .premise
+            }
+        }
+        
+        
         propositions.remove(at: propositions.firstIndex(of: proposition)!)
+        rearrange()
+        
+    }
+    
+    mutating func rearrange() {
+        propositions.sort(by: {
+            
+            switch ($0.type, $1.type) {
+            case (.premise, .step):
+                return true
+            case (.premise, .conclusion):
+                return true
+            case (.premise, .premise):
+                return false
+            case (.step, .step):
+                return false
+            case (.step, .conclusion):
+                return true
+            case (.step, .premise):
+                return false
+            case (.conclusion, .step):
+                return false
+            case (.conclusion, .conclusion):
+                return false
+            case (.conclusion, .premise):
+                return false
+            }
+            
+            
+            
+        })
     }
     
     func position(of input: Proposition) -> Int {
@@ -40,6 +82,14 @@ struct FormalData {
             if proposition.id == id {
                 return proposition
             }
+        }
+        
+        return nil
+    }
+    
+    func propositionsReliantOn(proposition: Proposition) -> [UUID]? {
+        if let index = propositions.firstIndex(of: proposition) {
+            return dependencyMap[index]
         }
         
         return nil
@@ -91,6 +141,26 @@ struct FormalData {
             }
             
             map.append(currentLevel)
+        }
+        
+        return map
+    }
+    
+    var dependencyMap: [[UUID]] {
+        var map: [[UUID]] = []
+        for proposition in propositions {
+            var dependenciesOfCurrentProposition: [UUID] = []
+            for possibleDependency in propositions {
+                if let ids = possibleDependency.justification?.references {
+                    for id in ids {
+                        if id == proposition.id {
+                            dependenciesOfCurrentProposition.append(possibleDependency.id)
+                        }
+                    }
+                }
+            }
+            map.append(dependenciesOfCurrentProposition)
+            dependenciesOfCurrentProposition = []
         }
         
         return map
