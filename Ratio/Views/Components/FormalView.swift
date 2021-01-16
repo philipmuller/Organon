@@ -36,7 +36,7 @@ struct FormalView: View {
                     .alignmentGuide(HorizontalAlignment.leading) { d in
                         return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id)) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
                     }
-            }//.onDelete(perform: removeRows(at:))
+            }
         }
         .backgroundPreferenceValue(PropositionPreferenceKey.self) { preferences in
             GeometryReader { geometry in
