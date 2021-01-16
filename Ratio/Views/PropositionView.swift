@@ -13,7 +13,7 @@ struct PropositionView: View {
     let position: Int
     let level: Int
     let references: [Int]?
-    let stringTest = "hahahahaha"
+    let reordered: Bool
     
     @Namespace var namespace
     
@@ -21,6 +21,7 @@ struct PropositionView: View {
     let faded: Bool
     let editable: Bool
     
+    @State var offX: CGFloat = 0
     @State var count = 0
     
     var body: some View {
@@ -46,13 +47,25 @@ struct PropositionView: View {
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
         .background(generateBackground(expanded: expanded))
         .opacity(faded ? 0.2 : 1)
-        .overlay(proposition.type == .opaque ? opaqueOverlay : nil)
+        .opacity(reordered ? 0 : 1)
+        .offset(x: offX)
+        .gesture(drag)
+        
     }
     var opaqueOverlay: some View {
         RoundedRectangle(cornerRadius: 10)
-            .foregroundColor(.gray)
-            //.shadow(color: Color("BoxGrey"), radius: expanded ? 10 : 0)
+            .foregroundColor(Color.init(red: 1, green: 1, blue: 1))
     }
+    
+    var drag: some Gesture {
+        DragGesture(minimumDistance: 30)
+            .onChanged { value in
+                print(value.translation.width)
+                self.offX = min(value.translation.width, 80)
+            }
+            .onEnded { _ in print("ended") }
+    }
+    
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
             StatementView(statement: $proposition.content, deleteCount: $count, editable: editable)

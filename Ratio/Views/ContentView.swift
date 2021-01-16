@@ -15,8 +15,8 @@ struct ContentView: View {
             let argument = Argument(title: "Stupidity doesn't justify killing", propositions: generatePropositions())
             ArgumentView(argument: argument)
                 .font(.custom("AvenirNext-Medium", size: 18))
-            
         }
+        
     }
     
     func generatePropositions() -> [Proposition] {

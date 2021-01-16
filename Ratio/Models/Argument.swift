@@ -64,6 +64,15 @@ struct FormalData: DropDelegate {
         rearrange()
     }
     
+    mutating func resetOpaque() {
+        for proposition in propositions {
+            if proposition.type == .opaque {
+                let index = propositions.firstIndex(of: proposition)
+                propositions[index!].type = .step
+            }
+        }
+    }
+    
 //    mutating func updatePropositionBounds(with preferences: [PropositionPreferenceData], context: GeometryProxy) {
 //        for preference in preferences {
 //            boundsMap[preference.id] = context[preference.bounds].minY

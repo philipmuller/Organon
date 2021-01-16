@@ -14,7 +14,10 @@ struct FormalView: View {
     @Binding var selectedProposition: Proposition?
     @Binding var isEditing: Bool
     
-    @State var movingID: UUID?
+    @Binding var movingID: UUID?
+    @Binding var changedLocation: Bool
+    
+    @GestureState var isDetectingLongPress = false
     
     var body: some View {
         VStack(alignment: selectedProposition == nil ? .basePropositionAlignment : .leading, spacing: 20) {
@@ -23,7 +26,7 @@ struct FormalView: View {
                 let selected = selectedProposition?.id == proposition.id ? true : false
                 let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id) || selected) ? false : true
                 
-                PropositionView(proposition: $formalData.propositions[formalData.propositions.firstIndex(of: proposition) ?? 0], onDelete: removeView(for:), position: formalData.position(of: proposition), level: formalData.level(of: proposition), references: formalData.references(of: proposition), expanded: selected, faded: faded, editable: selected ? isEditing : false)
+                PropositionView(proposition: $formalData.propositions[formalData.propositions.firstIndex(of: proposition) ?? 0], onDelete: removeView(for:), position: formalData.position(of: proposition), level: formalData.level(of: proposition), references: formalData.references(of: proposition), reordered: (proposition.id == movingID) && changedLocation ? true : false, expanded: selected, faded: faded, editable: selected ? isEditing : false)
                     .onTapGesture {
                         withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
                             if selectedProposition?.id == proposition.id {
@@ -37,15 +40,15 @@ struct FormalView: View {
                     .alignmentGuide(HorizontalAlignment.leading) { d in
                         return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id)) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
                     }
-                    .onDrag() {
-                        movingID = proposition.id
-                        formalData.propositions[formalData.propositions.firstIndex(of: proposition) ?? 0].type = .opaque
-                        return NSItemProvider(object: proposition.id.uuidString as NSString)
-                    }
-                    .onDrop(of: [UTType.text], delegate: ModelViewCoordinator(currentlyMoving: $movingID, currentlyTargeted: proposition.id, formalData: $formalData))
+//                    .onDrag() {
+//                        movingID = proposition.id
+//                        changedLocation = false
+//                        return NSItemProvider(object: proposition.id.uuidString as NSString)
+//                    }
+//                    .onDrop(of: [UTType.text], delegate: PropositionDropCoordinator(currentlyMoving: $movingID, changedLocation: $changedLocation, currentlyTargeted: proposition.id, formalData: $formalData))
+                    
                     
             }
-            
         }
         .backgroundPreferenceValue(TagPreferenceKey.self) { preferences in
             GeometryReader { geometry in
@@ -54,9 +57,6 @@ struct FormalView: View {
             }
         }
         
-        
-        
-        
     }
     
     func removeView(for proposition: Proposition) {
@@ -64,10 +64,23 @@ struct FormalView: View {
             formalData.remove(proposition: proposition)
         }
     }
+    
+    var longPress: some Gesture {
+        LongPressGesture(minimumDuration: 3)
+            .updating($isDetectingLongPress) { currentstate, gestureState, transaction in
+                print("updated")
+            }
+            .onEnded { finished in
+                print("ended")
+            }
+        }
 }
 
-struct ModelViewCoordinator: DropDelegate {
+
+
+struct PropositionDropCoordinator: DropDelegate {
     @Binding var currentlyMoving: UUID?
+    @Binding var changedLocation: Bool
     let currentlyTargeted: UUID
     @Binding var formalData: FormalData
     
@@ -78,15 +91,30 @@ struct ModelViewCoordinator: DropDelegate {
             if formalData.propositions[toIndex].id != formalData.propositions[fromIndex].id {
                 formalData.propositions.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex)
             }
+        } else {
+            print("drop entered")
+            
         }
     }
     
+    func dropExited(info: DropInfo) {
+        print("drop exited")
+    }
+    
+    func validateDrop(info: DropInfo) -> Bool {
+        print("validating drop")
+        return true
+    }
+    
     func dropUpdated(info: DropInfo) -> DropProposal? {
+        print("drop updated")
+        changedLocation = true
         return DropProposal(operation: .move)
     }
     
     func performDrop(info: DropInfo) -> Bool {
-        formalData.propositions[formalData.propositions.firstIndex(of: formalData.proposition(for: currentlyMoving!)!) ?? 0].type = .step
+        print("perform drop")
+        changedLocation = false
         self.currentlyMoving = nil
         return true
     }
