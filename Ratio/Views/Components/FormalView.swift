@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import MobileCoreServices
+import UniformTypeIdentifiers
 
 struct FormalView: View {
     
@@ -14,9 +14,9 @@ struct FormalView: View {
     @Binding var selectedProposition: Proposition?
     @Binding var isEditing: Bool
     
+    @State var movingID: UUID?
+    
     var body: some View {
-        //let dropDelegate = MyDropDelegate
-        
         VStack(alignment: selectedProposition == nil ? .basePropositionAlignment : .leading, spacing: 20) {
             let somethingSelected = selectedProposition != nil ? true : false
             ForEach(formalData.propositions) { proposition in
@@ -37,21 +37,15 @@ struct FormalView: View {
                     .alignmentGuide(HorizontalAlignment.leading) { d in
                         return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id)) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
                     }
-                    .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
-                        return [PropositionPreferenceData(bounds: $0, id: proposition.id)]
+                    .onDrag() {
+                        movingID = proposition.id
+                        formalData.propositions[formalData.propositions.firstIndex(of: proposition) ?? 0].type = .opaque
+                        return NSItemProvider(object: proposition.id.uuidString as NSString)
                     }
+                    .onDrop(of: [UTType.text], delegate: ModelViewCoordinator(currentlyMoving: $movingID, currentlyTargeted: proposition.id, formalData: $formalData))
                     
             }
             
-        }
-        .onDrop(of: [kUTTypeData as String], delegate: formalData)
-        .backgroundPreferenceValue(PropositionPreferenceKey.self) { preferences in
-            GeometryReader { geometry in
-                Text("")
-                    .onAppear(perform: {
-                        formalData.updatePropositionBounds(with: preferences, context: geometry)
-                    })
-            }
         }
         .backgroundPreferenceValue(TagPreferenceKey.self) { preferences in
             GeometryReader { geometry in
@@ -69,6 +63,32 @@ struct FormalView: View {
         withAnimation {
             formalData.remove(proposition: proposition)
         }
+    }
+}
+
+struct ModelViewCoordinator: DropDelegate {
+    @Binding var currentlyMoving: UUID?
+    let currentlyTargeted: UUID
+    @Binding var formalData: FormalData
+    
+    func dropEntered(info: DropInfo) {
+        if currentlyMoving != currentlyTargeted {
+            let fromIndex = formalData.propositions.firstIndex(of: formalData.proposition(for: currentlyMoving!)!)!
+            let toIndex = formalData.propositions.firstIndex(of: formalData.proposition(for: currentlyTargeted)!)!
+            if formalData.propositions[toIndex].id != formalData.propositions[fromIndex].id {
+                formalData.propositions.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? toIndex + 1 : toIndex)
+            }
+        }
+    }
+    
+    func dropUpdated(info: DropInfo) -> DropProposal? {
+        return DropProposal(operation: .move)
+    }
+    
+    func performDrop(info: DropInfo) -> Bool {
+        formalData.propositions[formalData.propositions.firstIndex(of: formalData.proposition(for: currentlyMoving!)!) ?? 0].type = .step
+        self.currentlyMoving = nil
+        return true
     }
 }
 

@@ -118,4 +118,5 @@ enum PropositionType: String, Codable {
     case premise
     case conclusion
     case step
+    case opaque
 }

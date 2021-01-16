@@ -42,15 +42,17 @@ struct PropositionView: View {
                     .padding(.top, expanded ? 7 : 0)
             }
         }
-        .onDrag() {
-            return NSItemProvider(object: self.proposition)
-        }
         .padding(.all, expanded ? 20 : 0)
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
         .background(generateBackground(expanded: expanded))
         .opacity(faded ? 0.2 : 1)
+        .overlay(proposition.type == .opaque ? opaqueOverlay : nil)
     }
-    
+    var opaqueOverlay: some View {
+        RoundedRectangle(cornerRadius: 10)
+            .foregroundColor(.gray)
+            //.shadow(color: Color("BoxGrey"), radius: expanded ? 10 : 0)
+    }
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
             StatementView(statement: $proposition.content, deleteCount: $count, editable: editable)
