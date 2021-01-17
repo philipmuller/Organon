@@ -40,12 +40,12 @@ struct FormalView: View {
                     .alignmentGuide(HorizontalAlignment.leading) { d in
                         return (selectedProposition?.id == proposition.id || (selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id)) ? d[HorizontalAlignment.leading] : d[HorizontalAlignment.leading] - 60
                     }
-//                    .onDrag() {
-//                        movingID = proposition.id
-//                        changedLocation = false
-//                        return NSItemProvider(object: proposition.id.uuidString as NSString)
-//                    }
-//                    .onDrop(of: [UTType.text], delegate: PropositionDropCoordinator(currentlyMoving: $movingID, changedLocation: $changedLocation, currentlyTargeted: proposition.id, formalData: $formalData))
+                    .onDrag() {
+                        movingID = proposition.id
+                        changedLocation = false
+                        return NSItemProvider(object: proposition.id.uuidString as NSString)
+                    }
+                    .onDrop(of: [UTType.text], delegate: PropositionDropCoordinator(currentlyMoving: $movingID, changedLocation: $changedLocation, currentlyTargeted: proposition.id, formalData: $formalData))
                     
                     
             }

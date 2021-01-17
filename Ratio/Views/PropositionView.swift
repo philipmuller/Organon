@@ -49,7 +49,7 @@ struct PropositionView: View {
         .opacity(faded ? 0.2 : 1)
         .opacity(reordered ? 0 : 1)
         .offset(x: offX)
-        .gesture(drag)
+        //.gesture(drag)
         
     }
     var opaqueOverlay: some View {
