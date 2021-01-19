@@ -219,7 +219,7 @@ struct StatementView: View {
     }
     
     func positionSymbol(childStatement: Statement, geometry: GeometryProxy, preferences: [StatementPreferenceData]) -> some View {
-        
+
         ForEach(preferences, id: \.id) { statementPreference in
             if statementPreference.statementId == childStatement.id {
                 Image("not")
@@ -232,13 +232,13 @@ struct StatementView: View {
     
     func filterPreferences(firstChild: Statement, secondChild: Statement, preferences: [StatementPreferenceData]) -> [StatementPreferenceData] {
         var relevantStatementData: [StatementPreferenceData] = []
-        
+
         for statementPreference in preferences {
             if statementPreference.statementId == firstChild.id || statementPreference.statementId == secondChild.id {
                 relevantStatementData.append(statementPreference)
             }
         }
-        
+
         return relevantStatementData
     }
     

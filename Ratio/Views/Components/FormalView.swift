@@ -21,7 +21,6 @@ struct FormalView: View {
     @State var hoverIndex: Int?
     @State var dragEnded: Bool = false
     
-    @State var scrollToIndex: Int?
     @State var scrollPercentage: CGFloat?
     
     //@State var count = 0
@@ -29,87 +28,28 @@ struct FormalView: View {
     let spacing: CGFloat = 20
     
     var body: some View {
-        ScrollViewReader { sp in
-            LazyVStack(alignment: .leading, spacing: spacing) {
+        //ScrollViewReader { sp in
+            LazyVStack(alignment: .basePropositionAlignment, spacing: spacing) {
                 let somethingSelected = selectedProposition != nil ? true : false
-                //Print(formalData.numberOfSteps)
                 ForEach(formalData.propositions) { proposition in
-                    //Print(index)
                     let selected = selectedProposition?.id == proposition.id ? true : false
                     let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id) || selected) ? false : true
                     
                     let propIndex = formalData.propositions.firstIndex(of: proposition) ?? 0
                     let propLevel = formalData.level(of: proposition)
                     
-                    PropositionView(proposition: $formalData.propositions[propIndex], selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, hoverIndex: $scrollToIndex, dragEnded: $dragEnded, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
-                        .padding(.leading, selected ? 0 : CGFloat(propLevel*20))
+                    PropositionView(proposition: $formalData.propositions[propIndex], selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
+                        .background(hoverTrigger(index: propIndex))
+                        .padding(.leading, selected ? 0 : CGFloat(propLevel*30))
                 }
             }
-//            .backgroundPreferenceValue(PropositionPreferenceKey.self) { preferences in
-//                GeometryReader { geometry in
-//                    LBracketView(geometry: geometry, preferences: preferences)
-//                        .opacity(selectedProposition == nil ? 1 : 0)
-//                }
-//            }
-//            .onPreferenceChange(DestinationDataKey.self) { preferences in
-//                for p in preferences {
-//                    self.destinations[p.destination] = p.bounds
-//                }
-//            }
-//            .transformAnchorPreference(key: DestinationDataKey.self, value: .bounds) { (value, anchor) in
-//                print("HELLLLOOOOO")
-//                for v in value {
-//                    self.destinations[v.destination] = v.bounds
-//                }
-//            }
-            .id("list")
-            .onChange(of: scrollToIndex) { index in
+            .onChange(of: hoverIndex) { index in
                 guard !formalData.propositions.isEmpty else { return }
                 guard draggingCoordinates != nil else { return }
                 
-                //print("Scroll to: \(scrollToIndex)")
-                
                 formalData.propositions.move(fromOffsets: IndexSet(integer: draggedIndex), toOffset: index!)
-                
-//                if let uIndex = index {
-//                    let displayLength: CGFloat = 844.0
-//
-//                    let percentage = (100/displayLength)*draggingCoordinates!.y
-//
-//                    withAnimation(.interpolatingSpring(stiffness: 1, damping: 1)) {
-//
-//
-//                        if percentage < 50  {
-//                            let scrollTop = max(uIndex - 1, 0)
-//                            sp.scrollTo(formalData.propositions[scrollTop].id)//scrollTo.direction == .up ? .top : .bottom)
-//                        } else {
-//                            let scrollBottom = min(uIndex + 1, formalData.propositions.count - 1)
-//                            sp.scrollTo(formalData.propositions[scrollBottom].id) //anchor: UnitPoint(x: 0, y: index))//scrollTo.direction == .up ? .top : .bottom)
-//                        }
-//                    }
-//                }
-                
             }
-            
-//            .onChange(of: draggingCoordinates) { coordinates in
-//                //print(draggingCoordinates)
-//                if let uCoordinates = coordinates {
-////                    let displayLength: CGFloat = 844.0
-////                    let percentage = (100/displayLength)*uCoordinates.y
-////
-////                    if percentage < 20 || percentage > 80 {
-////                        withAnimation(.interpolatingSpring(stiffness: 1, damping: 1)) {
-////                            sp.scrollTo(draggedIndex)
-////                        }
-////                    }
-//
-//                } else {
-//                    //print("Active index: \(draggedIndex)")
-//                    sp.scrollTo(formalData.propositions[draggedIndex].id)
-//                }
-//
-//            }
-        }
+        //}
         .animation(.default, value: formalData.propositions)
     }
     
@@ -119,64 +59,24 @@ struct FormalView: View {
         }
     }
     
-//    func dragMonitor(location: CGPoint?, draggedIndex: Int, finish: Bool) {
-//        let displayLength: CGFloat = 844.0
-//        if !finish {
-//            if let uLocation = location {
-//                let percentage = (100/displayLength)*uLocation.y
-//                //print("Monitoring position. X: \(uLocation.x), Y: \(uLocation.y), percentage: \(percentage)")
-//
-//                if uLocation.y < 150 || uLocation.y > (displayLength-150) {
-//                    //print("Scroll UP!!")
-//                    DispatchQueue.main.async {
-//                        scrollPercentage = percentage/100
-//                    }
-//
-//                } else {
-//                    DispatchQueue.main.async {
-//                        scrollToIndex = draggedIndex
-//                        scrollPercentage = nil
-//                    }
-//                }
-//
-//                DispatchQueue.main.async {
-//                    draggingCoordinates = location
-//                    draggedID = formalData.propositions[draggedIndex].id
-//                }
-//
-//
-//
-////                for (id, upper) in self.upperBounds {
-////                    let lower = self.lowerBounds[id] ?? 0
-////                    if (uLocation.y > (upper - spacing/2)) && (uLocation.y < (lower + spacing/2)) {
-////                        //print("Hovering over: \(id)")
-////
-////                        if percentage < 50 {
-////                            DispatchQueue.main.async {
-////                                scrollToIndex = max(0, id-2)
-////                            }
-////                        } else {
-////                            DispatchQueue.main.async {
-////                                scrollToIndex = min(formalData.numberOfSteps-1, id+2)
-////                            }
-////                        }
-////
-////                        DispatchQueue.main.async {
-////                            formalData.propositions.move(fromOffsets: IndexSet(integer: draggedIndex), toOffset: id)
-////                        }
-////                    }
-////                }
-//            }
-//        } else {
-//            //print("ABORT DRAG")
-//            scrollToIndex = draggedIndex
-//            scrollPercentage = nil
-//            DispatchQueue.main.async {
-//                draggingCoordinates = nil
-//                draggedID = nil
-//            }
-//        }
-//    }
+    func hoverTrigger(index: Int) -> some View {
+        GeometryReader { geometry in
+           RoundedRectangle(cornerRadius: 10)
+            .fill(Color.clear)
+            .onChange(of: draggingCoordinates) { value in
+                if let uValue = value {
+                    if (uValue.y > (geometry.frame(in: .global).minY - 10)) && (uValue.y < (geometry.frame(in: .global).maxY + 10)) {
+                        if uValue.y < geometry.frame(in: .global).midY {
+                            print("Hovering index \(index)")
+                            hoverIndex = index
+                        } else {
+                            hoverIndex = min(index + 1, formalData.numberOfSteps - 1)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension HorizontalAlignment {
