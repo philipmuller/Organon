@@ -80,7 +80,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         textField.delegate = context.coordinator
 
         textField.isEditable = true
-        textField.font = UIFont(name: "AvenirNext-Medium", size: 16)
+        textField.font = UIFont(name: "AvenirNext-Medium", size: 18)
         textField.isSelectable = true
         textField.isUserInteractionEnabled = true
         textField.isScrollEnabled = false
@@ -110,7 +110,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
             let attachmentS = NSAttributedString(attachment: attachment)
             attributedBase.append(attachmentS)
             attributedBase.append(NSAttributedString(string: cTheStatement.rightContent))
-            attributedBase.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "AvenirNext-Medium", size: 16), range: NSRange(location: 0, length: attributedBase.string.utf16.count))
+            attributedBase.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "AvenirNext-Medium", size: 18), range: NSRange(location: 0, length: attributedBase.string.utf16.count))
             attributedBase.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor(named: "MainText"), range: NSRange(location: 0, length: attributedBase.string.utf16.count))
             return attributedBase
         } else {
@@ -206,7 +206,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                     attachment.image = UIImage(named: "and")?.withTintColor(UIColor(Color.accentColor))
                     let replacement = NSAttributedString(attachment: attachment)
                     attributedString.replaceCharacters(in: NSRange(location: range.location-3, length: 3), with: replacement)
-                    attributedString.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "AvenirNext-Medium", size: 16), range: NSRange(location: 0, length: attributedString.string.utf16.count))
+                    attributedString.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "AvenirNext-Medium", size: 18) ?? .boldSystemFont(ofSize: 10), range: NSRange(location: 0, length: attributedString.string.utf16.count))
                     
                     textView.attributedText = attributedString
                 }

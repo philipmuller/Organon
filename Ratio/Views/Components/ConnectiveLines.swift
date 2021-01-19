@@ -13,7 +13,6 @@ struct ConnectiveLines: View {
     var depth: Int = 5
     
     var body: some View {
-        
         var yValues: [CGFloat] = []
         
         let depthValue: CGFloat = CGFloat(depth)
