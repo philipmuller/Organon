@@ -40,6 +40,19 @@ struct FormalData {
         
     }
     
+    mutating func add() {
+        let newProposition = Proposition(content: Statement(content: "test", formula: "A"))
+        propositions.append(newProposition)
+    }
+    
+    mutating func add(proposition: Proposition) {
+        propositions.append(proposition)
+    }
+    
+    func index(for proposition: Proposition) -> Int {
+        return propositions.firstIndex(of: proposition)!
+    }
+    
     mutating func rearrange() {
         propositions.sort(by: {
             
@@ -61,6 +74,8 @@ struct FormalData {
             case (.conclusion, .conclusion):
                 return false
             case (.conclusion, .premise):
+                return false
+            default:
                 return false
             }
             

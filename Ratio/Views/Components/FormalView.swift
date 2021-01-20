@@ -16,8 +16,8 @@ struct FormalView: View {
     @State var upperBounds: [Int: CGFloat] = [:]
     @State var lowerBounds: [Int: CGFloat] = [:]
     
-    @State var draggingCoordinates: CGPoint?
-    @State var draggedIndex: Int = 0
+    @Binding var draggingCoordinates: CGPoint?
+    @Binding var draggedIndex: Int
     @State var hoverIndex: Int?
     @State var dragEnded: Bool = false
     
@@ -52,6 +52,7 @@ struct FormalView: View {
                 if previousIndex != index {
                     previousIndex = index!
                     formalData.propositions.move(fromOffsets: IndexSet(integer: draggedIndex), toOffset: index!)
+                    //draggedIndex = index!
                     if draggedIndex != index {
                         let impactHeavy = UIImpactFeedbackGenerator(style: .rigid)
                         impactHeavy.impactOccurred()
@@ -59,7 +60,7 @@ struct FormalView: View {
                 }
             }
         //}
-            .animation(draggingCoordinates != nil ? .spring(response: 0.5, dampingFraction: 0.4, blendDuration: 1) : .default, value: formalData.propositions)
+            .animation(draggingCoordinates != nil ? .spring(response: 0.6, dampingFraction: 0.8, blendDuration: 0.8) : .default, value: formalData.propositions)
     }
     
     func removeView(for proposition: Proposition) {

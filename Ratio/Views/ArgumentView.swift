@@ -12,38 +12,55 @@ struct ArgumentView: View {
     @State var selectedProposition: Proposition? = nil
     @State var isEditing: Bool = false
     
-    @State var previewCoordinates: CGPoint?
+    @State var draggingCoordinates: CGPoint?
     @State var previewID: UUID?
+    @State var draggedIndex: Int = 0
+    
+    @State var newProposition: Proposition?
+    
+    @State var hasCompletedLongPress: Bool = false
+    
+    @GestureState var buttonDragState = DragState.inactive
     
     @State var count: Int = 0
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottomTrailing) {
             ScrollView(.vertical, showsIndicators: true) {
                 header
-                FormalView(formalData: $argument.formalData, selectedProposition: $selectedProposition, isEditing: $isEditing)
+                FormalView(formalData: $argument.formalData, selectedProposition: $selectedProposition, isEditing: $isEditing, draggingCoordinates: $draggingCoordinates, draggedIndex: $draggedIndex)
                     .frame(maxWidth: 350)
                     .accentColor(Color("AccentColor"))
             }
             .fixFlickering()
             
-            HStack(alignment: .top) {
-//                Button(action: {
-//
-//                }) {
-//                    Image(systemName: "minus.circle")
-//                }
-//
-//                iconAndNumber
-//                VStack(alignment: .leading) {
-//                    content
-//                        .padding(0)
-//                }
-                Text("ksdmom")
+            Button(action: {
+                
+            }) {
+                ZStack {
+                    Circle()
+                        .foregroundColor(Color.accentColor)
+                        .frame(width: 55, height: 55)
+                        
+                    
+                    Image(systemName: "plus")
+                        .foregroundColor(Color.white)
+                }
+                .offset(x: buttonDragState.translation.width - 20, y: buttonDragState.translation.height)
+                .onChange(of: buttonDragState.isActive) { value in
+                    if value == true {
+                        newProposition = Proposition()
+                        argument.formalData.add(proposition: newProposition!)
+                        draggedIndex = argument.formalData.propositions.count - 1
+                    }
+                }
+                .gesture(longPressDrag)
+                
+                    
             }
-            .padding(0)
-            .opacity(previewCoordinates != nil ? 1 : 0)
-            .position(x: (previewCoordinates?.x ?? 0), y: (previewCoordinates?.y ?? 0))
+//            .padding(0)
+//            .opacity(previewCoordinates != nil ? 1 : 0)
+//            .position(x: (previewCoordinates?.x ?? 0), y: (previewCoordinates?.y ?? 0))
         }
         .onTapGesture {
             withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
@@ -51,6 +68,9 @@ struct ArgumentView: View {
                 isEditing = false
                 let impactHeavy = UIImpactFeedbackGenerator(style: .soft)
                 impactHeavy.impactOccurred()
+                DispatchQueue.main.async {
+                    argument.formalData.rearrange()
+                }
             }
         }
     }
@@ -69,6 +89,46 @@ struct ArgumentView: View {
         .padding(EdgeInsets(top: 0, leading: 30, bottom: 30, trailing: 80))
         
     }
+    
+    var longPressDrag: some Gesture {
+        let minimumLongPressDuration = 0.5
+        return LongPressGesture(minimumDuration: minimumLongPressDuration)
+            .sequenced(before: DragGesture(coordinateSpace: .global))
+            .updating($buttonDragState) { value, state, transaction in
+                switch value {
+                // Long press begins.
+                case .first(true):
+                    state = .pressing
+                // Long press confirmed, dragging may begin.
+                case .second(true, let drag):
+                    state = .dragging(translation: drag?.translation ?? .zero)
+                    DispatchQueue.main.async {
+                        draggingCoordinates = drag?.location
+                        if let uProposition = newProposition {
+                            draggedIndex = argument.formalData.index(for: uProposition)
+                        }
+                    }
+                    
+                // Dragging ended or the long press cancelled.
+                default:
+                    print("Inactive")
+                    state = .inactive
+                }
+                
+            }
+            .onEnded { value in
+                guard case .second(true, let drag?) = value else { return }
+                DispatchQueue.main.async {
+                    withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
+                        draggingCoordinates = nil
+                        selectedProposition = newProposition
+                    }
+                }
+                
+                print("ENDED")
+            }
+    }
+    
     
 //    var content: some View {
 //        return VStack(alignment: .leading, spacing: 5) {

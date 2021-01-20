@@ -90,8 +90,14 @@ struct PropositionView: View {
         .padding(.all, expanded ? 20 : 5)
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
         .background(background)
+        .overlay(proposition.type == .empty ? overlay : nil)
         .opacity(faded ? 0.2 : 1)
         .offset(x: swipeAmount)
+        .onChange(of: draggingCoordinates) { value in
+            if value == nil && proposition.type == .empty {
+                proposition.type = .premise
+            }
+        }
         .onTapGesture {
             withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
                 if selectedProposition?.id == proposition.id {
@@ -191,6 +197,11 @@ struct PropositionView: View {
             .animation(.easeInOut(duration: 0.5), value: dragState.isActive)
     }
     
+    var overlay: some View {
+        RoundedRectangle(cornerRadius: 10)
+            .foregroundColor(Color(hue: 0, saturation: 0, brightness: 0.95))
+    }
+    
     var propositionIcon: some View {
         ZStack {
             let lBackground = RoundedRectangle(cornerRadius: 3)
@@ -283,39 +294,39 @@ struct PropositionView: View {
             }
     }
     
-    enum DragState {
-        case inactive
-        case pressing
-        case dragging(translation: CGSize)
-            
-        var translation: CGSize {
-            switch self {
-            case .inactive, .pressing:
-                return .zero
-            case .dragging(let translation):
-                return translation
-            }
-        }
-            
-        var isActive: Bool {
-            switch self {
-            case .inactive:
-                return false
-            case .pressing, .dragging:
-                return true
-            }
-        }
-            
-        var isDragging: Bool {
-            switch self {
-            case .inactive, .pressing:
-                return false
-            case .dragging:
-                return true
-            }
+}
+
+enum DragState {
+    case inactive
+    case pressing
+    case dragging(translation: CGSize)
+        
+    var translation: CGSize {
+        switch self {
+        case .inactive, .pressing:
+            return .zero
+        case .dragging(let translation):
+            return translation
         }
     }
-    
+        
+    var isActive: Bool {
+        switch self {
+        case .inactive:
+            return false
+        case .pressing, .dragging:
+            return true
+        }
+    }
+        
+    var isDragging: Bool {
+        switch self {
+        case .inactive, .pressing:
+            return false
+        case .dragging:
+            return true
+        }
+    }
 }
 
 struct Safe<T: RandomAccessCollection & MutableCollection, C: View>: View {

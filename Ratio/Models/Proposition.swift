@@ -16,6 +16,11 @@ struct Proposition: Identifiable, Equatable, Hashable {
     
     var content: Statement
     
+    init() {
+        type = .empty
+        content = Statement()
+    }
+    
     init(content: Statement) {
         self.content = content
         type = .premise
@@ -80,4 +85,5 @@ enum PropositionType {
     case premise
     case conclusion
     case step
+    case empty
 }

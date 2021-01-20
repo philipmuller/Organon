@@ -36,6 +36,11 @@ class Statement: Identifiable, Hashable {
         }
     }
     
+    init() {
+        self.content = ""
+        self.formula = ""
+    }
+    
     init(content: String, formula: String) {
         self.content = content
         self.formula = formula
