@@ -59,7 +59,7 @@ struct FormalView: View {
                 }
             }
         //}
-            .animation(.spring(response: 0.5, dampingFraction: 0.4, blendDuration: 1), value: formalData.propositions)
+            .animation(draggingCoordinates != nil ? .spring(response: 0.5, dampingFraction: 0.4, blendDuration: 1) : .default, value: formalData.propositions)
     }
     
     func removeView(for proposition: Proposition) {
