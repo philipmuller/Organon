@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Justification {
+struct Justification: Hashable {
     let type: JustificationType?
     let references: [UUID]?
     

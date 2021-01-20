@@ -11,7 +11,19 @@ enum StatementType {
     case simple, conjunction, disjunction, conditional, negation
 }
 
-class Statement: Identifiable {
+class Statement: Identifiable, Hashable {
+    static func == (lhs: Statement, rhs: Statement) -> Bool {
+        if lhs.id == rhs.id {
+            return true
+        }
+        
+        return false
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        return hasher.combine(ObjectIdentifier(self))
+    }
+    
     var id = UUID()
     var type: StatementType = .simple
     var content: String

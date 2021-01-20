@@ -32,6 +32,10 @@ struct PropositionView: View {
     let expanded: Bool
     let faded: Bool
     
+    let swipeTreshhold: CGFloat = 75
+    
+    @State var swipeHasMetTreshhold: Bool = false
+    
     @State var count = 0
     
     @GestureState var dragState = DragState.inactive
@@ -39,14 +43,40 @@ struct PropositionView: View {
     var body: some View {
         
         HStack(alignment: .top) {
-            Button(action: {
-                self.onDelete(proposition)
-            }) {
-                Image(systemName: "minus.circle")
-            }
+            
+            
             
             if !expanded {
-                iconAndNumber
+                ZStack(alignment: .center) {
+                    iconAndNumber
+                        .rotationEffect(Angle(degrees: Double(swipeAmount)), anchor: UnitPoint(x: 0.5, y: 0.5))
+                        .opacity(Double(1-(swipeAmount/50)))
+                    
+                    Button(action: {
+                        self.onDelete(proposition)
+                    }) {
+                        Image(systemName: swipeAmount < swipeTreshhold ? "xmark.circle" : "xmark.circle.fill")
+                            .resizable()
+                            .frame(width: swipeAmount < swipeTreshhold ? 20 : 25, height: swipeAmount < swipeTreshhold ? 20 : 25)
+                            .opacity(Double(swipeAmount/100))
+                            .rotationEffect(Angle(degrees: Double(min((-swipeTreshhold + swipeAmount), 0))), anchor: UnitPoint(x: 0.5, y: 0.5))
+                            //.scaleEffect(CGSize(width: swipeAmount/100, height: swipeAmount/100))
+                            .accentColor(.init(red: 0.8, green: 0.4, blue: 0.4))
+                            .onChange(of: swipeAmount) { value in
+                                if swipeAmount > swipeTreshhold {
+                                    swipeHasMetTreshhold = true
+                                } else {
+                                    swipeHasMetTreshhold = false
+                                }
+                            }
+                            .onChange(of: swipeHasMetTreshhold) { value in
+                                let impactHeavy = UIImpactFeedbackGenerator(style: .heavy)
+                                impactHeavy.impactOccurred()
+                            }
+                    }
+                    
+                }
+                .padding(.all, 0)
             }
             VStack(alignment: .leading) {
                 if expanded {
@@ -57,7 +87,7 @@ struct PropositionView: View {
             }
             
         }
-        .padding(.all, expanded ? 20 : 0)
+        .padding(.all, expanded ? 20 : 5)
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
         .background(background)
         .opacity(faded ? 0.2 : 1)
@@ -76,6 +106,7 @@ struct PropositionView: View {
             }
         }
         .gesture(ExclusiveGesture(longPressDrag, swipe))
+        .animation(.spring(), value: swipeAmount)
     }
     
     var content: some View {
@@ -124,18 +155,21 @@ struct PropositionView: View {
                         -CGFloat(self.level * 30)
                     }
                 
-                PropositionIcon(state: expanded, type: proposition.type, justification: (proposition.justification, references))
+                propositionIcon
                     .matchedGeometryEffect(id: "\(proposition.id)-icon", in: self.namespace)
+                    .fixedSize(horizontal: true, vertical: false)
                     .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
                         return [PropositionPreferenceData(bounds: $0, proposition: proposition)]
                     }
                 
             } else {
-                PropositionIcon(state: expanded, type: proposition.type, justification: (proposition.justification, references))
+                propositionIcon
                     .matchedGeometryEffect(id: "\(proposition.id)-icon", in: self.namespace)
+                    .fixedSize(horizontal: true, vertical: false)
                     .anchorPreference(key: PropositionPreferenceKey.self, value: .bounds) {
                         return [PropositionPreferenceData(bounds: $0, proposition: proposition)]
                     }
+                    .offset(x: swipeAmount/20)
                 
                 Text("\(position).")
                     .matchedGeometryEffect(id: "\(proposition.id)-number", in: self.namespace)
@@ -143,6 +177,7 @@ struct PropositionView: View {
                     .alignmentGuide(.basePropositionAlignment) { d in
                         -CGFloat(self.level * 30)
                     }
+                    .offset(x: -swipeAmount/20)
             }
             
         }
@@ -151,14 +186,67 @@ struct PropositionView: View {
     var background: some View {
         RoundedRectangle(cornerRadius: 10)
          .foregroundColor(.white)
-         .opacity(expanded ? 1 : 0)
-         .shadow(color: Color("BoxGrey"), radius: expanded ? 10 : 0)
+            .opacity(expanded || dragState.isActive ? 1 : 0)
+            .shadow(color: Color("BoxGrey"), radius: expanded || dragState.isActive ? 10 : 0)
+            .animation(.easeInOut(duration: 0.5), value: dragState.isActive)
+    }
+    
+    var propositionIcon: some View {
+        ZStack {
+            let lBackground = RoundedRectangle(cornerRadius: 3)
+                .foregroundColor(boxColor(type: proposition.type))
+    
+            Text(justificationText(data: (proposition.justification, references), state: expanded))
+                .padding(EdgeInsets(top: 1, leading: 5, bottom: 1, trailing: 5))
+                .background(lBackground)
+                .font(.custom("AvenirNext-DemiBold", size: 12))
+                .foregroundColor(.white)
+        }
+    }
+    
+    func justificationText(data: (Justification?, [Int]?), state: Bool) -> String {
+        if let j = data.0 {
+            if let r = data.1 {
+                if state == true {
+                    if let eText = j.type?.extendedText() {
+                        return r.count < 2 ? eText + ": \(r.first!)" : eText + ": \(r.first!), \(r.last!)"
+                    }
+                } else {
+                    if let cText = j.type?.text() {
+                        return cText
+                    }
+                }
+            }
+            if let type = j.type {
+                return state ? type.extendedText() : type.text()
+            }
+        }
+        
+        return state ? "Premise" : "Pr"
+    }
+    
+    func boxColor(type: PropositionType) -> Color {
+        switch type {
+        case .conclusion:
+            return Color("Conclusion")
+        case .premise:
+            return Color("Premise")
+        case .step:
+            return Color("BoxGrey")
+        default:
+            return Color("BoxGrey")
+        }
     }
     
     var swipe: some Gesture {
             DragGesture()
-                .onChanged { data in self.swipeAmount = data.translation.width }
-                .onEnded { _ in self.swipeAmount = 0 }
+                .onChanged { data in self.swipeAmount = max(800*log10((data.translation.width/700)+1), 0) }
+                .onEnded { _ in
+                    self.swipeAmount = 0
+                    if swipeHasMetTreshhold {
+                        self.onDelete(proposition)
+                    }
+                }
         }
     
     var longPressDrag: some Gesture {
@@ -230,8 +318,21 @@ struct PropositionView: View {
     
 }
 
-enum RearrangeState {
-    case ended, ongoing
+struct Safe<T: RandomAccessCollection & MutableCollection, C: View>: View {
+   
+   typealias BoundElement = Binding<T.Element>
+   private let binding: BoundElement
+   private let content: (BoundElement) -> C
+
+   init(_ binding: Binding<T>, index: T.Index, @ViewBuilder content: @escaping (BoundElement) -> C) {
+      self.content = content
+      self.binding = .init(get: { binding.wrappedValue[index] },
+                           set: { binding.wrappedValue[index] = $0 })
+   }
+   
+   var body: some View {
+      content(binding)
+   }
 }
 
 struct PropositionView_Previews: PreviewProvider {

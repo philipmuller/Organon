@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Proposition: Identifiable, Equatable {
+struct Proposition: Identifiable, Equatable, Hashable {
     
     var id = UUID()
     var type: PropositionType
