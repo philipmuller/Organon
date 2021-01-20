@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Proposition: Identifiable, Equatable, Hashable {
+class Proposition: Identifiable, Equatable {
     
     var id = UUID()
     var type: PropositionType
@@ -19,50 +19,68 @@ struct Proposition: Identifiable, Equatable, Hashable {
     init() {
         type = .empty
         content = Statement()
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement) {
         self.content = content
         type = .premise
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, type: PropositionType) {
         self.content = content
         self.type = type
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, type: PropositionType, justification: Justification) {
         self.content = content
         self.type = type
         self.justification = justification
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, position: Int) {
         self.content = content
         type = .premise
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, type: PropositionType, position: Int) {
         self.content = content
         self.type = type
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, type: PropositionType, justification: Justification, position: Int) {
         self.content = content
         self.type = type
         self.justification = justification
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, alias: String) {
         self.content = content
         type = .premise
         self.alias = alias
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, type: PropositionType, alias: String) {
         self.content = content
         self.type = type
         self.alias = alias
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     init(content: Statement, type: PropositionType, justification: Justification, alias: String) {
@@ -70,6 +88,8 @@ struct Proposition: Identifiable, Equatable, Hashable {
         self.type = type
         self.justification = justification
         self.alias = alias
+        self.content.delete = statementRequestsDeletion(childID:)
+        self.content.change = statementRequestsChange(childID:changeInto:)
     }
     
     static func == (lhs: Proposition, rhs: Proposition) -> Bool {
@@ -77,6 +97,20 @@ struct Proposition: Identifiable, Equatable, Hashable {
             return true
         }
         return false
+    }
+    
+    func statementRequestsDeletion(childID: UUID) {
+        content = Statement(content: "", formula: "")
+        content.id = childID
+        content.delete = statementRequestsDeletion(childID:)
+        content.change = statementRequestsChange(childID:changeInto:)
+    }
+    
+    func statementRequestsChange(childID: UUID, changeInto: Statement) {
+        content = changeInto
+        content.id = childID
+        content.delete = statementRequestsDeletion(childID:)
+        content.change = statementRequestsChange(childID:changeInto:)
     }
     
 }

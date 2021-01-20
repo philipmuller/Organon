@@ -36,6 +36,9 @@ class Statement: Identifiable, Hashable {
         }
     }
     
+    var delete: ((UUID) -> Void)?
+    var change: ((UUID, Statement) -> Void)?
+    
     init() {
         self.content = ""
         self.formula = ""
@@ -46,10 +49,35 @@ class Statement: Identifiable, Hashable {
         self.formula = formula
     }
     
-    func copy() -> Statement {
-        return Statement(content: self.content, formula: self.formula)
+    init(onDelete: ((UUID) -> Void)?, onChange: ((UUID, Statement) -> Void)?) {
+        self.content = ""
+        self.formula = ""
+        self.delete = onDelete
+        self.change = onChange
     }
     
+    init(content: String, formula: String, onDelete: ((UUID) -> Void)?, onChange: ((UUID, Statement) -> Void)?) {
+        self.content = content
+        self.formula = formula
+        self.delete = onDelete
+        self.change = onChange
+    }
+    
+    func copy() -> Statement {
+        return Statement(content: self.content, formula: self.formula, onDelete: self.delete, onChange: self.change)
+    }
+    
+    func childRequestsDeletion(childID: UUID) {
+        
+    }
+    
+    func childRequestsChange(childID: UUID, changeInto: Statement) {
+        
+    }
+    
+//    func childRequestsParentChange(childID: UUID, changeInto: Statement) {
+//
+//    }
 }
 
 
@@ -97,11 +125,76 @@ class JunctureStatement: Statement {
         
         type = junction
         
+        firstChild.delete = self.childRequestsDeletion(childID:)
+        firstChild.change = self.childRequestsChange(childID:changeInto:)
+        
+        secondChild.delete = self.childRequestsDeletion(childID:)
+        secondChild.change = self.childRequestsChange(childID:changeInto:)
+        
+    }
+    
+    init(firstStatement: Statement, secondStatement: Statement, junction: StatementType, onDelete: ((UUID) -> Void)?, onChange: ((UUID, Statement) -> Void)?) {
+        firstChild = firstStatement
+        secondChild = secondStatement
+        
+        let symbol: String
+        
+        switch junction {
+        case .conditional:
+            symbol = " -> "
+        case .conjunction:
+            symbol = " · "
+        case .disjunction:
+            symbol = " v "
+        default:
+            symbol = ""
+        }
+        
+        let preppedContent = firstStatement.content + symbol + secondStatement.content
+        let preppedFormula = "(" + firstStatement.formula + symbol + secondStatement.formula + ")"
+        
+        super.init(content: preppedContent, formula: preppedFormula, onDelete: onDelete, onChange: onChange)
+        
+        type = junction
+        
+        firstChild.delete = self.childRequestsDeletion(childID:)
+        firstChild.change = self.childRequestsChange(childID:changeInto:)
+        
+        secondChild.delete = self.childRequestsDeletion(childID:)
+        secondChild.change = self.childRequestsChange(childID:changeInto:)
+        
     }
     
     override func copy() -> JunctureStatement {
         return JunctureStatement(firstStatement: self.firstChild.copy(), secondStatement: self.secondChild.copy(), junction: self.type)
     }
+    
+    override func childRequestsDeletion(childID: UUID) {
+        if let uChange = change {
+            uChange(id, (childID == firstChild.id) ? secondChild : firstChild)
+        }
+        
+    }
+    
+    override func childRequestsChange(childID: UUID, changeInto: Statement) {
+        if childID == firstChild.id {
+            let oldID = firstChild.id
+            firstChild = changeInto
+            firstChild.id = oldID
+            firstChild.delete = self.childRequestsDeletion(childID:)
+            firstChild.change = self.childRequestsChange(childID:changeInto:)
+            
+        } else {
+            let oldID = secondChild.id
+            secondChild = changeInto
+            secondChild.id = oldID
+            secondChild.delete = self.childRequestsDeletion(childID:)
+            secondChild.change = self.childRequestsChange(childID:changeInto:)
+            
+        }
+    }
+    
+    //wrapper deletion needs to be handled
 }
 
 class Negation: Statement {
@@ -128,6 +221,21 @@ class Negation: Statement {
     
     override func copy() -> Negation {
         return Negation(self.negatedStatement.copy())
+    }
+    
+    override func childRequestsDeletion(childID: UUID) {
+        if let uDelete = delete {
+            uDelete(id)
+        }
+        
+    }
+    
+    override func childRequestsChange(childID: UUID, changeInto: Statement) {
+        let oldID = negatedStatement.id
+        negatedStatement = changeInto
+        negatedStatement.id = oldID
+        negatedStatement.delete = self.childRequestsDeletion(childID:)
+        negatedStatement.change = self.childRequestsChange(childID:changeInto:)
     }
 }
 
