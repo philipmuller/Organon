@@ -199,7 +199,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 //check if the previous characters are a match to the tag:
                 let textViewText = textView.text ?? ""
                 for (tag, statementType) in typesForTags {
-                    let lowerBound = range.location - tag.count
+                    let lowerBound = max(range.location - tag.count, 0)
                     let upperBound = range.location
                     
                     let potentialTag = textViewText[lowerBound..<upperBound]
