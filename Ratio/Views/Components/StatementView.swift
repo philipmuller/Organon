@@ -12,9 +12,7 @@ struct StatementView: View {
     @State var text: String = ""
     @Binding var deleteCount: Int
     @Binding var isEditing: UUID?
-    var editable: Bool
-    
-    
+    let editable: Bool
     
     var body: some View {
         VStack {
@@ -36,8 +34,7 @@ struct StatementView: View {
                     .transition(.scale)
                 
             default:
-                if isEditing == statement.id {
-                    Print(isEditing)
+                if isEditing == statement.id && editable == true {
                     StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing)
                         .padding(0)
                         .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
@@ -151,7 +148,7 @@ struct StatementView: View {
                     }
                 }
             } else {
-                if isEditing == statement.id {
+                if isEditing == statement.id && editable == true {
                     StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing)
                         .padding(0)
                         //.transition(.scale)
@@ -201,7 +198,7 @@ struct StatementView: View {
                     }
                 }
             } else {
-                if isEditing == disjunctionBinding.wrappedValue.id {
+                if isEditing == statement.id && editable == true {
                     StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing)
                         .padding(0)
                         //.transition(.scale)
