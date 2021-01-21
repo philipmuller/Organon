@@ -273,6 +273,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                             let leftStatement = Statement(content: simpleTextLeft, formula: "A")
                             let rightStatement = Statement(content: simpleTextRight, formula: "B")
                             
+                            
                             switch editedType {
                             case .conditional:
                                 changeToStatement = Conditional(leftStatement, rightStatement)
