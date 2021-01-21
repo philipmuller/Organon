@@ -16,6 +16,7 @@ struct PropositionView: View {
     @Binding var draggingCoordinates: CGPoint?
     
     @State var swipeAmount: CGFloat = 0
+    @State var editedStatementID: UUID?
     
     let onDelete: (Proposition) -> ()
     
@@ -101,11 +102,11 @@ struct PropositionView: View {
         .onTapGesture {
             withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
                 if selectedProposition?.id == proposition.id {
-                    editable = true
-                    print("editable!")
+//                    editable = true
+//                    print("editable!")
                 } else {
                     selectedProposition = proposition
-                    editable = false
+//                    editable = false
                     let impactHeavy = UIImpactFeedbackGenerator(style: .light)
                     impactHeavy.impactOccurred()
                 }
@@ -117,7 +118,7 @@ struct PropositionView: View {
     
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
-            StatementView(statement: $proposition.content, deleteCount: $count, editable: editable)
+            StatementView(statement: $proposition.content, deleteCount: $count, isEditing: $editedStatementID, editable: expanded)
             
             propositionDetailView
                 .frame(width: expanded ? nil : 0, height: expanded ? nil : 0)
@@ -192,7 +193,7 @@ struct PropositionView: View {
     var background: some View {
         RoundedRectangle(cornerRadius: 10)
          .foregroundColor(.white)
-            .opacity(expanded || dragState.isActive ? 1 : 0)
+            .opacity(expanded || dragState.isActive ? 1 : 0.1)
             .shadow(color: Color("BoxGrey"), radius: expanded || dragState.isActive ? 10 : 0)
             .animation(.easeInOut(duration: 0.5), value: dragState.isActive)
     }

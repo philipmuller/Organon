@@ -101,14 +101,15 @@ class Proposition: Identifiable, Equatable {
     
     func statementRequestsDeletion(childID: UUID) {
         content = Statement(content: "", formula: "")
-        content.id = childID
+        //content.id = childID
         content.delete = statementRequestsDeletion(childID:)
         content.change = statementRequestsChange(childID:changeInto:)
     }
     
     func statementRequestsChange(childID: UUID, changeInto: Statement) {
+        print("Proposition received change request from: \(childID), change into: \(changeInto.id)")
         content = changeInto
-        content.id = childID
+        //content.id = childID
         content.delete = statementRequestsDeletion(childID:)
         content.change = statementRequestsChange(childID:changeInto:)
     }

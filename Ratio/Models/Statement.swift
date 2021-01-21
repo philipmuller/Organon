@@ -177,17 +177,18 @@ class JunctureStatement: Statement {
     }
     
     override func childRequestsChange(childID: UUID, changeInto: Statement) {
+        print("Statement received change request from: \(childID), change into: \(changeInto.id)")
         if childID == firstChild.id {
             let oldID = firstChild.id
             firstChild = changeInto
-            firstChild.id = oldID
+            //firstChild.id = oldID
             firstChild.delete = self.childRequestsDeletion(childID:)
             firstChild.change = self.childRequestsChange(childID:changeInto:)
             
         } else {
             let oldID = secondChild.id
             secondChild = changeInto
-            secondChild.id = oldID
+            //secondChild.id = oldID
             secondChild.delete = self.childRequestsDeletion(childID:)
             secondChild.change = self.childRequestsChange(childID:changeInto:)
             
@@ -233,7 +234,7 @@ class Negation: Statement {
     override func childRequestsChange(childID: UUID, changeInto: Statement) {
         let oldID = negatedStatement.id
         negatedStatement = changeInto
-        negatedStatement.id = oldID
+        //negatedStatement.id = oldID
         negatedStatement.delete = self.childRequestsDeletion(childID:)
         negatedStatement.change = self.childRequestsChange(childID:changeInto:)
     }

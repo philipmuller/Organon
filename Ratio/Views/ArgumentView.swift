@@ -10,7 +10,11 @@ import SwiftUI
 struct ArgumentView: View {
     @ObservedObject var argument: Argument
     @State var selectedProposition: Proposition? = nil
-    @State var isEditing: Bool = false
+    @State var isEditing: Bool = false {
+        didSet {
+            print("TRIGGEREDDD")
+        }
+    }
     
     @State var draggingCoordinates: CGPoint?
     @State var previewID: UUID?
