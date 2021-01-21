@@ -214,9 +214,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
                             editedStatementType = statementType
                         } else {
                             //on anything else, we have to update the entire ui first, to match the writing
+                            textView.attributedText = textViewReplacementStringForSybom(oldString: textView.attributedText, currentLocation: range.location, type: statementType)
                             editedStatementType = statementType
-                            //textView.resignFirstResponder()
-                            //isEditing.wrappedValue = nil
                             updateStatement(statement, forText: textView.attributedText, editedType: statementType)
                         }
                         
@@ -329,7 +328,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         func attributedStringForSymbol(type: StatementType) -> NSAttributedString {
             let attachment = NSTextAttachment()
             attachment.image = UIImage(named: imageNames[type]!)!.withTintColor(UIColor(Color.accentColor))
-            return NSAttributedString(attachment: attachment)
+            return (type == .conditional || type == .negation || editedStatementType != .simple) ? NSAttributedString(string: "") : NSAttributedString(attachment: attachment)
         }
         
         func textViewReplacementStringForSybom(oldString: NSAttributedString, currentLocation: Int, type: StatementType) -> NSAttributedString {
