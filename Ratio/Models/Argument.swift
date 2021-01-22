@@ -20,10 +20,14 @@ class Argument: ObservableObject {
     
 }
 
-struct FormalData {
-    var propositions: [Proposition]
+class FormalData: ObservableObject {
+    @Published var propositions: [Proposition]
     
-    mutating func remove(proposition: Proposition) {
+    init(propositions: [Proposition]) {
+        self.propositions = propositions
+    }
+    
+    func remove(proposition: Proposition) {
         //check dependencies of thing you wish to delete
         if let dependencies = propositionsReliantOn(proposition: proposition) {
             for dependence in dependencies {
@@ -40,12 +44,12 @@ struct FormalData {
         
     }
     
-    mutating func add() {
+    func add() {
         let newProposition = Proposition(content: Statement(content: "test", formula: "A"))
         propositions.append(newProposition)
     }
     
-    mutating func add(proposition: Proposition) {
+    func add(proposition: Proposition) {
         propositions.append(proposition)
     }
     
@@ -53,7 +57,7 @@ struct FormalData {
         return propositions.firstIndex(of: proposition)!
     }
     
-    mutating func rearrange() {
+    func rearrange() {
         propositions.sort(by: {
             
             switch ($0.type, $1.type) {

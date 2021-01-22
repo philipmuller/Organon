@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PropositionView: View {
-    @Binding var proposition: Proposition
+    @ObservedObject var proposition: Proposition
     @Binding var selectedProposition: Proposition?
     @Binding var editable: Bool
     
@@ -91,14 +91,14 @@ struct PropositionView: View {
         .padding(.all, expanded ? 20 : 5)
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
         .background(background)
-        .overlay(proposition.type == .empty ? overlay : nil)
-        .opacity(faded ? 0.2 : 1)
-        .offset(x: swipeAmount)
         .onChange(of: draggingCoordinates) { value in
             if value == nil && proposition.type == .empty {
                 proposition.type = .premise
             }
         }
+        .overlay(overlay)
+        .opacity(faded ? 0.2 : 1)
+        .offset(x: swipeAmount)
         .onTapGesture {
             withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
                 if selectedProposition?.id == proposition.id {
@@ -201,6 +201,7 @@ struct PropositionView: View {
     var overlay: some View {
         RoundedRectangle(cornerRadius: 10)
             .foregroundColor(Color(hue: 0, saturation: 0, brightness: 0.95))
+            .opacity(proposition.type == .empty ? 1 : 0)
     }
     
     var propositionIcon: some View {

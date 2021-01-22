@@ -7,10 +7,10 @@
 
 import Foundation
 
-class Proposition: Identifiable, Equatable {
+class Proposition: ObservableObject, Identifiable, Equatable {
     
     var id = UUID()
-    var type: PropositionType
+    @Published var type: PropositionType
     var justification: Justification?
     var alias: String?
     

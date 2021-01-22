@@ -32,7 +32,7 @@ struct ArgumentView: View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView(.vertical, showsIndicators: true) {
                 header
-                FormalView(formalData: $argument.formalData, selectedProposition: $selectedProposition, isEditing: $isEditing, draggingCoordinates: $draggingCoordinates, draggedIndex: $draggedIndex)
+                FormalView(formalData: argument.formalData, selectedProposition: $selectedProposition, isEditing: $isEditing, draggingCoordinates: $draggingCoordinates, draggedIndex: $draggedIndex)
                     .frame(maxWidth: 350)
                     .accentColor(Color("AccentColor"))
             }

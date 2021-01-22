@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FormalView: View {
     
-    @Binding var formalData: FormalData
+    @ObservedObject var formalData: FormalData
     @Binding var selectedProposition: Proposition?
     @Binding var isEditing: Bool
     
@@ -40,7 +40,7 @@ struct FormalView: View {
                     let propIndex = formalData.propositions.firstIndex(of: proposition) ?? 0
                     let propLevel = formalData.level(of: proposition)
                     Safe($formalData.propositions, index: propIndex) { binding in
-                        PropositionView(proposition: binding, selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
+                        PropositionView(proposition: binding.wrappedValue, selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
                             .background(hoverTrigger(index: propIndex))
                             .padding(.leading, selected ? 0 : CGFloat(propLevel*30))
                     }
