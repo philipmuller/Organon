@@ -118,7 +118,7 @@ struct PropositionView: View {
     
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
-            StatementView(statement: $proposition.content, deleteCount: $count, isEditing: $editedStatementID, editable: expanded)
+            StatementView(statement: $proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, editable: expanded)
             
             propositionDetailView
                 .frame(width: expanded ? nil : 0, height: expanded ? nil : 0)

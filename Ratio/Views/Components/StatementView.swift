@@ -12,6 +12,7 @@ struct StatementView: View {
     @State var text: String = ""
     @Binding var deleteCount: Int
     @Binding var isEditing: UUID?
+    @Binding var selectedProposition: Proposition?
     let editable: Bool
     
     var body: some View {
@@ -35,7 +36,7 @@ struct StatementView: View {
                 
             default:
                 if isEditing == statement.id && editable == true {
-                    StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing)
+                    StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition)
                         .padding(0)
                         .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                             return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
@@ -63,8 +64,8 @@ struct StatementView: View {
         let conditionalBinding = Binding<Conditional>(get: {statement as! Conditional}, set: {statement = $0})
         let first = conditionalBinding.wrappedValue.firstChild
         let second = conditionalBinding.wrappedValue.secondChild
-        let firstView = StatementView(statement: conditionalBinding.firstChild, deleteCount: $deleteCount, isEditing: $isEditing, editable: editable)
-        let secondView = StatementView(statement: conditionalBinding.secondChild, deleteCount: $deleteCount, isEditing: $isEditing, editable: editable)
+        let firstView = StatementView(statement: conditionalBinding.firstChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, editable: editable)
+        let secondView = StatementView(statement: conditionalBinding.secondChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, editable: editable)
             
         return VStack(alignment: .leading, spacing: 4) {
             
@@ -121,8 +122,8 @@ struct StatementView: View {
         let conjunctionBinding = Binding<Conjunction>(get: {statement as! Conjunction}, set: {statement = $0})
         let firstStatement = conjunctionBinding.wrappedValue.firstChild
         let lastStatement = conjunctionBinding.wrappedValue.secondChild
-        let firstView = StatementView(statement: conjunctionBinding.firstChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, editable: editable)
-        let secondView = StatementView(statement: conjunctionBinding.secondChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, editable: editable)
+        let firstView = StatementView(statement: conjunctionBinding.firstChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, editable: editable)
+        let secondView = StatementView(statement: conjunctionBinding.secondChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, editable: editable)
         
         return HStack {
             if statement.block && firstStatement.block {
@@ -149,7 +150,7 @@ struct StatementView: View {
                 }
             } else {
                 if isEditing == statement.id && editable == true {
-                    StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing)
+                    StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition)
                         .padding(0)
                         //.transition(.scale)
                 } else {
@@ -171,8 +172,8 @@ struct StatementView: View {
         let disjunctionBinding = Binding<Disjunction>(get: {statement as! Disjunction}, set: {statement = $0})
         let firstStatement = disjunctionBinding.wrappedValue.firstChild
         let lastStatement = disjunctionBinding.wrappedValue.secondChild
-        let firstView = StatementView(statement: disjunctionBinding.firstChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, editable: editable)
-        let secondView = StatementView(statement: disjunctionBinding.secondChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, editable: editable)
+        let firstView = StatementView(statement: disjunctionBinding.firstChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, editable: editable)
+        let secondView = StatementView(statement: disjunctionBinding.secondChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, editable: editable)
         
         return HStack {
             if statement.block && firstStatement.block {
@@ -199,7 +200,7 @@ struct StatementView: View {
                 }
             } else {
                 if isEditing == statement.id && editable == true {
-                    StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing)
+                    StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition)
                         .padding(0)
                         //.transition(.scale)
                 } else {
@@ -220,7 +221,7 @@ struct StatementView: View {
     var notStatement: some View {
         let negationBinding = Binding<Negation>(get: {statement as! Negation}, set: {statement = $0})
         let nStatement = negationBinding.wrappedValue.negatedStatement
-        let nView = StatementView(statement: negationBinding.negatedStatement, text: negationBinding.wrappedValue.negatedStatementContent, deleteCount: $deleteCount, isEditing: $isEditing, editable: editable)
+        let nView = StatementView(statement: negationBinding.negatedStatement, text: negationBinding.wrappedValue.negatedStatementContent, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, editable: editable)
         
         return VStack {
 //            if statement.block {

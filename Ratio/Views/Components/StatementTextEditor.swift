@@ -16,6 +16,7 @@ struct StatementTextEditor: View {
     @Binding var statement: Statement
     @Binding var deleteWrapper: Int
     @Binding var isEditing: UUID?
+    @Binding var selectedProposition: Proposition?
     
     private var internalText: Binding<String> {
         Binding<String>(get: { self.text } ) {
@@ -37,7 +38,7 @@ struct StatementTextEditor: View {
     }
 
     var body: some View {
-        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: internalStatement, text: internalText, calculatedHeight: $viewHeight, isEditing: $isEditing, onDone: onCommit)
+        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: internalStatement, text: internalText, calculatedHeight: $viewHeight, isEditing: $isEditing, selectedProposition: $selectedProposition, onDone: onCommit)
             .frame(minHeight: viewHeight, maxHeight: viewHeight)
             .offset(x: -5, y: -8)
             .background(placeholderView, alignment: .topLeading)
@@ -54,13 +55,14 @@ struct StatementTextEditor: View {
         }
     }
     
-    init (bindedStatement: Binding<Statement>, deleteTracker: Binding<Int>, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>) {
+    init (bindedStatement: Binding<Statement>, deleteTracker: Binding<Int>, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
         self.placeholder = placeholder
         self.onCommit = onCommit
         self._text = text
         self._statement = bindedStatement
         self._deleteWrapper = deleteTracker
         self._isEditing = isEditing
+        self._selectedProposition = selectedProposition
         self._shouldShowPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
@@ -75,6 +77,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     @Binding var text: String
     @Binding var calculatedHeight: CGFloat
     @Binding var isEditing: UUID?
+    @Binding var selectedProposition: Proposition?
     var becomeResponder: Bool = true
     var onDone: (() -> Void)?
 
@@ -135,6 +138,11 @@ private struct UITextViewWrapper: UIViewRepresentable {
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
         
     }
+    
+    static func dismantleUIView(_ uiView: UITextView, coordinator: Coordinator) {
+        print("Dismantling Textview!!!")
+        uiView.resignFirstResponder()
+    }
 
     private static func recalculateHeight(view: UIView, result: Binding<CGFloat>) {
         let newSize = view.sizeThatFits(CGSize(width: view.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
@@ -146,7 +154,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(deleteWrapper: $deleteWrapper, statement: $statement, text: $text, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing)
+        return Coordinator(deleteWrapper: $deleteWrapper, statement: $statement, text: $text, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing, selectedProposition: $selectedProposition)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
@@ -157,18 +165,21 @@ private struct UITextViewWrapper: UIViewRepresentable {
         var onDone: (() -> Void)?
         var editedStatementType: StatementType
         var isEditing: Binding<UUID?>
+        var selectedProposition: Binding<Proposition?>
+        var shouldStopEditing = true
         
         let typesForTags = [":and:" : StatementType.conjunction, ":or:" : StatementType.disjunction, ":then:" : StatementType.conditional, ":not:" : StatementType.negation]
         let tagsForTypes = [StatementType.conjunction : ":and:", StatementType.disjunction: ":or:", StatementType.conditional : ":then:", StatementType.negation : ":not:"]
         let imageNames = [StatementType.conjunction : "and", StatementType.disjunction : "or", StatementType.conditional : "then", StatementType.negation : "not"]
 
-        init(deleteWrapper: Binding<Int>, statement: Binding<Statement>, text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>) {
+        init(deleteWrapper: Binding<Int>, statement: Binding<Statement>, text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
             self.deleteWrapper = deleteWrapper
             self.statement = statement
             self.text = text
             self.calculatedHeight = height
             self.onDone = onDone
             self.isEditing = isEditing
+            self.selectedProposition = selectedProposition
             self.editedStatementType = statement.wrappedValue.type
         }
 
@@ -216,12 +227,11 @@ private struct UITextViewWrapper: UIViewRepresentable {
                             //on anything else, we have to update the entire ui first, to match the writing
                             textView.attributedText = textViewReplacementStringForSybom(oldString: textView.attributedText, currentLocation: range.location, type: statementType)
                             editedStatementType = statementType
-                            updateStatement(statement, forText: textView.attributedText, editedType: statementType)
+                            shouldStopEditing = false
+                            textView.resignFirstResponder()
                         }
-                        
                     }
                 }
-                
             }
             
             //attempting to delete wrapper:
@@ -232,13 +242,22 @@ private struct UITextViewWrapper: UIViewRepresentable {
             //user is done editing
             if text == "\n" {
                 textView.resignFirstResponder()
-                updateStatement(statement, forText: textView.attributedText, editedType: editedStatementType)
-                isEditing.wrappedValue = nil
                 return false
             }
             
             
             return true
+        }
+        
+        func textViewDidEndEditing(_ textView: UITextView) {
+            print("Text view DID end editing")
+            
+            updateStatement(statement, forText: textView.attributedText, editedType: editedStatementType)
+            
+            if shouldStopEditing {
+                isEditing.wrappedValue = nil
+            }
+            shouldStopEditing = true
         }
         
         func updateStatement(_ ogStatement: Binding<Statement>, forText finishedText: NSAttributedString, editedType: StatementType) {
