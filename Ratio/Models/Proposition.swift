@@ -14,7 +14,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
     var justification: Justification?
     var alias: String?
     
-    var content: Statement
+    @Published var content: Statement
     
     init() {
         type = .empty

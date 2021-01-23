@@ -94,6 +94,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         if onDone != nil {
             textField.returnKeyType = .done
         }
+        textField.returnKeyType = UIReturnKeyType.done
 
         textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
@@ -163,7 +164,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
         var text: Binding<String>
         var calculatedHeight: Binding<CGFloat>
         var onDone: (() -> Void)?
-        var editedStatementType: StatementType
+        var liveStatementType: StatementType
+        var secondSymbolType: StatementType?
         var isEditing: Binding<UUID?>
         var selectedProposition: Binding<Proposition?>
         var shouldStopEditing = true
@@ -180,14 +182,10 @@ private struct UITextViewWrapper: UIViewRepresentable {
             self.onDone = onDone
             self.isEditing = isEditing
             self.selectedProposition = selectedProposition
-            self.editedStatementType = statement.wrappedValue.type
+            self.liveStatementType = statement.wrappedValue.type
         }
 
         func textViewDidChange(_ uiView: UITextView) {
-            //text.wrappedValue = uiView.text
-            if isEditing.wrappedValue == statement.id.wrappedValue {
-                uiView.becomeFirstResponder()
-            }
             
             UITextViewWrapper.recalculateHeight(view: uiView, result: calculatedHeight)
         }
@@ -200,7 +198,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 if range.contains(symbolRange.location) {
                     //this assumes that only 1 symbol can be present at any given point
                     //the symbol is deleted, so we change the statement type to simple
-                    editedStatementType = .simple
+                    liveStatementType = .simple
+                    
                 }
             }
             
@@ -222,13 +221,26 @@ private struct UITextViewWrapper: UIViewRepresentable {
                             //on a conjunction or disjunction, we can keep editing in this configuration
                             //TODO: WHAT HAPPENS IF THERE IS A SECOND CONJUNCTION OR DISJUNCTION TAG?!
                             textView.attributedText = textViewReplacementStringForSybom(oldString: textView.attributedText, currentLocation: range.location, type: statementType)
-                            editedStatementType = statementType
+                            if liveStatementType != .simple {
+                                secondSymbolType = statementType
+                                shouldStopEditing = false
+                                textView.resignFirstResponder()
+                            } else {
+                                liveStatementType = statementType
+                            }
                         } else {
                             //on anything else, we have to update the entire ui first, to match the writing
                             textView.attributedText = textViewReplacementStringForSybom(oldString: textView.attributedText, currentLocation: range.location, type: statementType)
-                            editedStatementType = statementType
-                            shouldStopEditing = false
-                            textView.resignFirstResponder()
+                            if liveStatementType != .simple {
+                                secondSymbolType = statementType
+                                shouldStopEditing = false
+                                textView.resignFirstResponder()
+                            } else {
+                                liveStatementType = statementType
+                                shouldStopEditing = false
+                                textView.resignFirstResponder()
+                            }
+                            
                         }
                     }
                 }
@@ -252,7 +264,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         func textViewDidEndEditing(_ textView: UITextView) {
             print("Text view DID end editing")
             
-            updateStatement(statement, forText: textView.attributedText, editedType: editedStatementType)
+            updateStatement(statement, forText: textView.attributedText, editedType: liveStatementType, secondSymbolType: secondSymbolType)
             
             if shouldStopEditing {
                 isEditing.wrappedValue = nil
@@ -260,70 +272,94 @@ private struct UITextViewWrapper: UIViewRepresentable {
             shouldStopEditing = true
         }
         
-        func updateStatement(_ ogStatement: Binding<Statement>, forText finishedText: NSAttributedString, editedType: StatementType) {
+        func updateStatement(_ ogStatement: Binding<Statement>, forText finishedText: NSAttributedString, editedType: StatementType, secondSymbolType: StatementType?) {
+            print("Update statement called. ogstatement type: \(ogStatement.wrappedValue.type), finished text: \(finishedText.string) editedType: \(editedType) second symbol type: \(secondSymbolType)")
             
-            if let uChange = ogStatement.wrappedValue.change {
-                if let uDelete = ogStatement.wrappedValue.delete {
-                    // if we have acces to delete and change closures that we can call
+            if ogStatement.wrappedValue.type == editedType && secondSymbolType == nil {
+                //no structural changes required. Update og statement directly
+                if ogStatement.wrappedValue.type == .disjunction || ogStatement.wrappedValue.type == .conjunction {
+                    let junctionBinding = Binding<JunctureStatement>(get: {self.statement.wrappedValue as! JunctureStatement}, set: {self.statement.wrappedValue = $0})
                     
-                    if finishedText.string != "" || finishedText.string != " " || finishedText.string != "  " {
-                        //if the text field is not empty (we don't want to delete but change)
-                        
-                        var changeToStatement = Statement()
-                        var nextResponderID = changeToStatement.id
-                        
-                        if editedType == .simple || editedType == .negation {
-                            //these types have just one term
-                            let simple = Statement(content: finishedText.string, formula: "A")
-                            changeToStatement = editedType == .simple ? simple : Negation(simple)
-                            nextResponderID = simple.id
-                            
-                        } else {
-                            //these have two terms, we have to figure out where the logic symbol is (the divider)
-                            var cuttingPoint = finishedText.string.count
-                            if let symbolPosition = rangeForLogicSymbol(attributedText: finishedText)?.location {
-                                cuttingPoint = symbolPosition
-                            }
-                            let lowerBound = 0
-                            let upperBound = finishedText.string.count
-                            let simpleTextLeft = String(finishedText.string[lowerBound..<cuttingPoint])
-                            let simpleTextRight = String(finishedText.string[cuttingPoint..<upperBound])
-                            let leftStatement = Statement(content: simpleTextLeft, formula: "A")
-                            let rightStatement = Statement(content: simpleTextRight, formula: "B")
-                            
-                            
-                            switch editedType {
-                            case .conditional:
-                                changeToStatement = Conditional(leftStatement, rightStatement)
-                            case .conjunction:
-                                changeToStatement = Conjunction(leftStatement, rightStatement)
-                            case .disjunction:
-                                changeToStatement = Disjunction(leftStatement, rightStatement)
-                            default:
-                                changeToStatement = Statement()
-                            }
-                            
-                            nextResponderID = rightStatement.id
-                        }
-                        
-                        //check if the new statement is structurally different to the old statement
-                        if ogStatement.wrappedValue.type == editedType {
-                            //the statement has the same type, just update the text
-                            ogStatement.wrappedValue.content = finishedText.string
-                        } else {
-                            //change the structure, call the closure
-                            //isEditing.wrappedValue = changeToStatement.id
-                            isEditing.wrappedValue = nextResponderID
-                            uChange(ogStatement.wrappedValue.id, changeToStatement)
-                        }
+                    var cuttingPoint = finishedText.string.count
+                    if let symbolPosition = rangeForLogicSymbol(attributedText: finishedText)?.location {
+                        cuttingPoint = symbolPosition
+                    }
+                    let lowerBound = 0
+                    let upperBound = finishedText.string.count
+                    let simpleTextLeft = String(finishedText.string[lowerBound..<cuttingPoint])
+                    let simpleTextRight = String(finishedText.string[cuttingPoint..<upperBound])
+                    let leftStatement = Statement(content: simpleTextLeft, formula: "A")
+                    let rightStatement = Statement(content: simpleTextRight, formula: "B")
+                    
+                    junctionBinding.wrappedValue.firstChild = leftStatement
+                    junctionBinding.wrappedValue.secondChild = rightStatement
+                    
+                } else {
+                    ogStatement.wrappedValue.content = finishedText.string
+                }
+            } else {
+                if let uChange = ogStatement.wrappedValue.change {
+                    var changeToStatement = Statement()
+                    var nextResponderID = changeToStatement.id
+                    
+                    if editedType == .simple || editedType == .negation {
+                        //these types have just one term
+                        let simple = Statement(content: finishedText.string, formula: "A")
+                        changeToStatement = editedType == .simple ? simple : Negation(simple)
+                        nextResponderID = simple.id
                         
                     } else {
-                        //the text field is empty, delete this statement
-                        uDelete(ogStatement.wrappedValue.id)
+                        //these have two terms, we have to figure out where the logic symbol is (the divider)
+                        var cuttingPoint = finishedText.string.count
+                        if let symbolPosition = rangeForLogicSymbol(attributedText: finishedText)?.location {
+                            cuttingPoint = symbolPosition
+                        }
+                        let lowerBound = 0
+                        let upperBound = finishedText.string.count
+                        let simpleTextLeft = String(finishedText.string[lowerBound..<cuttingPoint])
+                        let simpleTextRight = String(finishedText.string[cuttingPoint..<upperBound])
+                        let leftStatement = Statement(content: simpleTextLeft, formula: "A")
+                        let rightStatement = Statement(content: simpleTextRight, formula: "B")
+                        
+                        
+                        switch editedType {
+                        case .conditional:
+                            changeToStatement = Conditional(leftStatement, rightStatement)
+                        case .conjunction:
+                            changeToStatement = Conjunction(leftStatement, rightStatement)
+                        case .disjunction:
+                            changeToStatement = Disjunction(leftStatement, rightStatement)
+                        default:
+                            changeToStatement = Statement()
+                        }
+                        
+                        nextResponderID = rightStatement.id
                     }
+                    
+                    if secondSymbolType != nil {
+                        let freshNewStatement = Statement(content: "", formula: "A")
+                        nextResponderID = freshNewStatement.id
+                        
+                        switch secondSymbolType {
+                        case .conjunction:
+                            changeToStatement = Conjunction(changeToStatement, freshNewStatement)
+                        case .disjunction:
+                            changeToStatement = Disjunction(changeToStatement, freshNewStatement)
+                        case .conditional:
+                            changeToStatement = Conditional(changeToStatement, freshNewStatement)
+                        case .negation:
+                            nextResponderID = changeToStatement.id
+                            changeToStatement = Negation(changeToStatement)
+                        default:
+                            print("Yeah you fucked up something. Good luck.")
+                        }
+                    }
+                    
+                    isEditing.wrappedValue = nextResponderID
+                    //changeToStatement.id = ogStatement.wrappedValue.id
+                    uChange(ogStatement.wrappedValue.id, changeToStatement)
                 }
             }
-            
         }
         
         func rangeForLogicSymbol(attributedText: NSAttributedString) -> NSRange? {
@@ -347,7 +383,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         func attributedStringForSymbol(type: StatementType) -> NSAttributedString {
             let attachment = NSTextAttachment()
             attachment.image = UIImage(named: imageNames[type]!)!.withTintColor(UIColor(Color.accentColor))
-            return (type == .conditional || type == .negation || editedStatementType != .simple) ? NSAttributedString(string: "") : NSAttributedString(attachment: attachment)
+            return (type == .conditional || type == .negation || liveStatementType != .simple) ? NSAttributedString(string: "") : NSAttributedString(attachment: attachment)
         }
         
         func textViewReplacementStringForSybom(oldString: NSAttributedString, currentLocation: Int, type: StatementType) -> NSAttributedString {

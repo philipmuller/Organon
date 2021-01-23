@@ -11,7 +11,7 @@ enum StatementType {
     case simple, conjunction, disjunction, conditional, negation
 }
 
-class Statement: Identifiable, Hashable {
+class Statement: ObservableObject, Identifiable, Hashable {
     static func == (lhs: Statement, rhs: Statement) -> Bool {
         if lhs.id == rhs.id {
             return true
@@ -82,8 +82,44 @@ class Statement: Identifiable, Hashable {
 
 
 class JunctureStatement: Statement {
-    var firstChild: Statement
-    var secondChild: Statement
+    var firstChild: Statement {
+        didSet {
+            let symbol: String
+            
+            switch type {
+            case .conditional:
+                symbol = " -> "
+            case .conjunction:
+                symbol = " · "
+            case .disjunction:
+                symbol = " v "
+            default:
+                symbol = ""
+            }
+            
+            self.content = firstChild.content + symbol + secondChild.content
+            self.formula = "(" + firstChild.formula + symbol + secondChild.formula + ")"
+        }
+    }
+    var secondChild: Statement {
+        didSet {
+            let symbol: String
+            
+            switch type {
+            case .conditional:
+                symbol = " -> "
+            case .conjunction:
+                symbol = " · "
+            case .disjunction:
+                symbol = " v "
+            default:
+                symbol = ""
+            }
+            
+            self.content = firstChild.content + symbol + secondChild.content
+            self.formula = "(" + firstChild.formula + symbol + secondChild.formula + ")"
+        }
+    }
     
     var leftContent: String {
         return firstChild.content
@@ -199,7 +235,12 @@ class JunctureStatement: Statement {
 }
 
 class Negation: Statement {
-    var negatedStatement: Statement
+    var negatedStatement: Statement {
+        didSet {
+            self.content = "~ " + negatedStatement.content
+            self.formula = "(" + "~" + negatedStatement.formula + ")"
+        }
+    }
     
     var negatedStatementContent: String {
         return negatedStatement.content
@@ -218,6 +259,9 @@ class Negation: Statement {
         super.init(content: preppedContent, formula: preppedFormula)
         
         type = .negation
+        
+        negatedStatement.delete = self.childRequestsDeletion(childID:)
+        negatedStatement.change = self.childRequestsChange(childID:changeInto:)
     }
     
     override func copy() -> Negation {

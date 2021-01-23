@@ -152,7 +152,9 @@ struct StatementView: View {
                 if isEditing == statement.id && editable == true {
                     StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition)
                         .padding(0)
-                        //.transition(.scale)
+                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                        }
                 } else {
                     (Text(conjunctionBinding.wrappedValue.leftContent)+Text(Image("and")).foregroundColor(Color.accentColor)+Text(conjunctionBinding.wrappedValue.rightContent))
                         .fixedSize(horizontal: false, vertical: true)
@@ -163,6 +165,9 @@ struct StatementView: View {
                             }
                         }
                         .allowsHitTesting(editable)
+                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                        }
                 }
             }
         }
@@ -202,7 +207,9 @@ struct StatementView: View {
                 if isEditing == statement.id && editable == true {
                     StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition)
                         .padding(0)
-                        //.transition(.scale)
+                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                        }
                 } else {
                     (Text(disjunctionBinding.wrappedValue.leftContent)+Text(Image("or")).foregroundColor(Color.accentColor)+Text(disjunctionBinding.wrappedValue.rightContent))
                         .fixedSize(horizontal: false, vertical: true)
@@ -213,6 +220,9 @@ struct StatementView: View {
                             }
                         }
                         .allowsHitTesting(editable)
+                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                        }
                 }
             }
         }
