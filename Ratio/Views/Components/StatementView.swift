@@ -58,6 +58,7 @@ struct StatementView: View {
                 }
             }
         }
+        .background(statement.targeted ? Color.blue : Color.clear)
     }
     
     var ifThenStatement: some View {

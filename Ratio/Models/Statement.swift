@@ -38,6 +38,8 @@ class Statement: ObservableObject, Identifiable, Hashable {
     
     var delete: ((UUID) -> Void)?
     var change: ((UUID, Statement) -> Void)?
+    var target: ((Int?) -> Void)?
+    @Published var targeted: Bool = false
     
     init() {
         self.content = ""
@@ -72,6 +74,29 @@ class Statement: ObservableObject, Identifiable, Hashable {
     }
     
     func childRequestsChange(childID: UUID, changeInto: Statement) {
+        
+    }
+    
+    func targetStatementAtCount(count: Int?) {
+        if count == nil {
+           targeted = false
+            if let uTarget = self.target {
+                uTarget(nil)
+            }
+        } else {
+            if count == 0 {
+                targeted = true
+                print("Currently targeting type: \(self.type), content: \(self.content)")
+                if let uTarget = self.target {
+                    uTarget(nil)
+                }
+            } else {
+                targeted = false
+                if let uTarget = self.target {
+                    uTarget(count! - 1)
+                }
+            }
+        }
         
     }
     
@@ -163,9 +188,11 @@ class JunctureStatement: Statement {
         
         firstChild.delete = self.childRequestsDeletion(childID:)
         firstChild.change = self.childRequestsChange(childID:changeInto:)
+        firstChild.target = self.targetStatementAtCount(count:)
         
         secondChild.delete = self.childRequestsDeletion(childID:)
         secondChild.change = self.childRequestsChange(childID:changeInto:)
+        secondChild.target = self.targetStatementAtCount(count:)
         
     }
     
@@ -195,9 +222,11 @@ class JunctureStatement: Statement {
         
         firstChild.delete = self.childRequestsDeletion(childID:)
         firstChild.change = self.childRequestsChange(childID:changeInto:)
+        firstChild.target = self.targetStatementAtCount(count:)
         
         secondChild.delete = self.childRequestsDeletion(childID:)
         secondChild.change = self.childRequestsChange(childID:changeInto:)
+        secondChild.target = self.targetStatementAtCount(count:)
         
     }
     
@@ -262,6 +291,7 @@ class Negation: Statement {
         
         negatedStatement.delete = self.childRequestsDeletion(childID:)
         negatedStatement.change = self.childRequestsChange(childID:changeInto:)
+        negatedStatement.target = self.targetStatementAtCount(count:)
     }
     
     override func copy() -> Negation {

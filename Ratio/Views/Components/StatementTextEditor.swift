@@ -203,6 +203,24 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 }
             }
             
+            if text == ":" {
+                let textViewText = textView.text ?? ""
+                var currentCharacter = text
+                var count = 1
+                while currentCharacter == ":" {
+                    let lowerBound = max(range.location - count, 0)
+                    let upperBound = min(lowerBound + 1, textViewText.count)
+                    currentCharacter = String(textViewText[lowerBound..<upperBound])
+                    print(currentCharacter)
+                    count += 1
+                }
+                if let target = statement.wrappedValue.target {
+                    print("targeting: \(count)")
+                    target(nil)
+                    target(count)
+                }
+            }
+            
             //Check if written text is an logical operator tag
             
             if text == " " { //if the new text that wants to be inserted is a space
