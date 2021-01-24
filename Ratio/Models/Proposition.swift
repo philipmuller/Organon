@@ -21,6 +21,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         content = Statement()
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement) {
@@ -28,6 +30,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         type = .premise
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, type: PropositionType) {
@@ -35,6 +39,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.type = type
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, type: PropositionType, justification: Justification) {
@@ -43,6 +49,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.justification = justification
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, position: Int) {
@@ -50,6 +58,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         type = .premise
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, type: PropositionType, position: Int) {
@@ -57,6 +67,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.type = type
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, type: PropositionType, justification: Justification, position: Int) {
@@ -65,6 +77,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.justification = justification
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, alias: String) {
@@ -73,6 +87,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.alias = alias
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, type: PropositionType, alias: String) {
@@ -81,6 +97,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.alias = alias
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     init(content: Statement, type: PropositionType, justification: Justification, alias: String) {
@@ -90,6 +108,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.alias = alias
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
+        self.content.target = targetStatementAtCount(count:)
+        self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     static func == (lhs: Proposition, rhs: Proposition) -> Bool {
@@ -104,6 +124,8 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         //content.id = childID
         content.delete = statementRequestsDeletion(childID:)
         content.change = statementRequestsChange(childID:changeInto:)
+        content.target = targetStatementAtCount(count:)
+        content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
     func statementRequestsChange(childID: UUID, changeInto: Statement) {
@@ -112,6 +134,16 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         //content.id = childID
         content.delete = statementRequestsDeletion(childID:)
         content.change = statementRequestsChange(childID:changeInto:)
+        content.target = targetStatementAtCount(count:)
+        content.changeTarget = addAtTargeted(connectionType:connectTo:)
+    }
+    
+    func targetStatementAtCount(count: Int?) {
+        print("Proposition here! Target counting has reached end station!")
+    }
+    
+    func addAtTargeted(connectionType: StatementType, connectTo: Statement) {
+        print("Proposition here. endline, I cannot be targeted!")
     }
     
 }

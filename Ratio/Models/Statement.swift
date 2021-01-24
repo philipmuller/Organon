@@ -24,7 +24,7 @@ class Statement: ObservableObject, Identifiable, Hashable {
         return hasher.combine(ObjectIdentifier(self))
     }
     
-    var id = UUID()
+    @Published var id = UUID()
     var type: StatementType = .simple
     var content: String
     var formula: String
@@ -39,6 +39,9 @@ class Statement: ObservableObject, Identifiable, Hashable {
     var delete: ((UUID) -> Void)?
     var change: ((UUID, Statement) -> Void)?
     var target: ((Int?) -> Void)?
+    var changeTarget: ((StatementType, Statement) -> Void)?
+    var parent: (() -> Statement)?
+    
     @Published var targeted: Bool = false
     
     init() {
@@ -74,6 +77,7 @@ class Statement: ObservableObject, Identifiable, Hashable {
     }
     
     func childRequestsChange(childID: UUID, changeInto: Statement) {
+        print("Statement \(self.id) here! Child is requesting change! ChildID: \(childID), change into: \(changeInto)")
         
     }
     
@@ -93,11 +97,46 @@ class Statement: ObservableObject, Identifiable, Hashable {
             } else {
                 targeted = false
                 if let uTarget = self.target {
+                    print("type: \(self.type), content: \(self.content) NOT the targer. passing count \(count) - 1 to parent")
                     uTarget(count! - 1)
                 }
             }
         }
         
+    }
+    
+    func addAtTargeted(connectionType: StatementType, connectTo: Statement) {
+        print("handling add at target request at statement type \(self.type)")
+        if targeted {
+            print("I am targeted!")
+            if let uChange = change {
+                var newConfig: Statement = Statement()
+                
+                switch connectionType {
+                case .conditional:
+                    newConfig = Conditional(self, connectTo)
+                case .conjunction:
+                    newConfig = Conjunction(self, connectTo)
+                case .disjunction:
+                    newConfig = Disjunction(self, connectTo)
+                case .negation:
+                    newConfig = Negation(self)
+                default:
+                    print("something went wrong. Targeting simple not possible")
+                }
+                print("Requesting change from parent. New config \(connectionType)")
+                uChange(self.id, newConfig)
+            }
+        } else {
+            print("I am NOT targeted!")
+            if let uChangeTarget = changeTarget {
+                uChangeTarget(connectionType, connectTo)
+            }
+        }
+    }
+    
+    func childRequestsYourPresence() -> Statement {
+        return self
     }
     
 //    func childRequestsParentChange(childID: UUID, changeInto: Statement) {
@@ -189,10 +228,14 @@ class JunctureStatement: Statement {
         firstChild.delete = self.childRequestsDeletion(childID:)
         firstChild.change = self.childRequestsChange(childID:changeInto:)
         firstChild.target = self.targetStatementAtCount(count:)
+        firstChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
+        //firstChild.parent = self.childRequestsYourPresence
         
         secondChild.delete = self.childRequestsDeletion(childID:)
         secondChild.change = self.childRequestsChange(childID:changeInto:)
         secondChild.target = self.targetStatementAtCount(count:)
+        secondChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
+        //secondChild.parent = self.childr
         
     }
     
@@ -223,10 +266,12 @@ class JunctureStatement: Statement {
         firstChild.delete = self.childRequestsDeletion(childID:)
         firstChild.change = self.childRequestsChange(childID:changeInto:)
         firstChild.target = self.targetStatementAtCount(count:)
+        firstChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
         
         secondChild.delete = self.childRequestsDeletion(childID:)
         secondChild.change = self.childRequestsChange(childID:changeInto:)
         secondChild.target = self.targetStatementAtCount(count:)
+        secondChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
         
     }
     
@@ -249,6 +294,8 @@ class JunctureStatement: Statement {
             //firstChild.id = oldID
             firstChild.delete = self.childRequestsDeletion(childID:)
             firstChild.change = self.childRequestsChange(childID:changeInto:)
+            firstChild.target = self.targetStatementAtCount(count:)
+            firstChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
             
         } else {
             let oldID = secondChild.id
@@ -256,6 +303,8 @@ class JunctureStatement: Statement {
             //secondChild.id = oldID
             secondChild.delete = self.childRequestsDeletion(childID:)
             secondChild.change = self.childRequestsChange(childID:changeInto:)
+            secondChild.target = self.targetStatementAtCount(count:)
+            secondChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
             
         }
     }
@@ -292,6 +341,7 @@ class Negation: Statement {
         negatedStatement.delete = self.childRequestsDeletion(childID:)
         negatedStatement.change = self.childRequestsChange(childID:changeInto:)
         negatedStatement.target = self.targetStatementAtCount(count:)
+        negatedStatement.changeTarget = self.addAtTargeted(connectionType:connectTo:)
     }
     
     override func copy() -> Negation {
@@ -311,6 +361,8 @@ class Negation: Statement {
         //negatedStatement.id = oldID
         negatedStatement.delete = self.childRequestsDeletion(childID:)
         negatedStatement.change = self.childRequestsChange(childID:changeInto:)
+        negatedStatement.target = self.targetStatementAtCount(count:)
+        negatedStatement.changeTarget = self.addAtTargeted(connectionType:connectTo:)
     }
 }
 

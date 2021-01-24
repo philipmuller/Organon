@@ -13,7 +13,7 @@ struct StatementTextEditor: View {
     @State private var viewHeight: CGFloat = 40 //start with one line
     @State private var shouldShowPlaceholder = false
     @Binding private var text: String
-    @Binding var statement: Statement
+    @ObservedObject var statement: Statement
     @Binding var deleteWrapper: Int
     @Binding var isEditing: UUID?
     @Binding var selectedProposition: Proposition?
@@ -25,11 +25,11 @@ struct StatementTextEditor: View {
         }
     }
     
-    private var internalStatement: Binding<Statement> {
-        Binding<Statement>(get: { self.statement } ) {
-            self.statement = $0
-        }
-    }
+//    private var internalStatement: Binding<Statement> {
+//        Binding<Statement>(get: { self.statement } ) {
+//            self.statement = $0
+//        }
+//    }
     
     private var internalDeleteCount: Binding<Int> {
         Binding<Int>(get: { self.deleteWrapper } ) {
@@ -38,7 +38,7 @@ struct StatementTextEditor: View {
     }
 
     var body: some View {
-        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: internalStatement, text: internalText, calculatedHeight: $viewHeight, isEditing: $isEditing, selectedProposition: $selectedProposition, onDone: onCommit)
+        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: statement, text: internalText, calculatedHeight: $viewHeight, isEditing: $isEditing, selectedProposition: $selectedProposition, onDone: onCommit)
             .frame(minHeight: viewHeight, maxHeight: viewHeight)
             .offset(x: -5, y: -8)
             .background(placeholderView, alignment: .topLeading)
@@ -55,11 +55,11 @@ struct StatementTextEditor: View {
         }
     }
     
-    init (bindedStatement: Binding<Statement>, deleteTracker: Binding<Int>, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
+    init (bindedStatement: Statement, deleteTracker: Binding<Int>, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
         self.placeholder = placeholder
         self.onCommit = onCommit
         self._text = text
-        self._statement = bindedStatement
+        self.statement = bindedStatement
         self._deleteWrapper = deleteTracker
         self._isEditing = isEditing
         self._selectedProposition = selectedProposition
@@ -73,7 +73,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     //typealias UIViewType = UITextView
 
     @Binding var deleteWrapper: Int
-    @Binding var statement: Statement
+    @ObservedObject var statement: Statement
     @Binding var text: String
     @Binding var calculatedHeight: CGFloat
     @Binding var isEditing: UUID?
@@ -155,12 +155,12 @@ private struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(deleteWrapper: $deleteWrapper, statement: $statement, text: $text, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing, selectedProposition: $selectedProposition)
+        return Coordinator(deleteWrapper: $deleteWrapper, statement: statement, text: $text, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing, selectedProposition: $selectedProposition)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
         var deleteWrapper: Binding<Int>
-        var statement: Binding<Statement>
+        @ObservedObject var statement: Statement
         var text: Binding<String>
         var calculatedHeight: Binding<CGFloat>
         var onDone: (() -> Void)?
@@ -170,11 +170,11 @@ private struct UITextViewWrapper: UIViewRepresentable {
         var selectedProposition: Binding<Proposition?>
         var shouldStopEditing = true
         
-        let typesForTags = [":and:" : StatementType.conjunction, ":or:" : StatementType.disjunction, ":then:" : StatementType.conditional, ":not:" : StatementType.negation]
-        let tagsForTypes = [StatementType.conjunction : ":and:", StatementType.disjunction: ":or:", StatementType.conditional : ":then:", StatementType.negation : ":not:"]
+        let typesForTags = [":and" : StatementType.conjunction, ":or" : StatementType.disjunction, ":then" : StatementType.conditional, ":not" : StatementType.negation]
+        let tagsForTypes = [StatementType.conjunction : ":and", StatementType.disjunction: ":or", StatementType.conditional : ":then", StatementType.negation : ":not"]
         let imageNames = [StatementType.conjunction : "and", StatementType.disjunction : "or", StatementType.conditional : "then", StatementType.negation : "not"]
 
-        init(deleteWrapper: Binding<Int>, statement: Binding<Statement>, text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
+        init(deleteWrapper: Binding<Int>, statement: Statement, text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
             self.deleteWrapper = deleteWrapper
             self.statement = statement
             self.text = text
@@ -182,7 +182,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
             self.onDone = onDone
             self.isEditing = isEditing
             self.selectedProposition = selectedProposition
-            self.liveStatementType = statement.wrappedValue.type
+            self.liveStatementType = statement.type
         }
 
         func textViewDidChange(_ uiView: UITextView) {
@@ -214,10 +214,11 @@ private struct UITextViewWrapper: UIViewRepresentable {
                     print(currentCharacter)
                     count += 1
                 }
-                if let target = statement.wrappedValue.target {
+                count -= 2
+                if let target = statement.target {
                     print("targeting: \(count)")
-                    target(nil)
-                    target(count)
+                    statement.targetStatementAtCount(count: nil)
+                    statement.targetStatementAtCount(count: count)
                 }
             }
             
@@ -237,9 +238,9 @@ private struct UITextViewWrapper: UIViewRepresentable {
                         //we matched a tag! let's create the image and replace the text
                         if statementType == .conjunction || statementType == .disjunction {
                             //on a conjunction or disjunction, we can keep editing in this configuration
-                            //TODO: WHAT HAPPENS IF THERE IS A SECOND CONJUNCTION OR DISJUNCTION TAG?!
                             textView.attributedText = textViewReplacementStringForSybom(oldString: textView.attributedText, currentLocation: range.location, type: statementType)
                             if liveStatementType != .simple {
+                                print("Found then tag, shouldstopediting = false and we resign responder")
                                 secondSymbolType = statementType
                                 shouldStopEditing = false
                                 textView.resignFirstResponder()
@@ -280,23 +281,122 @@ private struct UITextViewWrapper: UIViewRepresentable {
         }
         
         func textViewDidEndEditing(_ textView: UITextView) {
-            print("Text view DID end editing")
+            print("Text view DID end editing (resigned first responder). about to call update statement. shouldStopEditing \(shouldStopEditing)")
             
-            updateStatement(statement, forText: textView.attributedText, editedType: liveStatementType, secondSymbolType: secondSymbolType)
-            
+            //updateStatement(forText: textView.attributedText, editedType: liveStatementType, secondSymbolType: secondSymbolType)
+            save(forText: textView.attributedText)
+            print("Back in did end editing! shouldStopEditing is: \(shouldStopEditing)")
             if shouldStopEditing {
+                print("Setting isEditing to nil.")
                 isEditing.wrappedValue = nil
             }
+            print("shouldStopEditing is now true again!")
             shouldStopEditing = true
         }
         
-        func updateStatement(_ ogStatement: Binding<Statement>, forText finishedText: NSAttributedString, editedType: StatementType, secondSymbolType: StatementType?) {
-            print("Update statement called. ogstatement type: \(ogStatement.wrappedValue.type), finished text: \(finishedText.string) editedType: \(editedType) second symbol type: \(secondSymbolType)")
+        func save(forText endText: NSAttributedString) {
+            if statement.type == liveStatementType && secondSymbolType == nil {
+                if statement.type == .disjunction || statement.type == .conjunction {
+                    var junctionWrapper: JunctureStatement {
+                        get {
+                            self.statement as! JunctureStatement
+                        }
+                        
+                        set {
+                            self.statement = newValue
+                        }
+                    }
+                    
+                    var cuttingPoint = endText.string.count
+                    if let symbolPosition = rangeForLogicSymbol(attributedText: endText)?.location {
+                        cuttingPoint = symbolPosition
+                    }
+                    let lowerBound = 0
+                    let upperBound = endText.string.count
+                    let simpleTextLeft = String(endText.string[lowerBound..<cuttingPoint])
+                    let simpleTextRight = String(endText.string[cuttingPoint..<upperBound])
+                    let leftStatement = Statement(content: simpleTextLeft, formula: "A")
+                    let rightStatement = Statement(content: simpleTextRight, formula: "B")
+                    
+                    junctionWrapper.firstChild = leftStatement
+                    junctionWrapper.secondChild = rightStatement
+                    
+                } else {
+                    statement.content = endText.string
+                }
+            } else {
+                if liveStatementType == .simple {
+                    if let uChange = statement.change {
+                        uChange(statement.id, Statement(content: endText.string, formula: "A"))
+                    }
+                } else {
+                    var currentStatementTransform = Statement()
+                    var splitPieceStatement = Statement()
+                    
+                    var cuttingPoint = endText.string.count
+                    if let symbolPosition = rangeForLogicSymbol(attributedText: endText)?.location {
+                        cuttingPoint = symbolPosition
+                    }
+                    let lowerBound = 0
+                    let upperBound = endText.string.count
+                    let simpleTextLeft = String(endText.string[lowerBound..<cuttingPoint])
+                    let simpleTextRight = String(endText.string[cuttingPoint..<upperBound])
+                    currentStatementTransform = Statement(content: simpleTextLeft, formula: "A")
+                    splitPieceStatement = Statement(content: simpleTextRight, formula: "B")
+                    
+                    if secondSymbolType != nil {
+                        switch liveStatementType {
+                        case .conjunction:
+                            currentStatementTransform = Conjunction(currentStatementTransform, splitPieceStatement)
+                        case .disjunction:
+                            currentStatementTransform = Disjunction(currentStatementTransform, splitPieceStatement)
+                        default:
+                            print("an error occuredd")
+                        }
+                        
+                        splitPieceStatement = Statement()
+                    }
+                    
+                    if let uChange = statement.change {
+                        uChange(statement.id, currentStatementTransform)
+                    }
+                    currentStatementTransform.delete = statement.delete
+                    currentStatementTransform.change = statement.change
+                    currentStatementTransform.target = statement.target
+                    currentStatementTransform.changeTarget = statement.changeTarget
+                    currentStatementTransform.targeted = statement.targeted
+                    
+                    let type = secondSymbolType != nil ? secondSymbolType! : liveStatementType
+                    self.isEditing.wrappedValue = splitPieceStatement.id
+                    
+                    currentStatementTransform.addAtTargeted(connectionType: type, connectTo: splitPieceStatement)
+                    print("SPLIT PIECE STATEMENT CONTENT: \(splitPieceStatement.content)")
+                }
+            }
+        }
+        
+        func updateTarget(moveHere: Statement) {
+            let type = secondSymbolType != nil ? secondSymbolType! : liveStatementType
+            self.isEditing.wrappedValue = moveHere.id
+            statement.addAtTargeted(connectionType: type, connectTo: moveHere)
+        }
+        
+        func updateStatement(forText finishedText: NSAttributedString, editedType: StatementType, secondSymbolType: StatementType?) {
+            print("Update statement called. ogstatement type: \(statement.type), finished text: \(finishedText.string) editedType: \(editedType) second symbol type: \(secondSymbolType)")
             
-            if ogStatement.wrappedValue.type == editedType && secondSymbolType == nil {
+            if statement.type == editedType && secondSymbolType == nil {
                 //no structural changes required. Update og statement directly
-                if ogStatement.wrappedValue.type == .disjunction || ogStatement.wrappedValue.type == .conjunction {
-                    let junctionBinding = Binding<JunctureStatement>(get: {self.statement.wrappedValue as! JunctureStatement}, set: {self.statement.wrappedValue = $0})
+                if statement.type == .disjunction || statement.type == .conjunction {
+                    var junctionBinding: JunctureStatement {
+                        get {
+                            self.statement as! JunctureStatement
+                        }
+                        set {
+                            self.statement = newValue
+                        }
+                    }
+//                    var junctionBinding: JunctureStatement {
+//                        get: {self.statement as! JunctureStatement}, set: {self.statement = $0}}
                     
                     var cuttingPoint = finishedText.string.count
                     if let symbolPosition = rangeForLogicSymbol(attributedText: finishedText)?.location {
@@ -309,16 +409,17 @@ private struct UITextViewWrapper: UIViewRepresentable {
                     let leftStatement = Statement(content: simpleTextLeft, formula: "A")
                     let rightStatement = Statement(content: simpleTextRight, formula: "B")
                     
-                    junctionBinding.wrappedValue.firstChild = leftStatement
-                    junctionBinding.wrappedValue.secondChild = rightStatement
+                    junctionBinding.firstChild = leftStatement
+                    junctionBinding.secondChild = rightStatement
                     
                 } else {
-                    ogStatement.wrappedValue.content = finishedText.string
+                    statement.content = finishedText.string
                 }
             } else {
-                if let uChange = ogStatement.wrappedValue.change {
+                if let uChange = statement.change {
                     var changeToStatement = Statement()
                     var nextResponderID = changeToStatement.id
+                    print("Initial values. ChangeToStatement = \(changeToStatement), nextResponderID = \(nextResponderID)")
                     
                     if editedType == .simple || editedType == .negation {
                         //these types have just one term
@@ -350,8 +451,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
                         default:
                             changeToStatement = Statement()
                         }
-                        
                         nextResponderID = rightStatement.id
+                        print("mid values. ChangeToStatement = \(changeToStatement), nextResponderID = \(nextResponderID)")
                     }
                     
                     if secondSymbolType != nil {
@@ -373,9 +474,14 @@ private struct UITextViewWrapper: UIViewRepresentable {
                         }
                     }
                     
+                    print("end values. ChangeToStatement = \(changeToStatement), nextResponderID = \(nextResponderID)")
+                    print("About to change isEditing ID")
                     isEditing.wrappedValue = nextResponderID
+                    print("Changed isEditing ID to: \(isEditing.wrappedValue)")
                     //changeToStatement.id = ogStatement.wrappedValue.id
-                    uChange(ogStatement.wrappedValue.id, changeToStatement)
+                    print("About to trigger uChange. Statement to change ID = \(statement.id), change to statemet \(changeToStatement)")
+                    uChange(statement.id, changeToStatement)
+                    print("Done changing, exiting update function...")
                 }
             }
         }
