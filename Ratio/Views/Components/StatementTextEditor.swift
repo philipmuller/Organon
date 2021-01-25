@@ -43,6 +43,9 @@ struct StatementTextEditor: View {
             .offset(x: -5, y: -8)
             .background(placeholderView, alignment: .topLeading)
             .padding(0)
+            .onChange(of: statement) { value in
+                print("I am desperate")
+            }
     }
 
     var placeholderView: some View {
@@ -160,7 +163,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
 
     final class Coordinator: NSObject, UITextViewDelegate {
         var deleteWrapper: Binding<Int>
-        @ObservedObject var statement: Statement
+        var statement: Statement
         var text: Binding<String>
         var calculatedHeight: Binding<CGFloat>
         var onDone: (() -> Void)?
@@ -291,6 +294,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 isEditing.wrappedValue = nil
             }
             print("shouldStopEditing is now true again!")
+            textView.text = "FUCK!"
+            print("\(statement.id) is my statement")
             shouldStopEditing = true
         }
         
@@ -331,7 +336,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                     }
                 } else {
                     var currentStatementTransform = Statement()
-                    var splitPieceStatement = Statement()
+                    var splitPieceStatement = Statement(content: "Hahahahahahah", formula: "B")
                     
                     var cuttingPoint = endText.string.count
                     if let symbolPosition = rangeForLogicSymbol(attributedText: endText)?.location {
@@ -357,6 +362,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                         splitPieceStatement = Statement()
                     }
                     
+                    self.isEditing.wrappedValue = currentStatementTransform.id
                     if let uChange = statement.change {
                         uChange(statement.id, currentStatementTransform)
                     }
@@ -369,8 +375,15 @@ private struct UITextViewWrapper: UIViewRepresentable {
                     let type = secondSymbolType != nil ? secondSymbolType! : liveStatementType
                     self.isEditing.wrappedValue = splitPieceStatement.id
                     
+//                    if let uChangeTarget = currentStatementTransform.changeTarget {
+//                        uChangeTarget(type, splitPieceStatement)
+//                    }
+                    let nextTest = Statement(content: "Hahahahahahah", formula: "B")
+                    splitPieceStatement = nextTest
                     currentStatementTransform.addAtTargeted(connectionType: type, connectTo: splitPieceStatement)
-                    print("SPLIT PIECE STATEMENT CONTENT: \(splitPieceStatement.content)")
+                    self.isEditing.wrappedValue = nextTest.id
+                    print("SPLIT PIECE STATEMENT CONTENT: \(splitPieceStatement)")
+                    //currentStatementTransform.target(nil)
                 }
             }
         }

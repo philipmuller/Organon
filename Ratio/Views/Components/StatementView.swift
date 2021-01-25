@@ -24,6 +24,7 @@ struct StatementView: View {
     
     var body: some View {
         VStack {
+            //Text("\(statement.id) content: \(statement.content)").font(.footnote).foregroundColor(Color.red)
             switch statement.type {
             case .conditional:
                 ifThenStatement
@@ -43,12 +44,18 @@ struct StatementView: View {
                 
             default:
                 if isEditing == statement.id && editable == true {
-                    StatementTextEditor(bindedStatement: self.statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition)
+                    StatementTextEditor(bindedStatement: statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition)
                         .padding(0)
                         .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                             return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
                         }
-                    
+//                        .onChange(of: statement) { value in
+//                            print("Whatever")
+//                        }
+//                        .onChange(of: isEditing) { value in
+//                            print("something something")
+//                        }
+//
                 } else {
                     Text(statement.content)
                         .transition(.scale)
@@ -66,9 +73,12 @@ struct StatementView: View {
             }
         }
         .accentColor(color)
-        .onChange(of: isEditing) { value in
-            print("is editing change detected in view! New is editing id = \(value)")
-        }
+//        .onChange(of: isEditing) { value in
+//            print("is editing change detected in view! New is editing id = \(value)")
+//        }
+//        .onChange(of: statement) { value in
+//            print("something")
+//        }
     }
     
     var ifThenStatement: some View {

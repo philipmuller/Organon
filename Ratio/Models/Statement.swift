@@ -26,7 +26,7 @@ class Statement: ObservableObject, Identifiable, Hashable {
     
     @Published var id = UUID()
     var type: StatementType = .simple
-    var content: String
+    @Published var content: String
     var formula: String
     var block: Bool {
         if type == .simple {
@@ -106,7 +106,7 @@ class Statement: ObservableObject, Identifiable, Hashable {
     }
     
     func addAtTargeted(connectionType: StatementType, connectTo: Statement) {
-        print("handling add at target request at statement type \(self.type)")
+        print("handling add at target request at statement type \(self.type), ID: \(self.id), content: \(self.content)")
         if targeted {
             print("I am targeted!")
             if let uChange = change {
@@ -125,6 +125,7 @@ class Statement: ObservableObject, Identifiable, Hashable {
                     print("something went wrong. Targeting simple not possible")
                 }
                 print("Requesting change from parent. New config \(connectionType)")
+                print("connectTo \(connectTo.type), ID: \(connectTo.id), content: \(connectTo.content)")
                 uChange(self.id, newConfig)
             }
         } else {
@@ -146,7 +147,7 @@ class Statement: ObservableObject, Identifiable, Hashable {
 
 
 class JunctureStatement: Statement {
-    var firstChild: Statement {
+    @Published var firstChild: Statement {
         didSet {
             let symbol: String
             
@@ -165,7 +166,7 @@ class JunctureStatement: Statement {
             self.formula = "(" + firstChild.formula + symbol + secondChild.formula + ")"
         }
     }
-    var secondChild: Statement {
+    @Published var secondChild: Statement {
         didSet {
             let symbol: String
             
@@ -290,6 +291,7 @@ class JunctureStatement: Statement {
         print("Statement received change request from: \(childID), change into: \(changeInto.id)")
         if childID == firstChild.id {
             let oldID = firstChild.id
+            firstChild = Statement()
             firstChild = changeInto
             //firstChild.id = oldID
             firstChild.delete = self.childRequestsDeletion(childID:)
@@ -297,10 +299,11 @@ class JunctureStatement: Statement {
             firstChild.target = self.targetStatementAtCount(count:)
             firstChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
             
-        } else {
+        } else if childID == secondChild.id {
             let oldID = secondChild.id
+            secondChild = Statement()
             secondChild = changeInto
-            //secondChild.id = oldID
+            secondChild.id = oldID
             secondChild.delete = self.childRequestsDeletion(childID:)
             secondChild.change = self.childRequestsChange(childID:changeInto:)
             secondChild.target = self.targetStatementAtCount(count:)
