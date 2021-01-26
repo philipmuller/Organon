@@ -144,6 +144,134 @@ class Statement: ObservableObject, Identifiable, Equatable {
 //    func childRequestsParentChange(childID: UUID, changeInto: Statement) {
 //
 //    }
+    
+    //Addition
+    static func ad(_ s1: Statement, _ s2: Statement) -> Disjunction? {
+        return nil
+    }
+    
+    //Association
+    static func aS(_ cod: JunctureStatement) -> JunctureStatement? {
+        return nil
+    }
+    
+    //Constructive Dilemma
+    static func cd(_ c: Conjuntion, _ s: Disjunction) -> Disjunction? {
+        return nil
+    }
+    
+    //Commutation
+    static func cm(_ cod: JunctureStatement) -> JunctureStatement? {
+        return nil
+    }
+    
+    //Conjunction
+    static func cn(_ s1: Statement, _ s2: Statement) -> Conjunction? {
+        return nil
+    }
+    
+    //Distribution
+    static func cn(_ cod: JunctureStatement) -> JunctureStatement? {
+        return nil
+    }
+    
+    //De Morgan's rule version 1
+    static func dm1(_ n: Negation) -> Conjunction? {
+        return nil
+    }
+    
+    //De Morgan's rule version 2
+    static func dm2(_ n: Conjunction) -> Negation? {
+        return nil
+    }
+    
+    //Double negation version 1
+    static func dn1(_ n: Negation) -> Statement? {
+        return nil
+    }
+    
+    //Double negation version 2
+    static func dn1(_ s: Statement) -> Negation? {
+        return nil
+    }
+    
+    //Disjunctive syllogism
+    static func ds(_ d: Disjunction, _ s: Statement) -> Statement? {
+        return nil
+    }
+    
+    //Exportation
+    static func exp(_ c: Conditional) -> Conditional? {
+        return nil
+    }
+    
+    //Hypothetical syllogism
+    static func hs(_ c1: Conditional, _ c2: Conditional) -> Conditional? {
+        return nil
+    }
+    
+    //Material implication version 1
+    static func imp1(_ d: Disjunction) -> Conditional? {
+        return nil
+    }
+    
+    //Material implication version 2
+    static func imp2(_ d: Conditional) -> Disjunction? {
+        return nil
+    }
+    
+    //Conditional proof
+    static func cp(_ s1: Statement, _ s2: Statement) -> Conditional? {
+        return nil
+    }
+    
+    //Indirect proof
+    static func ip(_ s: Statement) -> Negation? {
+        return nil
+    }
+    
+    //Modus Ponens
+    static func mp(_ c: Conditional, _ s: Statement) -> Statement? {
+        return nil
+    }
+    
+    //Modus Tollens
+    static func mt(_ c: Conditional, _ s: Statement) -> Statement? {
+        return nil
+    }
+    
+    //Simplification
+    static func sm(_ c: Conjunction) -> Statement? {
+        return nil
+    }
+    
+    //Tautology version 1
+    static func taut1(_ cod: JunctureStatement) -> Statement? {
+        return nil
+    }
+    
+    //Tautology version 2
+    static func taut2(_ cod: Statement) -> JunctureStatement? {
+        return nil
+    }
+    
+    //Transposition
+    static func tran(_ c: Conditional) -> Conditional? {
+        return nil
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }
 
 
