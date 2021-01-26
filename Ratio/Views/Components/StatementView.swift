@@ -14,10 +14,10 @@ struct StatementView: View {
     @Binding var isEditing: UUID?
     @Binding var selectedProposition: Proposition?
     var color: Color {
-        if statement.targeted {
-            return Color("AccentSelected")
+        if statement.targeted && editable {
+            return Color.init(hue: 1, saturation: 0, brightness: 0.7)
         } else {
-            return Color("AccentColor")
+            return Color.clear
         }
     }
     let editable: Bool
@@ -72,13 +72,24 @@ struct StatementView: View {
                 }
             }
         }
-        .accentColor(color)
+        .accentColor(Color("AccentColor"))
+        .background(selectedBackground)
 //        .onChange(of: isEditing) { value in
 //            print("is editing change detected in view! New is editing id = \(value)")
 //        }
 //        .onChange(of: statement) { value in
 //            print("something")
 //        }
+    }
+    
+    var selectedBackground: some View {
+        GeometryReader { geometry in
+            RoundedRectangle(cornerRadius: 10)
+                .fill(color)
+                .opacity(0.2)
+                .frame(width: geometry.frame(in: .local).width + 20, height: geometry.frame(in: .local).height + 20)
+                .offset(x: -10, y: -10)
+        }
     }
     
     var ifThenStatement: some View {
@@ -135,7 +146,7 @@ struct StatementView: View {
             GeometryReader { geometry in
                 ConnectiveLines(geometry: geometry, preferences: filterPreferences(firstChild: first, secondChild: second, preferences: preferences), depth: 0)
                     .padding(EdgeInsets(top: 0, leading: -2, bottom: 0, trailing: 0))
-                    .accentColor(deleteCount == 0 ? color : Color.red)
+                    .accentColor(deleteCount == 0 ? Color("AccentColor") : Color.red)
             }
         }
     }

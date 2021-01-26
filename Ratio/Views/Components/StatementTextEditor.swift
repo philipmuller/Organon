@@ -172,6 +172,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         var isEditing: Binding<UUID?>
         var selectedProposition: Binding<Proposition?>
         var shouldStopEditing = true
+        var targetingCount = 1
         
         let typesForTags = [":and" : StatementType.conjunction, ":or" : StatementType.disjunction, ":then" : StatementType.conditional, ":not" : StatementType.negation]
         let tagsForTypes = [StatementType.conjunction : ":and", StatementType.disjunction: ":or", StatementType.conditional : ":then", StatementType.negation : ":not"]
@@ -206,6 +207,13 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 }
             }
             
+            if let potentialTS = textView.text(in: range.toTextRange(textInput: textView)!) {
+                if potentialTS == ":" {
+                    targetingCount -= 1
+                    statement.targetStatementAtCount(count: targetingCount)
+                }
+            }
+            
             if text == "?" {
                 print("\(statement.content)")
             }
@@ -213,19 +221,19 @@ private struct UITextViewWrapper: UIViewRepresentable {
             if text == ":" {
                 let textViewText = textView.text ?? ""
                 var currentCharacter = text
-                var count = 1
+                targetingCount = 1
                 while currentCharacter == ":" {
-                    let lowerBound = max(range.location - count, 0)
+                    let lowerBound = max(range.location - targetingCount, 0)
                     let upperBound = min(lowerBound + 1, textViewText.count)
                     currentCharacter = String(textViewText[lowerBound..<upperBound])
                     print(currentCharacter)
-                    count += 1
+                    targetingCount += 1
                 }
-                count -= 2
+                targetingCount -= 2
                 if let target = statement.target {
-                    print("targeting: \(count)")
+                    print("targeting: \(targetingCount)")
                     statement.targetStatementAtCount(count: nil)
-                    statement.targetStatementAtCount(count: count)
+                    statement.targetStatementAtCount(count: targetingCount)
                 }
             }
             
@@ -247,12 +255,14 @@ private struct UITextViewWrapper: UIViewRepresentable {
                             //on a conjunction or disjunction, we can keep editing in this configuration
                             textView.attributedText = textViewReplacementStringForSybom(oldString: textView.attributedText, currentLocation: range.location, type: statementType)
                             if liveStatementType != .simple {
-                                print("Found then tag, shouldstopediting = false and we resign responder")
                                 secondSymbolType = statementType
                                 shouldStopEditing = false
                                 textView.resignFirstResponder()
                             } else {
                                 liveStatementType = statementType
+                                if targetingCount > 0 {
+                                    textView.resignFirstResponder()
+                                }
                             }
                         } else {
                             //on anything else, we have to update the entire ui first, to match the writing
@@ -301,6 +311,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
             //textView.text = "FUCK!"
             print("\(statement.id) is my statement")
             shouldStopEditing = true
+            statement.targetStatementAtCount(count: nil)
+            targetingCount = 1
         }
         
         func save(forText endText: NSAttributedString) {
@@ -530,7 +542,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         
         func textViewReplacementStringForSybom(oldString: NSAttributedString, currentLocation: Int, type: StatementType) -> NSAttributedString {
             let newString = NSMutableAttributedString(attributedString: oldString)
-            let tagLength = tagsForTypes[type]!.count
+            let tagLength = tagsForTypes[type]!.count + targetingCount
             newString.replaceCharacters(in: NSRange(location: currentLocation-tagLength, length: tagLength), with: attributedStringForSymbol(type: type))
             newString.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "AvenirNext-Medium", size: 18) ?? .boldSystemFont(ofSize: 10), range: NSRange(location: 0, length: newString.string.utf16.count))
             
@@ -556,4 +568,14 @@ extension String {
         return self[startIndex..<stopIndex]
     }
 
+}
+
+extension NSRange {
+    func toTextRange(textInput:UITextInput) -> UITextRange? {
+        if let rangeStart = textInput.position(from: textInput.beginningOfDocument, offset: location),
+            let rangeEnd = textInput.position(from: rangeStart, offset: length) {
+            return textInput.textRange(from: rangeStart, to: rangeEnd)
+        }
+        return nil
+    }
 }
