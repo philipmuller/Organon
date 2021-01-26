@@ -11,7 +11,7 @@ enum StatementType {
     case simple, conjunction, disjunction, conditional, negation
 }
 
-class Statement: ObservableObject, Identifiable, Hashable {
+class Statement: ObservableObject, Identifiable, Equatable {
     static func == (lhs: Statement, rhs: Statement) -> Bool {
         if lhs.id == rhs.id {
             return true
@@ -111,16 +111,17 @@ class Statement: ObservableObject, Identifiable, Hashable {
             print("I am targeted!")
             if let uChange = change {
                 var newConfig: Statement = Statement()
+                //var oldStatement
                 
                 switch connectionType {
                 case .conditional:
-                    newConfig = Conditional(self, connectTo)
+                    newConfig = Conditional(self.copy(), connectTo)
                 case .conjunction:
-                    newConfig = Conjunction(self, connectTo)
+                    newConfig = Conjunction(self.copy(), connectTo)
                 case .disjunction:
-                    newConfig = Disjunction(self, connectTo)
+                    newConfig = Disjunction(self.copy(), connectTo)
                 case .negation:
-                    newConfig = Negation(self)
+                    newConfig = Negation(self.copy())
                 default:
                     print("something went wrong. Targeting simple not possible")
                 }
@@ -290,8 +291,7 @@ class JunctureStatement: Statement {
     override func childRequestsChange(childID: UUID, changeInto: Statement) {
         print("Statement received change request from: \(childID), change into: \(changeInto.id)")
         if childID == firstChild.id {
-            let oldID = firstChild.id
-            firstChild = Statement()
+            
             firstChild = changeInto
             //firstChild.id = oldID
             firstChild.delete = self.childRequestsDeletion(childID:)
@@ -300,10 +300,8 @@ class JunctureStatement: Statement {
             firstChild.changeTarget = self.addAtTargeted(connectionType:connectTo:)
             
         } else if childID == secondChild.id {
-            let oldID = secondChild.id
-            secondChild = Statement()
+            //secondChild = Statement()
             secondChild = changeInto
-            secondChild.id = oldID
             secondChild.delete = self.childRequestsDeletion(childID:)
             secondChild.change = self.childRequestsChange(childID:changeInto:)
             secondChild.target = self.targetStatementAtCount(count:)
@@ -316,7 +314,7 @@ class JunctureStatement: Statement {
 }
 
 class Negation: Statement {
-    var negatedStatement: Statement {
+    @Published var negatedStatement: Statement {
         didSet {
             self.content = "~ " + negatedStatement.content
             self.formula = "(" + "~" + negatedStatement.formula + ")"
@@ -359,7 +357,6 @@ class Negation: Statement {
     }
     
     override func childRequestsChange(childID: UUID, changeInto: Statement) {
-        let oldID = negatedStatement.id
         negatedStatement = changeInto
         //negatedStatement.id = oldID
         negatedStatement.delete = self.childRequestsDeletion(childID:)

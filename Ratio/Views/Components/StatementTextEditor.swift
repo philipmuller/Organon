@@ -43,9 +43,9 @@ struct StatementTextEditor: View {
             .offset(x: -5, y: -8)
             .background(placeholderView, alignment: .topLeading)
             .padding(0)
-            .onChange(of: statement) { value in
-                print("I am desperate")
-            }
+//            .onChange(of: statement) { value in
+//                print("I am desperate")
+//            }
     }
 
     var placeholderView: some View {
@@ -206,6 +206,10 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 }
             }
             
+            if text == "?" {
+                print("\(statement.content)")
+            }
+            
             if text == ":" {
                 let textViewText = textView.text ?? ""
                 var currentCharacter = text
@@ -294,7 +298,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 isEditing.wrappedValue = nil
             }
             print("shouldStopEditing is now true again!")
-            textView.text = "FUCK!"
+            //textView.text = "FUCK!"
             print("\(statement.id) is my statement")
             shouldStopEditing = true
         }
@@ -373,15 +377,16 @@ private struct UITextViewWrapper: UIViewRepresentable {
                     currentStatementTransform.targeted = statement.targeted
                     
                     let type = secondSymbolType != nil ? secondSymbolType! : liveStatementType
-                    self.isEditing.wrappedValue = splitPieceStatement.id
+                    //self.isEditing.wrappedValue = splitPieceStatement.id
                     
 //                    if let uChangeTarget = currentStatementTransform.changeTarget {
 //                        uChangeTarget(type, splitPieceStatement)
 //                    }
-                    let nextTest = Statement(content: "Hahahahahahah", formula: "B")
-                    splitPieceStatement = nextTest
+                    self.isEditing.wrappedValue = nil
                     currentStatementTransform.addAtTargeted(connectionType: type, connectTo: splitPieceStatement)
-                    self.isEditing.wrappedValue = nextTest.id
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.0051) {
+                        self.isEditing.wrappedValue = splitPieceStatement.id
+                    }
                     print("SPLIT PIECE STATEMENT CONTENT: \(splitPieceStatement)")
                     //currentStatementTransform.target(nil)
                 }

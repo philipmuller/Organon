@@ -33,7 +33,7 @@ struct StatementView: View {
             case .conjunction:
                 andStatement
                     .transition(.scale)
-                
+
             case .disjunction:
                 orStatement
                     .transition(.scale)
@@ -315,7 +315,11 @@ struct StatementView: View {
     }
     
     
+    
 }
+
+
+
 
 struct StatementPreferenceData: Identifiable {
     let id = UUID()
