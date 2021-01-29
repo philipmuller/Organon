@@ -122,7 +122,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
         if let cTheStatement = theStatement as? JunctureStatement {
             let attributedBase = NSMutableAttributedString(string: cTheStatement.leftContent)
             let attachment = NSTextAttachment()
-            attachment.image = UIImage(named: "and")?.withTintColor(UIColor(Color.accentColor))
+            attachment.image = UIImage(named: theStatement.type == .conjunction ? "and" : "or")?.withTintColor(UIColor(Color.accentColor))
             let attachmentS = NSAttributedString(attachment: attachment)
             attributedBase.append(attachmentS)
             attributedBase.append(NSAttributedString(string: cTheStatement.rightContent))
@@ -336,11 +336,9 @@ private struct UITextViewWrapper: UIViewRepresentable {
                     let upperBound = endText.string.count
                     let simpleTextLeft = String(endText.string[lowerBound..<cuttingPoint])
                     let simpleTextRight = String(endText.string[cuttingPoint..<upperBound])
-                    let leftStatement = Statement(content: simpleTextLeft, formula: "A")
-                    let rightStatement = Statement(content: simpleTextRight, formula: "B")
                     
-                    junctionWrapper.firstChild = leftStatement
-                    junctionWrapper.secondChild = rightStatement
+                    junctionWrapper.firstChild.content = simpleTextLeft
+                    junctionWrapper.secondChild.content = simpleTextRight
                     
                 } else {
                     statement.content = endText.string
@@ -409,111 +407,6 @@ private struct UITextViewWrapper: UIViewRepresentable {
             let type = secondSymbolType != nil ? secondSymbolType! : liveStatementType
             self.isEditing.wrappedValue = moveHere.id
             statement.addAtTargeted(connectionType: type, connectTo: moveHere)
-        }
-        
-        func updateStatement(forText finishedText: NSAttributedString, editedType: StatementType, secondSymbolType: StatementType?) {
-            print("Update statement called. ogstatement type: \(statement.type), finished text: \(finishedText.string) editedType: \(editedType) second symbol type: \(secondSymbolType)")
-            
-            if statement.type == editedType && secondSymbolType == nil {
-                //no structural changes required. Update og statement directly
-                if statement.type == .disjunction || statement.type == .conjunction {
-                    var junctionBinding: JunctureStatement {
-                        get {
-                            self.statement as! JunctureStatement
-                        }
-                        set {
-                            self.statement = newValue
-                        }
-                    }
-//                    var junctionBinding: JunctureStatement {
-//                        get: {self.statement as! JunctureStatement}, set: {self.statement = $0}}
-                    
-                    var cuttingPoint = finishedText.string.count
-                    if let symbolPosition = rangeForLogicSymbol(attributedText: finishedText)?.location {
-                        cuttingPoint = symbolPosition
-                    }
-                    let lowerBound = 0
-                    let upperBound = finishedText.string.count
-                    let simpleTextLeft = String(finishedText.string[lowerBound..<cuttingPoint])
-                    let simpleTextRight = String(finishedText.string[cuttingPoint..<upperBound])
-                    let leftStatement = Statement(content: simpleTextLeft, formula: "A")
-                    let rightStatement = Statement(content: simpleTextRight, formula: "B")
-                    
-                    junctionBinding.firstChild = leftStatement
-                    junctionBinding.secondChild = rightStatement
-                    
-                } else {
-                    statement.content = finishedText.string
-                }
-            } else {
-                if let uChange = statement.change {
-                    var changeToStatement = Statement()
-                    var nextResponderID = changeToStatement.id
-                    print("Initial values. ChangeToStatement = \(changeToStatement), nextResponderID = \(nextResponderID)")
-                    
-                    if editedType == .simple || editedType == .negation {
-                        //these types have just one term
-                        let simple = Statement(content: finishedText.string, formula: "A")
-                        changeToStatement = editedType == .simple ? simple : Negation(simple)
-                        nextResponderID = simple.id
-                        
-                    } else {
-                        //these have two terms, we have to figure out where the logic symbol is (the divider)
-                        var cuttingPoint = finishedText.string.count
-                        if let symbolPosition = rangeForLogicSymbol(attributedText: finishedText)?.location {
-                            cuttingPoint = symbolPosition
-                        }
-                        let lowerBound = 0
-                        let upperBound = finishedText.string.count
-                        let simpleTextLeft = String(finishedText.string[lowerBound..<cuttingPoint])
-                        let simpleTextRight = String(finishedText.string[cuttingPoint..<upperBound])
-                        let leftStatement = Statement(content: simpleTextLeft, formula: "A")
-                        let rightStatement = Statement(content: simpleTextRight, formula: "B")
-                        
-                        
-                        switch editedType {
-                        case .conditional:
-                            changeToStatement = Conditional(leftStatement, rightStatement)
-                        case .conjunction:
-                            changeToStatement = Conjunction(leftStatement, rightStatement)
-                        case .disjunction:
-                            changeToStatement = Disjunction(leftStatement, rightStatement)
-                        default:
-                            changeToStatement = Statement()
-                        }
-                        nextResponderID = rightStatement.id
-                        print("mid values. ChangeToStatement = \(changeToStatement), nextResponderID = \(nextResponderID)")
-                    }
-                    
-                    if secondSymbolType != nil {
-                        let freshNewStatement = Statement(content: "", formula: "A")
-                        nextResponderID = freshNewStatement.id
-                        
-                        switch secondSymbolType {
-                        case .conjunction:
-                            changeToStatement = Conjunction(changeToStatement, freshNewStatement)
-                        case .disjunction:
-                            changeToStatement = Disjunction(changeToStatement, freshNewStatement)
-                        case .conditional:
-                            changeToStatement = Conditional(changeToStatement, freshNewStatement)
-                        case .negation:
-                            nextResponderID = changeToStatement.id
-                            changeToStatement = Negation(changeToStatement)
-                        default:
-                            print("Yeah you fucked up something. Good luck.")
-                        }
-                    }
-                    
-                    print("end values. ChangeToStatement = \(changeToStatement), nextResponderID = \(nextResponderID)")
-                    print("About to change isEditing ID")
-                    isEditing.wrappedValue = nextResponderID
-                    print("Changed isEditing ID to: \(isEditing.wrappedValue)")
-                    //changeToStatement.id = ogStatement.wrappedValue.id
-                    print("About to trigger uChange. Statement to change ID = \(statement.id), change to statemet \(changeToStatement)")
-                    uChange(statement.id, changeToStatement)
-                    print("Done changing, exiting update function...")
-                }
-            }
         }
         
         func rangeForLogicSymbol(attributedText: NSAttributedString) -> NSRange? {

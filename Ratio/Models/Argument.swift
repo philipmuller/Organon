@@ -11,13 +11,110 @@ import Combine
 class Argument: ObservableObject {
     var title: String
     @Published var formalData: FormalData
+    @Published var sLibrary: SimpleLibrary
     
     init(title: String, propositions: [Proposition]) {
         self.title = title
         self.formalData = FormalData(propositions: propositions)
+        self.sLibrary = SimpleLibrary()
+        
+        for proposition in formalData.propositions {
+            proposition.content.setPublishClosure(closure: sLibrary.publishRequest(text:symbol:))
+        }
     }
     
     
+}
+
+class SimpleLibrary: ObservableObject {
+    
+    @Published var statementForSymbol: [String : String] = [:]
+    var symbolsForStatements: [String : String] {
+        var d: [String : String] = [:]
+        for (symbol, statement) in statementForSymbol {
+            d[statement] = symbol
+        }
+        return d
+    }
+    var usedSymbols: [String] {
+        var s: [String] = []
+        
+        for (symbol, _) in statementForSymbol {
+            s.append(symbol)
+        }
+        
+        return s
+    }
+    
+    var unusedSymbols = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "R", "S", "T", "U", "V", "Z", "X", "Y", "Z"]
+    
+    private func searchSymbolForText(_ searchText: String) -> String? {
+        if searchText != "" {
+            debugPrint(statementForSymbol)
+            let punctuation = CharacterSet.punctuationCharacters
+            let whitespace = CharacterSet.whitespaces
+            let unwanted = punctuation.union(whitespace)
+            
+            let simplifiedSearchText = searchText.components(separatedBy: unwanted).joined()
+            print("Simplified search text: \(simplifiedSearchText)")
+            
+            for (symbol, text) in statementForSymbol {
+                
+                let comparisonText = text.components(separatedBy: unwanted).joined()
+                print("Comparison text: \(comparisonText)")
+                if simplifiedSearchText.compare(comparisonText, options: .caseInsensitive) == .orderedSame {
+                    return symbol
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func newSymbol() -> String {
+        let newSymbol = unusedSymbols.randomElement() ?? "Bad"
+        unusedSymbols.removeAll(where: { string in
+            if string == newSymbol {
+                return true
+            } else {
+                return false
+            }
+        })
+        
+        return  newSymbol
+    }
+    
+    
+    func publishRequest(text: String, symbol: String?) {
+        if let uSymbol = symbol {
+            if let currentTextForSymbol = statementForSymbol[uSymbol] {
+                publishPair(text: text, symbol: uSymbol)
+            } else if let currentSymbolForText = searchSymbolForText(text) {
+                statementForSymbol.removeValue(forKey: currentSymbolForText)
+                publishPair(text: text, symbol: uSymbol)
+            } else {
+                publishPair(text: text, symbol: uSymbol)
+            }
+        } else {
+            if let currentSymbolForText = searchSymbolForText(text) {
+                publishPair(text: text, symbol: currentSymbolForText)
+            } else {
+                publishPair(text: text, symbol: newSymbol())
+            }
+            
+        }
+        
+    }
+    
+    func publishPair(text: String, symbol: String) {
+        statementForSymbol[symbol] = text
+        NotificationCenter.default.post(name: .simpleStatementChange, object: (text, symbol))
+    }
+    
+}
+
+extension NSNotification.Name {
+    static let simpleStatementChange = Notification.Name("com.ratio.simpleStatementChange")
 }
 
 class FormalData: ObservableObject {
