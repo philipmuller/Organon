@@ -14,7 +14,7 @@ enum StatementType {
 
 class Statement: ObservableObject, Identifiable, Equatable {
     static func == (lhs: Statement, rhs: Statement) -> Bool {
-        if lhs.id == rhs.id {
+        if lhs.formula == rhs.formula {
             return true
         }
         
@@ -754,6 +754,10 @@ class Negation: Statement {
         negatedStatement.change = self.childRequestsChange(childID:changeInto:)
         negatedStatement.target = self.targetStatementAtCount(count:)
         negatedStatement.changeTarget = self.addAtTargeted(connectionType:connectTo:)
+        
+        if let uPublishSimpleChange = self.publishSimpleChange {
+            negatedStatement.setPublishClosure(closure: uPublishSimpleChange)
+        }
     }
     
     override func setPublishClosure(closure: @escaping (String, String?) -> Void) {

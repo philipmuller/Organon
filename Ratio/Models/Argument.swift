@@ -55,14 +55,15 @@ class SimpleLibrary: ObservableObject {
             let whitespace = CharacterSet.whitespaces
             let unwanted = punctuation.union(whitespace)
             
-            let simplifiedSearchText = searchText.components(separatedBy: unwanted).joined()
+            let simplifiedSearchText = searchText.components(separatedBy: unwanted).joined().filter { $0.isASCII }
             print("Simplified search text: \(simplifiedSearchText)")
             
             for (symbol, text) in statementForSymbol {
                 
-                let comparisonText = text.components(separatedBy: unwanted).joined()
+                let comparisonText = text.description.components(separatedBy: unwanted).joined().filter { $0.isASCII }
                 print("Comparison text: \(comparisonText)")
-                if simplifiedSearchText.compare(comparisonText, options: .caseInsensitive) == .orderedSame {
+                print(simplifiedSearchText.compare(comparisonText, options: [.caseInsensitive]) == .orderedSame)
+                if simplifiedSearchText.compare(comparisonText, options: [.caseInsensitive]) == .orderedSame {
                     return symbol
                 }
             }
