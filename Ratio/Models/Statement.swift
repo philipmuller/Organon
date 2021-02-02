@@ -53,6 +53,11 @@ class Statement: ObservableObject, Identifiable, Equatable {
         }
     }
     
+    var structure: String {
+        let charactersToReplace = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPRSTUVZXYZ")
+        return formula.components(separatedBy: charactersToReplace).joined(separator: "*")
+    }
+    
     var delete: ((UUID) -> Void)?
     var change: ((UUID, Statement) -> Void)?
     var target: ((Int?) -> Void)?

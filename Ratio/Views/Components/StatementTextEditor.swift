@@ -17,6 +17,8 @@ struct StatementTextEditor: View {
     @Binding var deleteWrapper: Int
     @Binding var isEditing: UUID?
     @Binding var selectedProposition: Proposition?
+    @Binding var newJustificationRequest: JustificationType?
+    @Binding var selectedJustificationReferences: [Int]
     
     private var internalText: Binding<String> {
         Binding<String>(get: { self.text } ) {
@@ -38,7 +40,7 @@ struct StatementTextEditor: View {
     }
 
     var body: some View {
-        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: statement, text: internalText, calculatedHeight: $viewHeight, isEditing: $isEditing, selectedProposition: $selectedProposition, onDone: onCommit)
+        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: statement, text: internalText, calculatedHeight: $viewHeight, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, onDone: onCommit)
             .frame(minHeight: viewHeight, maxHeight: viewHeight)
             .offset(x: -5, y: -8)
             .background(placeholderView, alignment: .topLeading)
@@ -58,7 +60,7 @@ struct StatementTextEditor: View {
         }
     }
     
-    init (bindedStatement: Statement, deleteTracker: Binding<Int>, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
+    init (bindedStatement: Statement, deleteTracker: Binding<Int>, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>) {
         self.placeholder = placeholder
         self.onCommit = onCommit
         self._text = text
@@ -66,6 +68,8 @@ struct StatementTextEditor: View {
         self._deleteWrapper = deleteTracker
         self._isEditing = isEditing
         self._selectedProposition = selectedProposition
+        self._newJustificationRequest = newJustificationRequest
+        self._selectedJustificationReferences = selectedJustificationReferences
         self._shouldShowPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
@@ -81,8 +85,12 @@ private struct UITextViewWrapper: UIViewRepresentable {
     @Binding var calculatedHeight: CGFloat
     @Binding var isEditing: UUID?
     @Binding var selectedProposition: Proposition?
+    @Binding var newJustificationRequest: JustificationType?
+    @Binding var selectedJustificationReferences: [Int]
     var becomeResponder: Bool = true
     var onDone: (() -> Void)?
+    @State var previousJustificationRequestState: JustificationType? = nil
+    @State var previousSelectedJustificationReferences: [Int] = []
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
         let textField = UITextView()
@@ -133,6 +141,15 @@ private struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UITextView, context: UIViewRepresentableContext<UITextViewWrapper>) {
+        if previousSelectedJustificationReferences != context.coordinator.selectedJustificationReferences.wrappedValue {
+            var text = "@MP "
+            print(context.coordinator.selectedJustificationReferences.wrappedValue.debugDescription)
+            print(selectedJustificationReferences.debugDescription)
+            for reference in selectedJustificationReferences {
+                text += "\(reference)"
+            }
+            uiView.text = text
+        }
 
         print("UPDATE VIEW GOT CALLED")
         if isEditing == statement.id {
@@ -141,6 +158,10 @@ private struct UITextViewWrapper: UIViewRepresentable {
         
         UITextViewWrapper.recalculateHeight(view: uiView, result: $calculatedHeight)
         
+        DispatchQueue.main.async {
+            previousJustificationRequestState = context.coordinator.newJustificationRequest.wrappedValue
+            previousSelectedJustificationReferences = context.coordinator.selectedJustificationReferences.wrappedValue
+        }
     }
     
     static func dismantleUIView(_ uiView: UITextView, coordinator: Coordinator) {
@@ -158,7 +179,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(deleteWrapper: $deleteWrapper, statement: statement, text: $text, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing, selectedProposition: $selectedProposition)
+        return Coordinator(deleteWrapper: $deleteWrapper, statement: statement, text: $text, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
@@ -171,14 +192,21 @@ private struct UITextViewWrapper: UIViewRepresentable {
         var secondSymbolType: StatementType?
         var isEditing: Binding<UUID?>
         var selectedProposition: Binding<Proposition?>
+        var newJustificationRequest: Binding<JustificationType?>
+        var selectedJustificationReferences: Binding<[Int]> {
+            didSet {
+                print("NEW SELECTED JUSTIFICATION: \(selectedJustificationReferences)")
+            }
+        }
         var shouldStopEditing = true
         var targetingCount = 1
+        var justificationEditingMode = false
         
         let typesForTags = [":and" : StatementType.conjunction, ":or" : StatementType.disjunction, ":then" : StatementType.conditional, ":not" : StatementType.negation]
         let tagsForTypes = [StatementType.conjunction : ":and", StatementType.disjunction: ":or", StatementType.conditional : ":then", StatementType.negation : ":not"]
         let imageNames = [StatementType.conjunction : "and", StatementType.disjunction : "or", StatementType.conditional : "then", StatementType.negation : "not"]
 
-        init(deleteWrapper: Binding<Int>, statement: Statement, text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>) {
+        init(deleteWrapper: Binding<Int>, statement: Statement, text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>) {
             self.deleteWrapper = deleteWrapper
             self.statement = statement
             self.text = text
@@ -186,6 +214,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
             self.onDone = onDone
             self.isEditing = isEditing
             self.selectedProposition = selectedProposition
+            self.newJustificationRequest = newJustificationRequest
+            self.selectedJustificationReferences = selectedJustificationReferences
             self.liveStatementType = statement.type
         }
 
@@ -215,7 +245,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
             }
             
             if text == "?" {
-                print("\(statement.content)")
+                print("content: \(statement.content), formula: \(statement.formula), structure: \(statement.structure)")
             }
             
             if text == ":" {
@@ -242,6 +272,13 @@ private struct UITextViewWrapper: UIViewRepresentable {
             if text == " " { //if the new text that wants to be inserted is a space
                 //check if the previous characters are a match to the tag:
                 let textViewText = textView.text ?? ""
+                if textViewText == "@MP" {
+                    newJustificationRequest.wrappedValue = JustificationType.MP
+                    
+                    textView.textColor = UIColor.blue
+                    
+                    justificationEditingMode = true
+                }
                 for (tag, statementType) in typesForTags {
                     let lowerBound = max(range.location - tag.count, 0)
                     let upperBound = range.location

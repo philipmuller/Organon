@@ -343,3 +343,295 @@ class FormalData: ObservableObject {
     }
     
 }
+
+extension FormalData {
+    func clearHighlighting() {
+        for prop in propositions {
+            prop.highlight = false
+        }
+    }
+    
+    func highlightEverything() {
+        for prop in propositions {
+            prop.highlight = true
+        }
+    }
+    
+    func highlightAssociationCandidates() {
+        for prop in propositions {
+            if let js = prop.content as? JunctureStatement {
+                if Statement.aS(js) != nil {
+                    prop.highlight = true
+                } else {
+                    prop.highlight = false
+                }
+            } else {
+                prop.highlight = false
+            }
+        }
+    }
+    
+    func highlightConstructiveDilemmaCandidates() {
+        var availableConjunctions: [Conjunction] = []
+        var availableDisjunctions: [Disjunction] = []
+        var statementsToHighlight: [Statement] = []
+        
+        for prop in propositions {
+            if let c = prop.content as? Conjunction {
+                availableConjunctions.append(c)
+            }
+            if let d = prop.content as? Disjunction {
+                availableDisjunctions.append(d)
+            }
+        }
+        
+        for ac in availableConjunctions {
+            for ad in availableDisjunctions {
+                if Statement.cd(ac, ad) != nil {
+                    statementsToHighlight.append(ac)
+                    statementsToHighlight.append(ad)
+                }
+            }
+        }
+        
+        for prop in propositions {
+            for sth in statementsToHighlight {
+                if prop.content == sth {
+                    prop.highlight = true
+                }
+            }
+        }
+    }
+    
+    func highlightConjunctionsAndDisjunctions() {
+        for prop in propositions {
+            if prop.content.type == .disjunction || prop.content.type == .conjunction {
+                prop.highlight = true
+            }
+        }
+    }
+    
+    func highlightDeMorgansRuleCandidates() {
+        for prop in propositions {
+            if let n = prop.content as? Negation {
+                if Statement.dm(n) != nil {
+                    prop.highlight = true
+                }
+            }
+            
+            if let cod = prop.content as? JunctureStatement {
+                if Statement.dm(cod) != nil {
+                    prop.highlight = true
+                }
+            }
+        }
+    }
+    
+    func highlightDisjunctiveSyllogismCandidates() {
+        var availableDisjunctions: [Disjunction] = []
+        var statementsToHighlight: [Statement] = []
+        
+        for prop in propositions {
+            if let d = prop.content as? Disjunction {
+                availableDisjunctions.append(d)
+            }
+        }
+        
+        for ad in availableDisjunctions {
+            for prop in propositions {
+                if Statement.ds(ad, prop.content) != nil {
+                    statementsToHighlight.append(ad)
+                    statementsToHighlight.append(prop.content)
+                }
+            }
+        }
+        
+        for prop in propositions {
+            for sth in statementsToHighlight {
+                if prop.content == sth {
+                    prop.highlight = true
+                }
+            }
+        }
+    }
+    
+    func highlightExportationCandidates() {
+        for prop in propositions {
+            if let c = prop.content as? Conditional {
+                if Statement.exp(c) != nil {
+                    prop.highlight = true
+                }
+            }
+        }
+    }
+    
+    func highlightHypotheticalSyllogismCandidates() {
+        var conditionals: [Conditional] = []
+        var statementsToHighlight: [Statement] = []
+        
+        for prop in propositions {
+            if let c = prop.content as? Conditional {
+                for pc in conditionals {
+                    if Statement.hs(c, pc) != nil {
+                        statementsToHighlight.append(c)
+                        statementsToHighlight.append(pc)
+                    }
+                }
+                conditionals.append(c)
+            }
+        }
+        
+        for prop in propositions {
+            for sth in statementsToHighlight {
+                if prop.content == sth {
+                    prop.highlight = true
+                }
+            }
+        }
+    }
+    
+    func highlightModusPonensCandidates(selectedReferences: [Int]) -> Statement? {
+        var conditionals: [Conditional] = []
+        var statementsToHighlight: [Statement] = []
+        
+        var anyCompatibleStatement: Statement?
+        var anyCompatibleConditional: Conditional?
+        
+        for r in selectedReferences {
+            if let c = propositions[r].content as? Conditional {
+                anyCompatibleConditional = c
+            } else if let s = propositions[r].content as? Statement {
+                anyCompatibleStatement = s
+            }
+        }
+        
+        for prop in propositions {
+            for pc in conditionals {
+                if Statement.mp(anyCompatibleConditional ?? pc, anyCompatibleStatement ?? prop.content) != nil {
+                    statementsToHighlight.append(anyCompatibleStatement ?? prop.content)
+                    statementsToHighlight.append(anyCompatibleConditional ?? pc)
+                }
+            }
+            if prop.content.type == .conditional {
+                conditionals.append(prop.content as! Conditional)
+            }
+        }
+        
+        for prop in propositions {
+            for sth in statementsToHighlight {
+                if prop.content == sth {
+                    prop.highlight = true
+                }
+            }
+        }
+        
+        if let uS = anyCompatibleStatement, let uC = anyCompatibleConditional {
+            return Statement.mp(uC, uS)
+        }
+        
+        return nil
+    }
+    
+    func highlightModusTollensCandidates() {
+        var conditionals: [Conditional] = []
+        var statementsToHighlight: [Statement] = []
+        
+        for prop in propositions {
+            for pc in conditionals {
+                if Statement.mp(pc, prop.content) != nil {
+                    statementsToHighlight.append(prop.content)
+                    statementsToHighlight.append(pc)
+                }
+            }
+            if prop.content.type == .conditional {
+                conditionals.append(prop.content as! Conditional)
+            }
+        }
+        
+        for prop in propositions {
+            for sth in statementsToHighlight {
+                if prop.content == sth {
+                    prop.highlight = true
+                }
+            }
+        }
+    }
+    
+    func highlightConjunctions() {
+        for prop in propositions {
+            if prop.content.type == .conjunction {
+                prop.highlight = true
+            }
+        }
+    }
+    
+    func highlightTautologyCandidates() {
+        for prop in propositions {
+            if let js = prop.content as? JunctureStatement {
+                if Statement.taut(js) != nil {
+                    prop.highlight = true
+                }
+            }
+        }
+    }
+    
+    func highlightConditionals() {
+        for prop in propositions {
+            if prop.content.type == .conditional {
+                prop.highlight = true
+            }
+        }
+    }
+    
+    func highlight(justification: JustificationType, selectedReferences: [Int], requestedBy: UUID) {
+        clearHighlighting()
+        var potentialReturn: Statement?
+        switch justification {
+        case .AD:
+            highlightEverything()
+        case .AS:
+            highlightAssociationCandidates()
+        case .CD:
+            highlightConstructiveDilemmaCandidates()
+        case .CM:
+            highlightConjunctionsAndDisjunctions()
+        case .CN:
+            highlightEverything()
+        case .DIST:
+            highlightConjunctionsAndDisjunctions()
+        case .DM:
+            highlightDeMorgansRuleCandidates()
+        case .DN:
+            highlightEverything()
+        case .DS:
+            highlightDisjunctiveSyllogismCandidates()
+        case .EXP:
+            highlightExportationCandidates()
+        case .HS:
+            highlightHypotheticalSyllogismCandidates()
+        case .IMP:
+            highlightConjunctionsAndDisjunctions()
+        case .MP:
+            potentialReturn = highlightModusPonensCandidates(selectedReferences: selectedReferences)
+        case .MT:
+            highlightModusTollensCandidates()
+        case .SM:
+            highlightConjunctions()
+        case .TAUT:
+            highlightTautologyCandidates()
+        case .TRAN:
+            highlightConditionals()
+        default:
+            print("Justification highlights nothing")
+        }
+        
+        if let r = potentialReturn {
+            let p = proposition(for: requestedBy) ?? Proposition()
+            let i = propositions.firstIndex(of: p)
+            
+            if let uI = i {
+                propositions[uI].content = r
+            }
+        }
+    }
+}

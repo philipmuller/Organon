@@ -11,8 +11,9 @@ class Proposition: ObservableObject, Identifiable, Equatable {
     
     var id = UUID()
     @Published var type: PropositionType
-    var justification: Justification?
+    @Published var justification: Justification?
     var alias: String?
+    @Published var highlight: Bool = false
     
     @Published var content: Statement
     

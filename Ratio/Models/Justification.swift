@@ -8,8 +8,8 @@
 import Foundation
 
 struct Justification: Hashable {
-    let type: JustificationType?
-    let references: [UUID]?
+    var type: JustificationType?
+    var references: [UUID]?
     
     init(type: JustificationType) {
         self.type = type

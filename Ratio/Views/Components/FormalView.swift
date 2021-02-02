@@ -25,6 +25,9 @@ struct FormalView: View {
     
     @State var previousIndex: Int = 0
     
+    @State var newJustificationRequest: JustificationType?
+    @State var selectedJustificationReferences: [Int] = []
+    
     //@State var count = 0
     
     let spacing: CGFloat = 20
@@ -35,12 +38,15 @@ struct FormalView: View {
                 let somethingSelected = selectedProposition != nil ? true : false
                 ForEach(formalData.propositions, id: \.id) { proposition in
                     let selected = selectedProposition?.id == proposition.id ? true : false
-                    let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id) || selected) ? false : true
                     
                     let propIndex = formalData.propositions.firstIndex(of: proposition) ?? 0
                     let propLevel = formalData.level(of: proposition)
+                    
+                    let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id) || selected) ? false : true
+                    
+                    
                     Safe($formalData.propositions, index: propIndex) { binding in
-                        PropositionView(proposition: binding.wrappedValue, selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
+                        PropositionView(proposition: binding.wrappedValue, statement: proposition.content, selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
                             .background(hoverTrigger(index: propIndex))
                             .padding(.leading, selected ? 0 : CGFloat(propLevel*30))
                     }
@@ -57,6 +63,16 @@ struct FormalView: View {
                         let impactHeavy = UIImpactFeedbackGenerator(style: .rigid)
                         impactHeavy.impactOccurred()
                     }
+                }
+            }
+            .onChange(of: newJustificationRequest) { justification in
+                if let j = justification, let sp = selectedProposition {
+                    formalData.highlight(justification: j, selectedReferences: selectedJustificationReferences, requestedBy: sp.id)
+                }
+            }
+            .onChange(of: selectedJustificationReferences) { value in
+                if let j = newJustificationRequest, let sp = selectedProposition {
+                    formalData.highlight(justification: j, selectedReferences: selectedJustificationReferences, requestedBy: sp.id)
                 }
             }
         //}

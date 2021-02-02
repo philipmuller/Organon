@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PropositionView: View {
     @ObservedObject var proposition: Proposition
+    @ObservedObject var statement: Statement
     @Binding var selectedProposition: Proposition?
     @Binding var editable: Bool
     
@@ -17,6 +18,9 @@ struct PropositionView: View {
     
     @State var swipeAmount: CGFloat = 0
     @State var editedStatementID: UUID?
+    
+    @Binding var newJustificationRequest: JustificationType?
+    @Binding var selectedJustificationReferences: [Int]
     
     let onDelete: (Proposition) -> ()
     
@@ -97,28 +101,60 @@ struct PropositionView: View {
             }
         }
         .overlay(overlay)
-        .opacity(faded ? 0.2 : 1)
+        .opacity((faded && proposition.highlight == false) ? 0.2 : 1)
         .offset(x: swipeAmount)
         .onTapGesture {
             withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
+                
+                let impactHeavy = UIImpactFeedbackGenerator(style: .light)
+                
                 if selectedProposition?.id == proposition.id {
 //                    editable = true
 //                    print("editable!")
                 } else {
-                    selectedProposition = proposition
-//                    editable = false
-                    let impactHeavy = UIImpactFeedbackGenerator(style: .light)
-                    impactHeavy.impactOccurred()
+                    if newJustificationRequest == nil {
+                        selectedProposition = proposition
+                        impactHeavy.impactOccurred()
+                    } else {
+                        if proposition.highlight == true {
+                            var isAlreadyPresent = false
+                            for reference in selectedJustificationReferences {
+                                if reference == index {
+                                    isAlreadyPresent = true
+                                }
+                            }
+                            
+                            if isAlreadyPresent {
+                                selectedJustificationReferences.removeAll(where: { idx in
+                                    if idx == index {
+                                        return true
+                                    } else {
+                                        return false
+                                    }
+                                })
+                            } else {
+                                selectedJustificationReferences.append(index)
+                            }
+                            selectedProposition?.type = .step
+                            selectedProposition?.justification = Justification(type: newJustificationRequest!, references: [proposition.id])
+                            impactHeavy.impactOccurred()
+                        }
+                    }
                 }
             }
         }
         .gesture(ExclusiveGesture(longPressDrag, swipe))
         .animation(.spring(), value: swipeAmount)
+        .onAppear() {
+            if proposition.type == .empty {
+                editedStatementID = proposition.content.id
+            }
+        }
     }
     
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
-            StatementView(statement: proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, editable: expanded)
+            StatementView(statement: proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: expanded)
             
             propositionDetailView
                 .frame(width: expanded ? nil : 0, height: expanded ? nil : 0)
@@ -147,7 +183,7 @@ struct PropositionView: View {
                 .font(.custom("AvenirNext-Medium", size: 14))
                 .foregroundColor(Color("BoxGrey"))
             
-            Text(proposition.content.formula).font(.custom("SabonBold", size: 18))
+            Text(statement.formula).font(.custom("SabonBold", size: 18))
             
         }
     }
@@ -192,7 +228,7 @@ struct PropositionView: View {
     
     var background: some View {
         RoundedRectangle(cornerRadius: 10)
-         .foregroundColor(.white)
+            .foregroundColor(proposition.highlight ? .green : .white)
             .opacity(expanded || dragState.isActive ? 1 : 0.1)
             .shadow(color: Color("BoxGrey"), radius: expanded || dragState.isActive ? 10 : 0)
             .animation(.easeInOut(duration: 0.5), value: dragState.isActive)
