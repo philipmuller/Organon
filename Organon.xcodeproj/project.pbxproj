@@ -16,12 +16,11 @@
 		850C6E32258B7664006FF747 /* StatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850C6E31258B7664006FF747 /* StatementView.swift */; };
 		85347B72258FB3D9002C4142 /* StatementTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85347B71258FB3D9002C4142 /* StatementTextEditor.swift */; };
 		853F4FB42581617B00D98CBE /* ConnectiveLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853F4FB32581617B00D98CBE /* ConnectiveLines.swift */; };
-		856470B92556BF1900FD6EA2 /* RatioApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470B82556BF1900FD6EA2 /* RatioApp.swift */; };
+		856470B92556BF1900FD6EA2 /* OrganonApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470B82556BF1900FD6EA2 /* OrganonApp.swift */; };
 		856470BB2556BF1900FD6EA2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470BA2556BF1900FD6EA2 /* ContentView.swift */; };
 		856470BD2556BF1B00FD6EA2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 856470BC2556BF1B00FD6EA2 /* Assets.xcassets */; };
 		856470C02556BF1B00FD6EA2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 856470BF2556BF1B00FD6EA2 /* Preview Assets.xcassets */; };
 		856470C22556BF1B00FD6EA2 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470C12556BF1B00FD6EA2 /* Persistence.swift */; };
-		856470C52556BF1B00FD6EA2 /* Ratio.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 856470C32556BF1B00FD6EA2 /* Ratio.xcdatamodeld */; };
 		856470DC2556F29E00FD6EA2 /* Silk Serif ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 856470CE2556F29D00FD6EA2 /* Silk Serif ExtraLight.otf */; };
 		856470DD2556F29E00FD6EA2 /* Silk Serif Bold Italic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 856470CF2556F29D00FD6EA2 /* Silk Serif Bold Italic.otf */; };
 		856470DE2556F29E00FD6EA2 /* Silk Serif Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 856470D02556F29D00FD6EA2 /* Silk Serif Light.otf */; };
@@ -64,13 +63,12 @@
 		850C6E31258B7664006FF747 /* StatementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatementView.swift; sourceTree = "<group>"; };
 		85347B71258FB3D9002C4142 /* StatementTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatementTextEditor.swift; sourceTree = "<group>"; };
 		853F4FB32581617B00D98CBE /* ConnectiveLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectiveLines.swift; sourceTree = "<group>"; };
-		856470B52556BF1800FD6EA2 /* Ratio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ratio.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		856470B82556BF1900FD6EA2 /* RatioApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatioApp.swift; sourceTree = "<group>"; };
+		856470B52556BF1800FD6EA2 /* Organon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Organon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		856470B82556BF1900FD6EA2 /* OrganonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganonApp.swift; sourceTree = "<group>"; };
 		856470BA2556BF1900FD6EA2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		856470BC2556BF1B00FD6EA2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		856470BF2556BF1B00FD6EA2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		856470C12556BF1B00FD6EA2 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
-		856470C42556BF1B00FD6EA2 /* Ratio.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Ratio.xcdatamodel; sourceTree = "<group>"; };
 		856470C62556BF1B00FD6EA2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		856470CE2556F29D00FD6EA2 /* Silk Serif ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Silk Serif ExtraLight.otf"; sourceTree = "<group>"; };
 		856470CF2556F29D00FD6EA2 /* Silk Serif Bold Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Silk Serif Bold Italic.otf"; sourceTree = "<group>"; };
@@ -94,8 +92,8 @@
 		85A0DF6625830CEF00991C23 /* SabonLTStd-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SabonLTStd-Bold.otf"; sourceTree = "<group>"; };
 		85A0DF6725830CEF00991C23 /* SabonLTStd-Italic.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SabonLTStd-Italic.otf"; sourceTree = "<group>"; };
 		85A0DF6D2583EC2200991C23 /* Avenir Next Condensed.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Avenir Next Condensed.ttc"; sourceTree = "<group>"; };
-		85C751EE2559ED3C00A4FF60 /* PropositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PropositionView.swift; path = Ratio/Views/PropositionView.swift; sourceTree = SOURCE_ROOT; };
-		85C751F52559EE7D00A4FF60 /* Bracket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Bracket.swift; path = Ratio/Views/Bracket.swift; sourceTree = SOURCE_ROOT; };
+		85C751EE2559ED3C00A4FF60 /* PropositionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PropositionView.swift; path = Organon/Views/PropositionView.swift; sourceTree = SOURCE_ROOT; };
+		85C751F52559EE7D00A4FF60 /* Bracket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Bracket.swift; path = Organon/Views/Bracket.swift; sourceTree = SOURCE_ROOT; };
 		85C751FE2559F70C00A4FF60 /* BracketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BracketView.swift; sourceTree = "<group>"; };
 		85C75204255A103000A4FF60 /* ArgumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArgumentView.swift; sourceTree = "<group>"; };
 		85ED3BAD257EDAE7009CCC7C /* Argument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Argument.swift; sourceTree = "<group>"; };
@@ -118,7 +116,7 @@
 		856470AC2556BF1800FD6EA2 = {
 			isa = PBXGroup;
 			children = (
-				856470B72556BF1900FD6EA2 /* Ratio */,
+				856470B72556BF1900FD6EA2 /* Organon */,
 				856470B62556BF1800FD6EA2 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -126,25 +124,24 @@
 		856470B62556BF1800FD6EA2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				856470B52556BF1800FD6EA2 /* Ratio.app */,
+				856470B52556BF1800FD6EA2 /* Organon.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		856470B72556BF1900FD6EA2 /* Ratio */ = {
+		856470B72556BF1900FD6EA2 /* Organon */ = {
 			isa = PBXGroup;
 			children = (
-				856470B82556BF1900FD6EA2 /* RatioApp.swift */,
+				856470B82556BF1900FD6EA2 /* OrganonApp.swift */,
 				8590FDB1255749E000B8DA1A /* Views */,
 				8590FDB225574A0B00B8DA1A /* Models */,
 				856470BC2556BF1B00FD6EA2 /* Assets.xcassets */,
 				856470C12556BF1B00FD6EA2 /* Persistence.swift */,
 				856470C62556BF1B00FD6EA2 /* Info.plist */,
-				856470C32556BF1B00FD6EA2 /* Ratio.xcdatamodeld */,
 				856470CD2556F26500FD6EA2 /* Fonts */,
 				856470BE2556BF1B00FD6EA2 /* Preview Content */,
 			);
-			path = Ratio;
+			path = Organon;
 			sourceTree = "<group>";
 		};
 		856470BE2556BF1B00FD6EA2 /* Preview Content */ = {
@@ -227,9 +224,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		856470B42556BF1800FD6EA2 /* Ratio */ = {
+		856470B42556BF1800FD6EA2 /* Organon */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 856470C92556BF1B00FD6EA2 /* Build configuration list for PBXNativeTarget "Ratio" */;
+			buildConfigurationList = 856470C92556BF1B00FD6EA2 /* Build configuration list for PBXNativeTarget "Organon" */;
 			buildPhases = (
 				856470B12556BF1800FD6EA2 /* Sources */,
 				856470B22556BF1800FD6EA2 /* Frameworks */,
@@ -239,9 +236,9 @@
 			);
 			dependencies = (
 			);
-			name = Ratio;
+			name = Organon;
 			productName = Ratio;
-			productReference = 856470B52556BF1800FD6EA2 /* Ratio.app */;
+			productReference = 856470B52556BF1800FD6EA2 /* Organon.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -258,7 +255,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 856470B02556BF1800FD6EA2 /* Build configuration list for PBXProject "Ratio" */;
+			buildConfigurationList = 856470B02556BF1800FD6EA2 /* Build configuration list for PBXProject "Organon" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -271,7 +268,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				856470B42556BF1800FD6EA2 /* Ratio */,
+				856470B42556BF1800FD6EA2 /* Organon */,
 			);
 		};
 /* End PBXProject section */
@@ -331,11 +328,10 @@
 				85ED3BB9257EDDEF009CCC7C /* Statement.swift in Sources */,
 				853F4FB42581617B00D98CBE /* ConnectiveLines.swift in Sources */,
 				85ED3BBC257EE0A5009CCC7C /* Justification.swift in Sources */,
-				856470C52556BF1B00FD6EA2 /* Ratio.xcdatamodeld in Sources */,
 				85ED3BB2257EDC43009CCC7C /* Proposition.swift in Sources */,
 				856470BB2556BF1900FD6EA2 /* ContentView.swift in Sources */,
 				850C6E32258B7664006FF747 /* StatementView.swift in Sources */,
-				856470B92556BF1900FD6EA2 /* RatioApp.swift in Sources */,
+				856470B92556BF1900FD6EA2 /* OrganonApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -464,16 +460,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"Ratio/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Organon/Preview Content\"";
 				DEVELOPMENT_TEAM = PWF9ZTARDX;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = Ratio/Info.plist;
+				INFOPLIST_FILE = Organon/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = lampyridae.Ratio;
+				PRODUCT_BUNDLE_IDENTIFIER = lampyridae.Organon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -486,16 +482,16 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"Ratio/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Organon/Preview Content\"";
 				DEVELOPMENT_TEAM = PWF9ZTARDX;
 				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = Ratio/Info.plist;
+				INFOPLIST_FILE = Organon/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = lampyridae.Ratio;
+				PRODUCT_BUNDLE_IDENTIFIER = lampyridae.Organon;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -505,7 +501,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		856470B02556BF1800FD6EA2 /* Build configuration list for PBXProject "Ratio" */ = {
+		856470B02556BF1800FD6EA2 /* Build configuration list for PBXProject "Organon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				856470C72556BF1B00FD6EA2 /* Debug */,
@@ -514,7 +510,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		856470C92556BF1B00FD6EA2 /* Build configuration list for PBXNativeTarget "Ratio" */ = {
+		856470C92556BF1B00FD6EA2 /* Build configuration list for PBXNativeTarget "Organon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				856470CA2556BF1B00FD6EA2 /* Debug */,
@@ -524,19 +520,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		856470C32556BF1B00FD6EA2 /* Ratio.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				856470C42556BF1B00FD6EA2 /* Ratio.xcdatamodel */,
-			);
-			currentVersion = 856470C42556BF1B00FD6EA2 /* Ratio.xcdatamodel */;
-			path = Ratio.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 856470AD2556BF1800FD6EA2 /* Project object */;
 }
