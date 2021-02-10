@@ -12,20 +12,12 @@ struct StatementTextEditor: View {
     private var onCommit: (() -> Void)?
     @State private var viewHeight: CGFloat = 40 //start with one line
     @State private var shouldShowPlaceholder = false
-    @Binding private var text: String
     @ObservedObject var statement: Statement
     @Binding var deleteWrapper: Int
     @Binding var isEditing: UUID?
     @Binding var selectedProposition: Proposition?
     @Binding var newJustificationRequest: JustificationType?
     @Binding var selectedJustificationReferences: [Int]
-    
-    private var internalText: Binding<String> {
-        Binding<String>(get: { self.text } ) {
-            self.text = $0
-            self.shouldShowPlaceholder = $0.isEmpty
-        }
-    }
     
 //    private var internalStatement: Binding<Statement> {
 //        Binding<Statement>(get: { self.statement } ) {
@@ -40,7 +32,7 @@ struct StatementTextEditor: View {
     }
 
     var body: some View {
-        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: statement, text: internalText, calculatedHeight: $viewHeight, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, onDone: onCommit)
+        UITextViewWrapper(deleteWrapper: internalDeleteCount, statement: statement, calculatedHeight: $viewHeight, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, onDone: onCommit)
             .frame(minHeight: viewHeight, maxHeight: viewHeight)
             .offset(x: -5, y: -8)
             .background(placeholderView, alignment: .topLeading)
@@ -60,17 +52,15 @@ struct StatementTextEditor: View {
         }
     }
     
-    init (bindedStatement: Statement, deleteTracker: Binding<Int>, placeholder: String = "", text: Binding<String>, onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>) {
+    init (bindedStatement: Statement, deleteTracker: Binding<Int>, placeholder: String = "", onCommit: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>) {
         self.placeholder = placeholder
         self.onCommit = onCommit
-        self._text = text
         self.statement = bindedStatement
         self._deleteWrapper = deleteTracker
         self._isEditing = isEditing
         self._selectedProposition = selectedProposition
         self._newJustificationRequest = newJustificationRequest
         self._selectedJustificationReferences = selectedJustificationReferences
-        self._shouldShowPlaceholder = State<Bool>(initialValue: self.text.isEmpty)
     }
 
 }
@@ -81,7 +71,6 @@ private struct UITextViewWrapper: UIViewRepresentable {
 
     @Binding var deleteWrapper: Int
     @ObservedObject var statement: Statement
-    @Binding var text: String
     @Binding var calculatedHeight: CGFloat
     @Binding var isEditing: UUID?
     @Binding var selectedProposition: Proposition?
@@ -179,13 +168,12 @@ private struct UITextViewWrapper: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(deleteWrapper: $deleteWrapper, statement: statement, text: $text, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
+        return Coordinator(deleteWrapper: $deleteWrapper, statement: statement, height: $calculatedHeight, onDone: onDone, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
     }
 
     final class Coordinator: NSObject, UITextViewDelegate {
         var deleteWrapper: Binding<Int>
         var statement: Statement
-        var text: Binding<String>
         var calculatedHeight: Binding<CGFloat>
         var onDone: (() -> Void)?
         var liveStatementType: StatementType
@@ -206,10 +194,9 @@ private struct UITextViewWrapper: UIViewRepresentable {
         let tagsForTypes = [StatementType.conjunction : ":and", StatementType.disjunction: ":or", StatementType.conditional : ":then", StatementType.negation : ":not"]
         let imageNames = [StatementType.conjunction : "and", StatementType.disjunction : "or", StatementType.conditional : "then", StatementType.negation : "not"]
 
-        init(deleteWrapper: Binding<Int>, statement: Statement, text: Binding<String>, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>) {
+        init(deleteWrapper: Binding<Int>, statement: Statement, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>) {
             self.deleteWrapper = deleteWrapper
             self.statement = statement
-            self.text = text
             self.calculatedHeight = height
             self.onDone = onDone
             self.isEditing = isEditing

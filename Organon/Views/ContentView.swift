@@ -11,11 +11,33 @@ import CoreData
 struct ContentView: View {
     
     var body: some View {
-        NavigationView {
-            let argument = Argument(title: "Stupidity doesn't justify killing", propositions: generatePropositions())
-            ArgumentView(argument: argument)
-                .font(.custom("AvenirNext-Medium", size: 18))
+        TabView {
+            NavigationView {
+                ArgumentBrowser(arguments: [giveMeWhatIWant(), giveMeWhatIWant(), giveMeWhatIWant(), giveMeWhatIWant()])
+                //ArgumentView(argument: giveMeWhatIWant())
+            }
+            .tabItem {
+                Image(systemName: "list.dash")
+                Text("Menu")
+                
+            }
+            
+            NavigationView {
+                CompendiumBrowser()
+            }
+            .tabItem {
+                Image(systemName: "list.dash")
+                Text("Hello")
+                
+            }
         }
+        
+    }
+    
+    func giveMeWhatIWant() -> Argument {
+        var argument = Argument(title: "Stupidity doesn't justify killing", propositions: generatePropositions())
+        argument.description = "This is not an argument for veganism. This is an argument that wants to illustrate how the common justification for killing animals because they are stupid is inconsistent."
+        return argument
     }
     
     func generatePropositions() -> [Proposition] {
@@ -71,7 +93,7 @@ struct ContentView: View {
         let notIfSandAthenK = Negation(ifSandAthenK)
         let twelfth = Proposition(content: notIfSandAthenK.copy(), type: .conclusion, justification: Justification(type: .IP, references: [third.id, eleventh.id]), alias: "Therefore, it is not the case that if an animal is stupid, it can be ethically killed for food")
         
-        return [first, second, third, fourth, fifth, sixth, seventh, eight, ninth, tenth, eleventh, twelfth]
+        return [first, second, third, fourth, fifth, sixth, seventh, eight, ninth, tenth, eleventh, twelfth]//.shuffled()
     }
 }
 

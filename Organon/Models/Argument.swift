@@ -8,8 +8,9 @@
 import Foundation
 import Combine
 
-class Argument: ObservableObject {
+class Argument: ObservableObject, Identifiable {
     var title: String
+    @Published var description: String = ""
     @Published var formalData: FormalData
     @Published var sLibrary: SimpleLibrary
     
@@ -23,6 +24,9 @@ class Argument: ObservableObject {
         }
     }
     
+    var conclusion: Proposition? {
+        return formalData.propositions.last
+    }
     
 }
 

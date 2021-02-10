@@ -92,7 +92,7 @@ struct PropositionView: View {
             }
             
         }
-        .padding(.all, expanded ? 20 : 5)
+        .padding(.all, expanded ? 20 : 0)
         .frame(minWidth: expanded ? 350 : 0, maxWidth: 350, alignment: .leading)
         .background(background)
         .onChange(of: draggingCoordinates) { value in
@@ -105,6 +105,7 @@ struct PropositionView: View {
         .offset(x: swipeAmount)
         .onTapGesture {
             withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                 
                 let impactHeavy = UIImpactFeedbackGenerator(style: .light)
                 
@@ -155,6 +156,7 @@ struct PropositionView: View {
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
             StatementView(statement: proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: expanded)
+                .offset(x: expanded ? 0 : calculateOffset(proposition.content))
             
             propositionDetailView
                 .frame(width: expanded ? nil : 0, height: expanded ? nil : 0)
@@ -168,7 +170,7 @@ struct PropositionView: View {
             if let alias = proposition.alias {
                 Text("\"" + alias + "\"")
                     .font(.custom("SabonItalic", size: 14))
-                    .foregroundColor(Color("MainText"))
+                    .foregroundColor(Color("MainText").opacity(0.8))
                     .opacity(0.8)
                     .padding(.bottom, 8)
             }
@@ -234,6 +236,21 @@ struct PropositionView: View {
             .animation(.easeInOut(duration: 0.5), value: dragState.isActive)
     }
     
+    func calculateOffset(_ forStatement: Statement) -> CGFloat {
+        var offset: CGFloat = 0
+        if forStatement.type == .negation {
+            offset = -15
+        } else if let cod = forStatement as? JunctureStatement {
+            if cod.type != .conditional {
+                if cod.firstChild.type != .simple || cod.secondChild.type != .simple {
+                    offset = -15
+                }
+            }
+        }
+        
+        return offset
+    }
+    
     var overlay: some View {
         RoundedRectangle(cornerRadius: 10)
             .foregroundColor(Color(hue: 0, saturation: 0, brightness: 0.95))
@@ -248,7 +265,7 @@ struct PropositionView: View {
             Text(justificationText(data: (proposition.justification, references), state: expanded))
                 .padding(EdgeInsets(top: 1, leading: 5, bottom: 1, trailing: 5))
                 .background(lBackground)
-                .font(.custom("AvenirNext-DemiBold", size: 12))
+                .font(.custom("AvenirNext-DemiBold", size: expanded ? 13 : 11))
                 .foregroundColor(.white)
         }
     }

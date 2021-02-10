@@ -34,7 +34,7 @@ struct FormalView: View {
     
     var body: some View {
         //ScrollViewReader { sp in
-            LazyVStack(alignment: .basePropositionAlignment, spacing: spacing) {
+            LazyVStack(alignment: .center, spacing: spacing) {
                 let somethingSelected = selectedProposition != nil ? true : false
                 ForEach(formalData.propositions, id: \.id) { proposition in
                     let selected = selectedProposition?.id == proposition.id ? true : false

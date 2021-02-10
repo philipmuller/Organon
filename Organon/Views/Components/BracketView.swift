@@ -36,12 +36,16 @@ struct LBracketView: View {
     
     var body: some View {
         let identifiablePointData = generatePointsFromData(geometry: geometry, data: preferences)
-        
-        ForEach(identifiablePointData) { data in
-            LBracket(firstPosition: data.firstPoint, connectToPosition: data.toPoint)
-                .stroke(style: StrokeStyle(lineWidth: 0.5, lineCap: .round, lineJoin: .round, dash: [1, 5]))
-                .stroke(Color("BoxGrey"))
+        HStack{
+            ForEach(identifiablePointData) { data in
+    //            Text("\(data.firstPoint.x)")
+    //                .font(.title)
+                LBracket(firstPosition: data.firstPoint, connectToPosition: data.toPoint)
+                    //.stroke(style: StrokeStyle(lineWidth: 0.5, lineCap: .round, lineJoin: .round, dash: [1, 5]))
+                    //.stroke(Color("BoxGrey"))
+            }
         }
+        
     }
     
     func generatePointsFromData(geometry: GeometryProxy, data: [PropositionPreferenceData]) -> [ForBracketData] {
@@ -65,8 +69,11 @@ struct LBracketView: View {
         var finalData: [ForBracketData] = []
         var count = 0
         for point in endPoints {
-            finalData.append(ForBracketData(firstPoint: startingPoints[count], toPoint: point))
-            
+            var sp: CGPoint = CGPoint(x: point.x, y: 0)
+            if count < startingPoints.count {
+                sp = startingPoints[count]
+            }
+            finalData.append(ForBracketData(firstPoint: sp, toPoint: point))
             count += 1
         }
         

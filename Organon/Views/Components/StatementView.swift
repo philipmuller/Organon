@@ -9,13 +9,48 @@ import SwiftUI
 
 struct StatementView: View {
     @ObservedObject var statement: Statement
-    @State var text: String = ""
     @Binding var deleteCount: Int
     @Binding var isEditing: UUID?
     @Binding var selectedProposition: Proposition?
+    let editable: Bool
     
     @Binding var newJustificationRequest: JustificationType?
     @Binding var selectedJustificationReferences: [Int]
+    
+    init(statement: Statement) {
+        var d: Int = 0
+        let dBinding = Binding<Int>(get: {d}, set: {d = $0})
+        
+        var ie: UUID? = nil
+        let ieBinding = Binding<UUID?>(get: {ie}, set: {ie = $0})
+        
+        var sp: Proposition? = nil
+        let spBinding = Binding<Proposition?>(get: {sp}, set: {sp = $0})
+        
+        var jr: JustificationType? = nil
+        let jrBinding = Binding<JustificationType?>(get: {jr}, set: {jr = $0})
+        
+        var sjr: [Int] = []
+        let sjrBinding = Binding<[Int]>(get: {sjr}, set: {sjr = $0})
+        
+        self.statement = statement
+        self._deleteCount = dBinding
+        self._isEditing = ieBinding
+        self._selectedProposition = spBinding
+        self._newJustificationRequest = jrBinding
+        self._selectedJustificationReferences = sjrBinding
+        self.editable = false
+    }
+    
+    init(statement: Statement, deleteCount: Binding<Int>, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>, editable: Bool) {
+        self.statement = statement
+        self._deleteCount = deleteCount
+        self._isEditing = isEditing
+        self._selectedProposition = selectedProposition
+        self._newJustificationRequest = newJustificationRequest
+        self._selectedJustificationReferences = selectedJustificationReferences
+        self.editable = editable
+    }
     
     var color: Color {
         if statement.targeted && editable {
@@ -24,7 +59,6 @@ struct StatementView: View {
             return Color.clear
         }
     }
-    let editable: Bool
     
     var body: some View {
         VStack {
@@ -48,7 +82,7 @@ struct StatementView: View {
                 
             default:
                 if isEditing == statement.id && editable == true {
-                    StatementTextEditor(bindedStatement: statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
+                    StatementTextEditor(bindedStatement: statement, deleteTracker: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
                         .padding(0)
                         .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                             return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
@@ -77,6 +111,7 @@ struct StatementView: View {
             }
         }
         .accentColor(Color("AccentColor"))
+        .foregroundColor(Color("MainText"))
         .background(selectedBackground)
 //        .onChange(of: isEditing) { value in
 //            print("is editing change detected in view! New is editing id = \(value)")
@@ -106,26 +141,28 @@ struct StatementView: View {
             
         return VStack(alignment: .leading, spacing: 4) {
             
-            ZStack(alignment: .bottomLeading) {
-                HStack(alignment: .top) {
-                    Image("if")
-                        .foregroundColor(Color.accentColor)
-                        .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
-                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-                            return [StatementPreferenceData(bounds: $0, statementId: first.id, modifier: 0)]
-                        }
-                    firstView
-                        .transformAnchorPreference(key: StatementPreferenceKey.self, value: .bounds) { (value, anchor) in
-                            value.removeAll()
-                        }
-                }
-                
-                Rectangle()
-                    .frame(width: 0, height: 0)
+            HStack(alignment: .top) {
+                Image("if")
+                    .foregroundColor(Color.accentColor)
+                    .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
                     .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-                        return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                        return [StatementPreferenceData(bounds: $0, statementId: first.id, modifier: 0)]
+                    }
+                firstView
+                    .transformAnchorPreference(key: StatementPreferenceKey.self, value: .bounds) { (value, anchor) in
+                        value.removeAll()
                     }
             }
+            .background(
+                GeometryReader { geometry in
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(width: geometry.frame(in: .global).width, height: geometry.frame(in: .global).height + 32)
+                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                        }
+                }
+            )
             
             HStack(alignment: .top) {
                 ZStack(alignment:.bottomLeading) {
@@ -160,8 +197,8 @@ struct StatementView: View {
         let conjunctionBinding = statement as! Conjunction
         let firstStatement = conjunctionBinding.firstChild
         let lastStatement = conjunctionBinding.secondChild
-        let firstView = StatementView(statement: conjunctionBinding.firstChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
-        let secondView = StatementView(statement: conjunctionBinding.secondChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
+        let firstView = StatementView(statement: conjunctionBinding.firstChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
+        let secondView = StatementView(statement: conjunctionBinding.secondChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
         
         return HStack {
             if statement.block && firstStatement.block {
@@ -188,7 +225,7 @@ struct StatementView: View {
                 }
             } else {
                 if isEditing == statement.id && editable == true {
-                    StatementTextEditor(bindedStatement: self.statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
+                    StatementTextEditor(bindedStatement: self.statement, deleteTracker: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
                         .padding(0)
                         .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                             return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
@@ -216,8 +253,8 @@ struct StatementView: View {
         let disjunctionBinding = statement as! Disjunction
         let firstStatement = disjunctionBinding.firstChild
         let lastStatement = disjunctionBinding.secondChild
-        let firstView = StatementView(statement: disjunctionBinding.firstChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
-        let secondView = StatementView(statement: disjunctionBinding.secondChild, text: statement.content, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
+        let firstView = StatementView(statement: disjunctionBinding.firstChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
+        let secondView = StatementView(statement: disjunctionBinding.secondChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
         
         return HStack {
             if statement.block && firstStatement.block {
@@ -244,7 +281,7 @@ struct StatementView: View {
                 }
             } else {
                 if isEditing == statement.id && editable == true {
-                    StatementTextEditor(bindedStatement: self.statement, deleteTracker: $deleteCount, text: $text, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
+                    StatementTextEditor(bindedStatement: self.statement, deleteTracker: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
                         .padding(0)
                         .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                             return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
@@ -271,7 +308,7 @@ struct StatementView: View {
         //let negationBinding = Binding<Negation>(get: {statement as! Negation}, set: {statement = $0})
         let negationBinding = statement as! Negation
         let nStatement = negationBinding.negatedStatement
-        let nView = StatementView(statement: negationBinding.negatedStatement, text: negationBinding.negatedStatementContent, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
+        let nView = StatementView(statement: negationBinding.negatedStatement, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
         
         return VStack {
 //            if statement.block {

@@ -8,8 +8,17 @@
 import SwiftUI
 
 struct ArgumentView: View {
+    
+    init(argument: Argument) {
+        self.argument = argument
+        UITextView.appearance().backgroundColor = .clear
+    }
+    
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
     @ObservedObject var argument: Argument
     @State var selectedProposition: Proposition? = nil
+    @State var editNote = false
     @State var isEditing: Bool = false {
         didSet {
             print("TRIGGEREDDD")
@@ -33,10 +42,11 @@ struct ArgumentView: View {
             ScrollView(.vertical, showsIndicators: true) {
                 header
                 FormalView(formalData: argument.formalData, selectedProposition: $selectedProposition, isEditing: $isEditing, draggingCoordinates: $draggingCoordinates, draggedIndex: $draggedIndex)
-                    .frame(maxWidth: 350)
+                    .frame(maxWidth: 310)
+                    //.background(Color.red)
+                    //.offset(x: -15)
                     .accentColor(Color("AccentColor"))
             }
-            .fixFlickering()
             
             Button(action: {
                 
@@ -67,6 +77,7 @@ struct ArgumentView: View {
 //            .position(x: (previewCoordinates?.x ?? 0), y: (previewCoordinates?.y ?? 0))
         }
         .onTapGesture {
+            UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
             withAnimation(Animation.interpolatingSpring(mass: 1, stiffness: 0.7, damping: 1.2, initialVelocity: 0.5).speed(10)) {
                 selectedProposition = nil
                 isEditing = false
@@ -77,21 +88,73 @@ struct ArgumentView: View {
                 }
             }
         }
+        .font(.custom("AvenirNext-Medium", size: 17))
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: btnBack
+            .accentColor(Color("BoxGrey"))
+            , trailing:
+                HStack {
+                    Button(action: {
+                        print("Specials tapped!")
+                    }) {
+                        Image(systemName: "ellipsis")
+                            .font(Font.system(size: 23, weight: .light))
+                            .rotationEffect(Angle(degrees: 90))
+                    }
+                    
+                    Button(action: {
+                        print("Favorites tapped!")
+                    }) {
+                        Image(systemName: "info.circle")
+                            .font(Font.system(size: 23, weight: .light))
+                    }
+                }
+                .accentColor(Color("BoxGrey"))
+        )
+    }
+    
+    var btnBack : some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+            
+        }) {
+            Image(systemName: "chevron.backward")
+                .font(Font.system(size: 23, weight: .light))
+            
+        }
     }
     
     var header: some View {
         VStack(alignment: .leading) {
-            Text(argument.title)
-                .lineSpacing(5)
-                .fixedSize(horizontal: false, vertical: true)
-                .font(.custom("SabonBold", size: 30))
-                .foregroundColor(Color("MainText"))
-                .padding(.bottom, 15)
+            VStack(alignment: .leading) {
+                Text(argument.title)
+                    .lineSpacing(5)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .font(.custom("SabonBold", size: 28))
+                    .foregroundColor(Color("MainText"))
+                    .padding(.bottom, 10)
+                
+                //Divider()
+            }
+            .padding(.trailing, 30)
             
-            Divider()
+            TextEditor(text: $argument.description)
+                .foregroundColor(Color("MainText"))
+                .background(GeometryReader{ geometry in
+                    Text(argument.description == "" ? "Tap to add note" : "")
+                        .foregroundColor(Color("BoxGrey"))
+                        .frame(alignment: .leading)
+                        .padding(.top, 8)
+                        .padding(.leading, 4)
+                })
+            
+//            Text("SIMPLE STATEMENTS:")
+//                .font(.custom("AvenirNext-DemiBold", size: 13))
+//                .foregroundColor(Color("BoxGrey"))
         }
-        .padding(EdgeInsets(top: 0, leading: 30, bottom: 30, trailing: 80))
-        
+        .padding(.leading, 30)
+        .padding(.trailing, 30)
+        .padding(.bottom, 30)
     }
     
     var longPressDrag: some Gesture {
@@ -187,9 +250,27 @@ extension ScrollView {
     }
 }
 
+extension UINavigationController: UIGestureRecognizerDelegate {
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+        interactivePopGestureRecognizer?.delegate = self
+    }
+
+    public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return viewControllers.count > 1
+    }
+}
+
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
 
 struct ArgumentView_Previews: PreviewProvider {
     static var previews: some View {
         Text("Hello world!")
     }
 }
+
