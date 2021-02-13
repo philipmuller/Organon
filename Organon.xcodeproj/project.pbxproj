@@ -21,6 +21,7 @@
 		853FC97F25CF174D00EF5771 /* CompendiumDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853FC97E25CF174D00EF5771 /* CompendiumDetail.swift */; };
 		853FC98225D2F76800EF5771 /* CompendiumEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853FC98125D2F76800EF5771 /* CompendiumEntry.swift */; };
 		853FC98625D3031700EF5771 /* CompendiumData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853FC98525D3031700EF5771 /* CompendiumData.swift */; };
+		853FC98925D4966100EF5771 /* QuizView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853FC98825D4966100EF5771 /* QuizView.swift */; };
 		856470B92556BF1900FD6EA2 /* OrganonApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470B82556BF1900FD6EA2 /* OrganonApp.swift */; };
 		856470BB2556BF1900FD6EA2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 856470BA2556BF1900FD6EA2 /* ContentView.swift */; };
 		856470BD2556BF1B00FD6EA2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 856470BC2556BF1B00FD6EA2 /* Assets.xcassets */; };
@@ -73,6 +74,7 @@
 		853FC97E25CF174D00EF5771 /* CompendiumDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumDetail.swift; sourceTree = "<group>"; };
 		853FC98125D2F76800EF5771 /* CompendiumEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumEntry.swift; sourceTree = "<group>"; };
 		853FC98525D3031700EF5771 /* CompendiumData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumData.swift; sourceTree = "<group>"; };
+		853FC98825D4966100EF5771 /* QuizView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuizView.swift; sourceTree = "<group>"; };
 		856470B52556BF1800FD6EA2 /* Organon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Organon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		856470B82556BF1900FD6EA2 /* OrganonApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrganonApp.swift; sourceTree = "<group>"; };
 		856470BA2556BF1900FD6EA2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -203,6 +205,7 @@
 				853FC97E25CF174D00EF5771 /* CompendiumDetail.swift */,
 				853FC97625CDA29200EF5771 /* ArgumentBrowser.swift */,
 				85C75204255A103000A4FF60 /* ArgumentView.swift */,
+				853FC98825D4966100EF5771 /* QuizView.swift */,
 				85C751ED2559ECFC00A4FF60 /* Components */,
 			);
 			path = Views;
@@ -344,6 +347,7 @@
 				85C751FF2559F70C00A4FF60 /* BracketView.swift in Sources */,
 				853FC98225D2F76800EF5771 /* CompendiumEntry.swift in Sources */,
 				85C751EF2559ED3C00A4FF60 /* PropositionView.swift in Sources */,
+				853FC98925D4966100EF5771 /* QuizView.swift in Sources */,
 				853FC98625D3031700EF5771 /* CompendiumData.swift in Sources */,
 				85ED3BB9257EDDEF009CCC7C /* Statement.swift in Sources */,
 				853F4FB42581617B00D98CBE /* ConnectiveLines.swift in Sources */,

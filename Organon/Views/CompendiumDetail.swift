@@ -83,32 +83,62 @@ struct CompendiumDetail: View {
                     let exercises = data.exercises
                     ForEach(exercises, id: \.id) { exercise in
                         let colour = exercise.difficulty == "EASY" ? Color("Conclusion") : exercise.difficulty == "MEDIUM" ? Color("Medium") : Color("false")
-                        VStack(alignment: .leading) {
-                            Text(exercise.title)
-                                .font(.custom("SabonBold", size: 20))
-                            
-                            Text(exercise.difficulty)
-                                .font(.custom("AvenirNext-Bold", size: 15))
-                                .foregroundColor(colour)
-                            
-                            VStack(alignment: .leading) {
-                                if let quiz = exercise as? Quiz {
-                                    Text("\(quiz.qa.count) domande")
-                                        .font(.custom("AvenirNext-Medium", size: 17))
-                                        .foregroundColor(Color("MainText"))
+                        if let quiz = exercise as? Quiz {
+                            NavigationLink(
+                                destination: QuizView(quiz: quiz)
+                            ) {
+                                VStack(alignment: .leading) {
+                                    Text(quiz.title)
+                                        .font(.custom("SabonBold", size: 20))
+                                    
+                                    Text(quiz.difficulty)
+                                        .font(.custom("AvenirNext-Bold", size: 15))
+                                        .foregroundColor(colour)
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text("\(quiz.qa.count) domande")
+                                            .font(.custom("AvenirNext-Medium", size: 17))
+                                            .foregroundColor(Color("MainText"))
+                                        
+                                        Text("\(quiz.estimatedCompletionTime) minuti")
+                                            .font(.custom("AvenirNext-Medium", size: 17))
+                                            .foregroundColor(Color("MainText"))
+                                    }
+                                    .padding(.top, 5)
                                 }
-                                
-                                Text("\(exercise.estimatedCompletionTime) minuti")
-                                    .font(.custom("AvenirNext-Medium", size: 17))
-                                    .foregroundColor(Color("MainText"))
+                                .frame(width: 170, height: 150)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(colour.opacity(0.3))
+                                )
                             }
-                            .padding(.top, 5)
+                            .buttonStyle(PlainButtonStyle())
+                        } else if let translation = exercise as? EditorQuestion {
+                            NavigationLink(
+                                destination: ArgumentView(argument: Argument(title: translation.title, propositions: []))
+                            ) {
+                                VStack(alignment: .leading) {
+                                    Text(translation.title)
+                                        .font(.custom("SabonBold", size: 20))
+                                    
+                                    Text(translation.difficulty)
+                                        .font(.custom("AvenirNext-Bold", size: 15))
+                                        .foregroundColor(colour)
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text("\(translation.estimatedCompletionTime) minuti")
+                                            .font(.custom("AvenirNext-Medium", size: 17))
+                                            .foregroundColor(Color("MainText"))
+                                    }
+                                    .padding(.top, 5)
+                                }
+                                .frame(width: 170, height: 150)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(colour.opacity(0.3))
+                                )
+                            }
                         }
-                        .frame(width: 170, height: 150)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(colour.opacity(0.3))
-                        )
                     }
                 }
             }
