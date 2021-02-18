@@ -63,6 +63,7 @@ class Statement: ObservableObject, Identifiable, Equatable {
     var target: ((Int?) -> Void)?
     var changeTarget: ((StatementType, Statement) -> Void)?
     var publishSimpleChange: ((String, String?) -> Void)?
+    var publisherID: UUID?
     
     @Published var targeted: Bool = false
     
@@ -74,7 +75,7 @@ class Statement: ObservableObject, Identifiable, Equatable {
         
         NotificationCenter.default
             .publisher(for: .simpleStatementChange)
-            .compactMap{$0.object as? (String, String)}
+            .compactMap{$0.object as? (String, String, UUID)}
             .sink() {
                 [weak self] formula in
                 self?.handleFormulaUpdate(updated: formula)
@@ -95,7 +96,7 @@ class Statement: ObservableObject, Identifiable, Equatable {
         
         NotificationCenter.default
             .publisher(for: .simpleStatementChange)
-            .compactMap{$0.object as? (String, String)}
+            .compactMap{$0.object as? (String, String, UUID)}
             .sink() {
                 [weak self] formula in
                 self?.handleFormulaUpdate(updated: formula)
@@ -117,7 +118,7 @@ class Statement: ObservableObject, Identifiable, Equatable {
         
         NotificationCenter.default
             .publisher(for: .simpleStatementChange)
-            .compactMap{$0.object as? (String, String)}
+            .compactMap{$0.object as? (String, String, UUID)}
             .sink() {
                 [weak self] formula in
                 self?.handleFormulaUpdate(updated: formula)
@@ -140,7 +141,7 @@ class Statement: ObservableObject, Identifiable, Equatable {
         
         NotificationCenter.default
             .publisher(for: .simpleStatementChange)
-            .compactMap{$0.object as? (String, String)}
+            .compactMap{$0.object as? (String, String, UUID)}
             .sink() {
                 [weak self] formula in
                 self?.handleFormulaUpdate(updated: formula)
@@ -155,17 +156,21 @@ class Statement: ObservableObject, Identifiable, Equatable {
 
     }
     
-    func handleFormulaUpdate(updated: (String, String)) {
-        if type == .simple {
-            let newSymbol = updated.1
-            let newText = updated.0
-            
-            if newSymbol == formula {
-                if !matches(newText, content) {
-                    content = newText
+    func handleFormulaUpdate(updated: (String, String, UUID)) {
+        if let pID = publisherID {
+            if updated.2 == pID {
+                if type == .simple {
+                    let newSymbol = updated.1
+                    let newText = updated.0
+                    
+                    if newSymbol == formula {
+                        if !matches(newText, content) {
+                            content = newText
+                        }
+                    } else if matches(content, newText) {
+                        formula = newSymbol
+                    }
                 }
-            } else if matches(content, newText) {
-                formula = newSymbol
             }
         }
     }
@@ -208,6 +213,10 @@ class Statement: ObservableObject, Identifiable, Equatable {
                 uPublish(content, nil)
             }
         }
+    }
+    
+    func setPublisherID(id: UUID) {
+        self.publisherID = id
     }
     
     func targetStatementAtCount(count: Int?) {
@@ -256,6 +265,13 @@ class Statement: ObservableObject, Identifiable, Equatable {
                 }
                 print("Requesting change from parent. New config \(connectionType)")
                 print("connectTo \(connectTo.type), ID: \(connectTo.id), content: \(connectTo.content)")
+                if let pClosure = self.publishSimpleChange {
+                    newConfig.setPublishClosure(closure: pClosure)
+                }
+                
+                if let pID = self.publisherID {
+                    newConfig.publisherID = pID
+                }
                 uChange(self.id, newConfig)
             }
         } else {
@@ -645,6 +661,12 @@ class JunctureStatement: Statement {
         self.secondChild.setPublishClosure(closure: closure)
     }
     
+    override func setPublisherID(id: UUID) {
+        super.setPublisherID(id: id)
+        self.firstChild.setPublisherID(id: id)
+        self.secondChild.setPublisherID(id: id)
+    }
+    
     override func copy() -> JunctureStatement {
         return JunctureStatement(firstStatement: self.firstChild.copy(), secondStatement: self.secondChild.copy(), junction: self.type)
     }
@@ -768,6 +790,11 @@ class Negation: Statement {
     override func setPublishClosure(closure: @escaping (String, String?) -> Void) {
         self.publishSimpleChange = closure
         self.negatedStatement.setPublishClosure(closure: closure)
+    }
+    
+    override func setPublisherID(id: UUID) {
+        super.setPublisherID(id: id)
+        self.negatedStatement.setPublisherID(id: id)
     }
 }
 

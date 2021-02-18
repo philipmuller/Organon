@@ -21,6 +21,6 @@ struct ConnectiveLines: View {
             yValues.append(geometry[anchor.bounds].midY+CGFloat(anchor.modifier))
         }
 
-        return AnyView(Bracket(firstLevelPositions: yValues, connectToPosition: nil, firstLevelDepth: depthValue, secondLevelDepth: nil).stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round)).foregroundColor(Color.accentColor))
+        return AnyView(Bracket(firstLevelPositions: yValues, connectToPosition: nil, firstLevelDepth: depthValue, secondLevelDepth: nil).stroke(style: StrokeStyle(lineWidth: 1.5, lineCap: .square, lineJoin: .miter)).foregroundColor(Color.accentColor))
     }
 }

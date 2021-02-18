@@ -65,15 +65,15 @@ struct StatementView: View {
             //Text("\(statement.id) content: \(statement.content)").font(.footnote).foregroundColor(Color.red)
             switch statement.type {
             case .conditional:
-                ifThenStatement
+                junctionStatement
                     .transition(.scale)
                 
             case .conjunction:
-                andStatement
+                junctionStatement
                     .transition(.scale)
 
             case .disjunction:
-                orStatement
+                junctionStatement
                     .transition(.scale)
                 
             case .negation:
@@ -84,16 +84,16 @@ struct StatementView: View {
                 if isEditing == statement.id && editable == true {
                     StatementTextEditor(bindedStatement: statement, deleteTracker: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
                         .padding(0)
-                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
-                        }
-//                        .onChange(of: statement) { value in
-//                            print("Whatever")
-//                        }
-//                        .onChange(of: isEditing) { value in
-//                            print("something something")
-//                        }
-//
+                        .background(
+                            GeometryReader { geometry in
+                                Rectangle()
+                                    .fill(Color.clear)
+                                    .frame(width: 1, height: 25)
+                                    .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                                        return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                                    }
+                            }
+                        )
                 } else {
                     Text(statement.content == "" ? "Tap to type..." : statement.content)
                         .transition(.scale)
@@ -104,9 +104,18 @@ struct StatementView: View {
                             }
                         }
                         .allowsHitTesting(editable)
-                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
-                        }
+                        .background(
+                            GeometryReader { geometry in
+                                Rectangle()
+                                    .fill(Color.clear)
+                                    .frame(width: 1, height: 25)
+                                    .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                                        return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                                    }
+                            }
+                        )
+                        //.background(Color.red)
+                        
                 }
             }
         }
@@ -142,12 +151,23 @@ struct StatementView: View {
         return VStack(alignment: .leading, spacing: 4) {
             
             HStack(alignment: .top) {
-                Image("if")
-                    .foregroundColor(Color.accentColor)
-                    .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
-                    .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-                        return [StatementPreferenceData(bounds: $0, statementId: first.id, modifier: 0)]
-                    }
+                
+                ZStack(alignment:.topLeading) {
+                    Image("if")
+                        .foregroundColor(Color.accentColor)
+                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                            return [StatementPreferenceData(bounds: $0, statementId: first.id, modifier: 0)]
+                        }
+                        
+                    Rectangle()
+                        .frame(width: 0, height: 0)
+                        .padding(.bottom, 2)
+                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                            return [StatementPreferenceData(bounds: $0, statementId: second.id, modifier: 0)]
+                        }
+                }
+                .padding(EdgeInsets(top: 8, leading: 0, bottom: 0, trailing: 0))
+                
                 firstView
                     .transformAnchorPreference(key: StatementPreferenceKey.self, value: .bounds) { (value, anchor) in
                         value.removeAll()
@@ -168,7 +188,7 @@ struct StatementView: View {
                 ZStack(alignment:.bottomLeading) {
                     Image("then")
                         .foregroundColor(Color.accentColor)
-                        .padding(EdgeInsets(top: 4, leading: 0, bottom: 0, trailing: 0))
+                        .padding(EdgeInsets(top: 6, leading: 0, bottom: 0, trailing: 0))
                         
                     Rectangle()
                         .frame(width: 0, height: 0)
@@ -192,6 +212,81 @@ struct StatementView: View {
         }
     }
     
+    var junctionStatement: some View {
+        //let conjunctionBinding = Binding<Conjunction>(get: {statement as! Conjunction}, set: {statement = $0})
+        let junction = statement as! JunctureStatement
+        let firstStatement = junction.firstChild
+        let lastStatement = junction.secondChild
+        let firstView = StatementView(statement: junction.firstChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
+        let secondView = StatementView(statement: junction.secondChild, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
+        
+        return HStack {
+            if statement.block && firstStatement.block {
+                VStack(alignment: .leading, spacing: 4) {
+                    firstView
+                        .padding(EdgeInsets(top: 0, leading: firstStatement.type == .negation ? 8 : 18, bottom: 0, trailing: 0))
+                    HStack {
+                        Image(junction.type == .conditional ? "then" : junction.type == .conjunction ? "and" : "or").foregroundColor(Color.accentColor)
+                            .fixedSize()
+                            .rotationEffect(Angle(degrees: 90))
+                            .padding(1)
+                            .background(Color.white)
+                            .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                                return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                            }
+                    }
+                    .frame(height: 0)
+                    
+                    
+                    secondView
+                        .padding(EdgeInsets(top: 0, leading: lastStatement.type == .negation ? 8 : 18, bottom: 0, trailing: 0))
+   
+                }
+                .backgroundPreferenceValue(StatementPreferenceKey.self) { preferences in
+                    GeometryReader { geometry in
+                        ConnectiveLines(geometry: geometry, preferences: filterPreferences(firstChild: firstStatement, secondChild: lastStatement, preferences: preferences))
+                            .padding(EdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 0))
+                    }
+                }
+            } else {
+                if isEditing == statement.id && editable == true {
+                    StatementTextEditor(bindedStatement: self.statement, deleteTracker: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences)
+                        .padding(0)
+                        .background(
+                            GeometryReader { geometry in
+                                Rectangle()
+                                    .fill(Color.clear)
+                                    .frame(width: 1, height: 25)
+                                    .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                                        return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                                    }
+                            }
+                        )
+                } else {
+                    (Text(junction.leftContent)+Text(Image(junction.type == .conditional ? "then" : junction.type == .conjunction ? "and" : "or")).foregroundColor(Color.accentColor)+Text(junction.rightContent))
+                        .fixedSize(horizontal: false, vertical: true)
+                        .transition(.scale)
+                        .onTapGesture {
+                            if editable {
+                                isEditing = statement.id
+                            }
+                        }
+                        .allowsHitTesting(editable)
+                        .background(
+                            GeometryReader { geometry in
+                                Rectangle()
+                                    .fill(Color.clear)
+                                    .frame(width: 1, height: 25)
+                                    .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                                        return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                                    }
+                            }
+                        )
+                }
+            }
+        }
+    }
+    
     var andStatement: some View {
         //let conjunctionBinding = Binding<Conjunction>(get: {statement as! Conjunction}, set: {statement = $0})
         let conjunctionBinding = statement as! Conjunction
@@ -202,19 +297,23 @@ struct StatementView: View {
         
         return HStack {
             if statement.block && firstStatement.block {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 4) {
                     firstView
-                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
-                        
-                    Image("and").foregroundColor(Color.accentColor)
-                        .padding(1)
-                        .background(Color.white)
-                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
-                        }
+                        .padding(EdgeInsets(top: 0, leading: firstStatement.type == .negation ? 8 : 18, bottom: 0, trailing: 0))
+                    HStack {
+                        Image("and").foregroundColor(Color.accentColor)
+                            .fixedSize()
+                            .padding(1)
+                            .background(Color.white)
+                            .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                                return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                            }
+                    }
+                    .frame(height: 0)
+                    
                     
                     secondView
-                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
+                        .padding(EdgeInsets(top: 0, leading: lastStatement.type == .negation ? 8 : 18, bottom: 0, trailing: 0))
    
                 }
                 .backgroundPreferenceValue(StatementPreferenceKey.self) { preferences in
@@ -258,19 +357,23 @@ struct StatementView: View {
         
         return HStack {
             if statement.block && firstStatement.block {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 4) {
                     firstView
-                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
+                        .padding(EdgeInsets(top: 0, leading: firstStatement.type == .negation ? 8 : 18, bottom: 0, trailing: 0))
                         
-                    Image("or").foregroundColor(Color.accentColor)
-                        .padding(1)
-                        .background(Color.white)
-                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
-                        }
+                    VStack {
+                        Image("or").foregroundColor(Color.accentColor)
+                            .fixedSize()
+                            .padding(1)
+                            .background(Color.white)
+                            .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+                                return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+                            }
+                    }
+                    .frame(height: 0)
                     
                     secondView
-                        .padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 0))
+                        .padding(EdgeInsets(top: 0, leading: lastStatement.type == .negation ? 8 : 18, bottom: 0, trailing: 0))
    
                 }
                 .backgroundPreferenceValue(StatementPreferenceKey.self) { preferences in
@@ -311,7 +414,7 @@ struct StatementView: View {
         let nView = StatementView(statement: negationBinding.negatedStatement, deleteCount: $deleteCount, isEditing: $isEditing, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: editable)
         
         return VStack {
-//            if statement.block {
+//            if nStatement.block || isEditing != nil {
                     nView
                         .transformAnchorPreference(key: StatementPreferenceKey.self, value: .bounds, transform: { (value, anchor) in
                             for item in value {
@@ -326,18 +429,14 @@ struct StatementView: View {
                                 positionSymbol(childStatement: nStatement, geometry: geometry, preferences: preferences)
                             }
                         }
-                        .padding(EdgeInsets(top: 0, leading: 22, bottom: 0, trailing: 0))
+                        .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 0))
+                        //.background(Color.blue)
 //            } else {
-//                if editable {
-//                    StatementTextEditor(bindedStatement: self.$statement, deleteTracker: $deleteCount, text: $text, isEditing: $editable)
-//                        .padding(0)
-//                } else {
-//                    (Text(Image("not")).foregroundColor(Color.accentColor) + Text(nStatement.content))
-//                        .fixedSize(horizontal: false, vertical: true)
-//                        .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
-//                            return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
-//                        }
-//                }
+//                (Text(Image("not")).foregroundColor(Color.accentColor) + Text(nStatement.content))
+//                    .fixedSize(horizontal: false, vertical: true)
+//                    .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
+//                        return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
+//                    }
 //            }
         }
     }
@@ -347,9 +446,11 @@ struct StatementView: View {
         ForEach(preferences, id: \.id) { statementPreference in
             if statementPreference.statementId == childStatement.id {
                 Image("not")
+                    .padding(.bottom, 2)
+                    .background(Color.white)
                     .foregroundColor(Color.accentColor)
                     .position(y: geometry[statementPreference.bounds].midY)
-                    .offset(x: -15, y: 0)
+                    .offset(x: -10, y: 0)
             }
         }
     }

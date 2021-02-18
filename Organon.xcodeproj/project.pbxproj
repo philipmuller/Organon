@@ -14,6 +14,8 @@
 		850C6E2D258A6850006FF747 /* Sabon_Roman.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 850C6E27258A6850006FF747 /* Sabon_Roman.ttf */; };
 		850C6E2E258A6850006FF747 /* Sabon_CE_Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 850C6E28258A6850006FF747 /* Sabon_CE_Bold.ttf */; };
 		850C6E32258B7664006FF747 /* StatementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 850C6E31258B7664006FF747 /* StatementView.swift */; };
+		852FFF9425D9BADD005264E2 /* FirstRunOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852FFF9325D9BADD005264E2 /* FirstRunOverview.swift */; };
+		852FFF9825DB295B005264E2 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 852FFF9725DB295B005264E2 /* SettingsView.swift */; };
 		85347B72258FB3D9002C4142 /* StatementTextEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85347B71258FB3D9002C4142 /* StatementTextEditor.swift */; };
 		853F4FB42581617B00D98CBE /* ConnectiveLines.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853F4FB32581617B00D98CBE /* ConnectiveLines.swift */; };
 		853FC97725CDA29200EF5771 /* ArgumentBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 853FC97625CDA29200EF5771 /* ArgumentBrowser.swift */; };
@@ -67,6 +69,8 @@
 		850C6E27258A6850006FF747 /* Sabon_Roman.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sabon_Roman.ttf; sourceTree = "<group>"; };
 		850C6E28258A6850006FF747 /* Sabon_CE_Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Sabon_CE_Bold.ttf; sourceTree = "<group>"; };
 		850C6E31258B7664006FF747 /* StatementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatementView.swift; sourceTree = "<group>"; };
+		852FFF9325D9BADD005264E2 /* FirstRunOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstRunOverview.swift; sourceTree = "<group>"; };
+		852FFF9725DB295B005264E2 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		85347B71258FB3D9002C4142 /* StatementTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatementTextEditor.swift; sourceTree = "<group>"; };
 		853F4FB32581617B00D98CBE /* ConnectiveLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectiveLines.swift; sourceTree = "<group>"; };
 		853FC97625CDA29200EF5771 /* ArgumentBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArgumentBrowser.swift; sourceTree = "<group>"; };
@@ -206,6 +210,8 @@
 				853FC97625CDA29200EF5771 /* ArgumentBrowser.swift */,
 				85C75204255A103000A4FF60 /* ArgumentView.swift */,
 				853FC98825D4966100EF5771 /* QuizView.swift */,
+				852FFF9325D9BADD005264E2 /* FirstRunOverview.swift */,
+				852FFF9725DB295B005264E2 /* SettingsView.swift */,
 				85C751ED2559ECFC00A4FF60 /* Components */,
 			);
 			path = Views;
@@ -342,6 +348,8 @@
 				85C751F62559EE7D00A4FF60 /* Bracket.swift in Sources */,
 				853FC97F25CF174D00EF5771 /* CompendiumDetail.swift in Sources */,
 				85ED3BAE257EDAE7009CCC7C /* Argument.swift in Sources */,
+				852FFF9425D9BADD005264E2 /* FirstRunOverview.swift in Sources */,
+				852FFF9825DB295B005264E2 /* SettingsView.swift in Sources */,
 				8590FDA225571A1E00B8DA1A /* FormalView.swift in Sources */,
 				85347B72258FB3D9002C4142 /* StatementTextEditor.swift in Sources */,
 				85C751FF2559F70C00A4FF60 /* BracketView.swift in Sources */,

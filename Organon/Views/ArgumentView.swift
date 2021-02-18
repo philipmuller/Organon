@@ -60,10 +60,12 @@ struct ArgumentView: View {
                     Image(systemName: "plus")
                         .foregroundColor(Color.white)
                 }
-                .offset(x: buttonDragState.translation.width - 20, y: buttonDragState.translation.height)
+                .offset(x: buttonDragState.translation.width - 20, y: buttonDragState.translation.height - 20)
                 .onChange(of: buttonDragState.isActive) { value in
                     if value == true {
                         newProposition = Proposition()
+                        newProposition!.content.setPublishClosure(closure: argument.sLibrary.publishRequest(text:symbol:))
+                        newProposition!.content.setPublisherID(id: argument.sLibrary.id)
                         argument.formalData.add(proposition: newProposition!)
                         draggedIndex = argument.formalData.propositions.count - 1
                     }
@@ -127,12 +129,21 @@ struct ArgumentView: View {
     var header: some View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading) {
-                Text(argument.title)
+                TextEditor(text: $argument.title)
                     .lineSpacing(5)
                     .fixedSize(horizontal: false, vertical: true)
                     .font(.custom("SabonBold", size: 28))
                     .foregroundColor(Color("MainText"))
-                    .padding(.bottom, 10)
+                    .background(GeometryReader{ geometry in
+                        Text(argument.title == "" ? "Nuovo ragionamento" : "")
+                            .lineSpacing(5)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .font(.custom("SabonBold", size: 28))
+                            .foregroundColor(Color("BoxGrey"))
+                            .frame(alignment: .leading)
+                            .padding(.top, 8)
+                            .padding(.leading, 4)
+                    })
                 
                 //Divider()
             }

@@ -131,6 +131,10 @@ class Proposition: ObservableObject, Identifiable, Equatable {
     
     func statementRequestsChange(childID: UUID, changeInto: Statement) {
         print("Proposition received change request from: \(childID), change into: \(changeInto.id)")
+        changeInto.publisherID = content.publisherID
+        if let pClosure = content.publishSimpleChange {
+            changeInto.setPublishClosure(closure: pClosure)
+        }
         content = changeInto
         //content.id = childID
         content.delete = statementRequestsDeletion(childID:)

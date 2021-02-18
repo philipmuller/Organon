@@ -8,38 +8,127 @@
 import SwiftUI
 
 struct ArgumentBrowser: View {
-    var arguments: [Argument]
+    @State var arguments: [Argument]
+    @State var hideSearch = false
+    @State var selection: UUID? = nil
     var body: some View {
-        ScrollView {
-            HStack {
-                Text("My Arguments")
-                    .font(.custom("SabonBold", size: 30))
-                    .foregroundColor(Color("MainText"))
-                    .padding(.leading, 30)
-                Spacer()
-            }
-            .padding(.top, 60)
-            .padding(.bottom, 20)
-            
-            
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ForEach(arguments) { argument in
-                    VStack {
-                        NavigationLink(
-                            destination: ArgumentView(argument: argument)
-                        ) {
-                            ArgumentPreviewCell(argument: argument)
+        ZStack(alignment: .bottomTrailing) {
+            ScrollView {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text("My Arguments")
+                            .font(.custom("SabonBold", size: 30))
+                            .foregroundColor(Color("MainText"))
+                            .padding(.leading, 30)
+                        
+                        Spacer()
+                        
+                        
+                        
+                    }
+                    //.padding(.top, 60)
+                    .padding(.bottom, 20)
+                    
+                    Button(action: {
+                        print("Favorites tapped!")
+                    }) {
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color("BoxGrey").opacity(0.3))
+                                .frame(height: 40)
+                            
+                            HStack() {
+                                Image("search")
+                                    .font(Font.system(size: 17, weight: .regular))
+                                    .padding(.leading, 10)
+                                    .foregroundColor(Color("MainText"))
+                                Text("Tocca per cercare")
+                                    .foregroundColor(Color("BoxGrey"))
+                            }
+                            
                         }
-                        .buttonStyle(PlainButtonStyle())
+                        .padding(.horizontal, 30)
+                        .onAppear() {
+                            hideSearch = true
+                        }
+                        .onDisappear() {
+                            hideSearch = false
+                        }
+                        .padding(.bottom, 20)
+                        
                     }
                 }
+                
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ForEach(arguments) { argument in
+                        VStack {
+                            NavigationLink(destination: ArgumentView(argument: argument), tag: argument.id, selection: $selection) {
+                                ArgumentPreviewCell(argument: argument)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                }
+                .frame(width: 380)
             }
-            .frame(width: 380)
+            .navigationBarTitle("")
+            //.navigationBarHidden(false)
+            .navigationBarItems(leading: searchBtn
+                .accentColor(Color("BoxGrey"))
+                , trailing:
+                    NavigationLink(
+                        destination: SettingsView()
+                    ) {
+                        Image("settings")
+                            .font(Font.system(size: 20, weight: .regular))
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                    .accentColor(Color("BoxGrey"))
+            )
+//            NavigationLink(
+//                destination: ArgumentView(argument: addNewArgument())
+//            ) {
+//
+//            }
+//            .buttonStyle(PlainButtonStyle())
+            
+            Button(action: {
+                let argument = Argument(title: "", propositions: [])
+                arguments.append(argument)
+                selection = argument.id
+            }) {
+                ZStack {
+                    Circle()
+                        .foregroundColor(Color.accentColor)
+                        .frame(width: 55, height: 55)
+                        
+                    
+                    Image(systemName: "plus")
+                        .foregroundColor(Color.white)
+                }
+                .offset(x: -20, y: -20)
+            }
         }
-        .navigationBarTitle("")
-        .navigationBarHidden(true)
+    }
+    
+    func addNewArgument() -> Argument {
+        let argument = Argument(title: "\(UUID())", propositions: [])
+        DispatchQueue.main.async {
+            self.arguments.append(argument)
+        }
+        return argument
+    }
+    
+    var searchBtn: some View {
+        VStack {
+            if !hideSearch {
+                Image("search")
+                    .font(Font.system(size: 20, weight: .regular))
+            }
+        }
     }
 }
+
 
 struct ArgumentPreviewCell: View {
     
@@ -52,13 +141,13 @@ struct ArgumentPreviewCell: View {
             
             VStack(alignment: .leading) {
                 Text(argument.title)
-                    .font(.custom("SabonBold", size: 19))
+                    .font(.custom("SabonBold", size: 20))
                     .foregroundColor(Color("MainText"))
                     .padding(.bottom, 5)
                 
-                Text("CONCLUSIONE:")
-                    .font(.custom("AvenirNext-DemiBold", size: 12))
-                    .foregroundColor(Color("BoxGrey"))
+//                Text("CONCLUSIONE:")
+//                    .font(.custom("AvenirNext-DemiBold", size: 12))
+//                    .foregroundColor(Color("BoxGrey"))
                 
                 if let conclusion = argument.conclusion {
                     StatementView(statement: conclusion.content)
@@ -66,12 +155,12 @@ struct ArgumentPreviewCell: View {
                         .offset(x: calculateOffset(conclusion.content))
                         .font(.custom("AvenirNext-Medium", size: 17))
                         .foregroundColor(Color("MainText"))
-                        .opacity(0.8)
+                        //.opacity(0.8)
                 } else {
                     Text(argument.description)
                         .font(.custom("AvenirNext-Medium", size: 17))
                         .foregroundColor(Color("MainText"))
-                        .opacity(0.8)
+                        //.opacity(0.8)
                 }
                 
                 Divider()

@@ -95,6 +95,12 @@ private struct UITextViewWrapper: UIViewRepresentable {
             textField.returnKeyType = .done
         }
         textField.returnKeyType = UIReturnKeyType.done
+        
+        let bar = UIToolbar()
+        let reset = UIBarButtonItem(title: "Reset", style: .plain, target: self, action: nil)
+        bar.items = [reset, reset, reset]
+        bar.sizeToFit()
+        textField.inputAccessoryView = bar
 
         textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
@@ -113,6 +119,10 @@ private struct UITextViewWrapper: UIViewRepresentable {
         
         UITextViewWrapper.recalculateHeight(view: textField, result: $calculatedHeight)
         return textField
+    }
+    
+    func resetTapped() {
+        
     }
     
     func stringFromStatement(_ theStatement: Statement) -> NSMutableAttributedString {

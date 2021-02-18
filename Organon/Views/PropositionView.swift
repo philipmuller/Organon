@@ -238,12 +238,14 @@ struct PropositionView: View {
     
     func calculateOffset(_ forStatement: Statement) -> CGFloat {
         var offset: CGFloat = 0
-        if forStatement.type == .negation {
-            offset = -15
+        if let neg = forStatement as? Negation {
+            if let juncture = neg.negatedStatement as? JunctureStatement {
+                offset = -10
+            }
         } else if let cod = forStatement as? JunctureStatement {
             if cod.type != .conditional {
-                if cod.firstChild.type != .simple || cod.secondChild.type != .simple {
-                    offset = -15
+                if cod.firstChild.type != .simple || cod.secondChild.type != .simple, cod.firstChild.type != .negation || cod.secondChild.type != .negation {
+                    offset = -10
                 }
             }
         }

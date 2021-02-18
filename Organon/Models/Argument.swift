@@ -9,7 +9,8 @@ import Foundation
 import Combine
 
 class Argument: ObservableObject, Identifiable {
-    var title: String
+    @Published var title: String
+    var id = UUID()
     @Published var description: String = ""
     @Published var formalData: FormalData
     @Published var sLibrary: SimpleLibrary
@@ -21,6 +22,7 @@ class Argument: ObservableObject, Identifiable {
         
         for proposition in formalData.propositions {
             proposition.content.setPublishClosure(closure: sLibrary.publishRequest(text:symbol:))
+            proposition.content.setPublisherID(id: sLibrary.id)
         }
     }
     
@@ -33,6 +35,7 @@ class Argument: ObservableObject, Identifiable {
 class SimpleLibrary: ObservableObject {
     
     @Published var statementForSymbol: [String : String] = [:]
+    var id = UUID()
     var symbolsForStatements: [String : String] {
         var d: [String : String] = [:]
         for (symbol, statement) in statementForSymbol {
@@ -113,7 +116,7 @@ class SimpleLibrary: ObservableObject {
     
     func publishPair(text: String, symbol: String) {
         statementForSymbol[symbol] = text
-        NotificationCenter.default.post(name: .simpleStatementChange, object: (text, symbol))
+        NotificationCenter.default.post(name: .simpleStatementChange, object: (text, symbol, id))
     }
     
 }
