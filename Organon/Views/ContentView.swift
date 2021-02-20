@@ -32,7 +32,7 @@ struct ContentView: View {
             .tabItem {
                 VStack {
                     Image("libreria").font(.system(size: 23))
-                    Text("Libreria")
+                    Text("Biblioteca")
                 }
                 .background(Color.red)
 

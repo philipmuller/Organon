@@ -22,7 +22,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         content = Statement()
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -31,7 +31,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         type = .premise
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -40,7 +40,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.type = type
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -50,7 +50,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.justification = justification
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -59,7 +59,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         type = .premise
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -68,7 +68,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.type = type
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -78,7 +78,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.justification = justification
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -88,7 +88,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.alias = alias
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -98,7 +98,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.alias = alias
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -109,7 +109,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         self.alias = alias
         self.content.delete = statementRequestsDeletion(childID:)
         self.content.change = statementRequestsChange(childID:changeInto:)
-        self.content.target = targetStatementAtCount(count:)
+        self.content.target = targetStatementAtCount(count:type:senderID:)
         self.content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -125,7 +125,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         //content.id = childID
         content.delete = statementRequestsDeletion(childID:)
         content.change = statementRequestsChange(childID:changeInto:)
-        content.target = targetStatementAtCount(count:)
+        content.target = targetStatementAtCount(count:type:senderID:)
         content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
@@ -139,11 +139,11 @@ class Proposition: ObservableObject, Identifiable, Equatable {
         //content.id = childID
         content.delete = statementRequestsDeletion(childID:)
         content.change = statementRequestsChange(childID:changeInto:)
-        content.target = targetStatementAtCount(count:)
+        content.target = targetStatementAtCount(count:type:senderID:)
         content.changeTarget = addAtTargeted(connectionType:connectTo:)
     }
     
-    func targetStatementAtCount(count: Int?) {
+    func targetStatementAtCount(count: Int?, type: TargetingType, senderID: UUID) {
         print("Proposition here! Target counting has reached end station!")
     }
     

@@ -74,7 +74,7 @@
 		85347B71258FB3D9002C4142 /* StatementTextEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatementTextEditor.swift; sourceTree = "<group>"; };
 		853F4FB32581617B00D98CBE /* ConnectiveLines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectiveLines.swift; sourceTree = "<group>"; };
 		853FC97625CDA29200EF5771 /* ArgumentBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArgumentBrowser.swift; sourceTree = "<group>"; };
-		853FC97B25CECEEA00EF5771 /* CompendiumBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumBrowser.swift; sourceTree = "<group>"; };
+		853FC97B25CECEEA00EF5771 /* CompendiumBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumBrowser.swift; sourceTree = "<group>"; usesTabs = 0; };
 		853FC97E25CF174D00EF5771 /* CompendiumDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumDetail.swift; sourceTree = "<group>"; };
 		853FC98125D2F76800EF5771 /* CompendiumEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumEntry.swift; sourceTree = "<group>"; };
 		853FC98525D3031700EF5771 /* CompendiumData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompendiumData.swift; sourceTree = "<group>"; };

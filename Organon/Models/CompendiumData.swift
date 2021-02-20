@@ -8,13 +8,11 @@
 import Foundation
 
 struct CompendiumData {
-    static func generateFirstSection() -> [Row] {
-        var rows: [Row] = []
-        
+    static func generateFirstSection() -> [CompendiumEntry] {
         var entries: [CompendiumEntry] = []
         
         let introduction = CompendiumEntry(
-            title: "Introduction",
+            title: "Logica?",
             tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
             requiredKnowladge: [],
             body: [Paragraph(
@@ -26,7 +24,7 @@ struct CompendiumData {
         entries.append(introduction)
         
         let simple = CompendiumEntry(
-            title: "Simple Statements",
+            title: "Tipi di ragionamento",
             tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
             requiredKnowladge: [],
             body: [Paragraph(
@@ -38,7 +36,7 @@ struct CompendiumData {
         entries.append(simple)
         
         let conjunction = CompendiumEntry(
-            title: "Conjunctions",
+            title: "Ragionamenti deduttivi",
             tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
             requiredKnowladge: [],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A · B", "t", "f", "f", "f"]]),
@@ -50,14 +48,14 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: false, title: "Quiz", estimatedCompletionTime: 4, qa: [
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
                     "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
                     "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
                     "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
                     "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
                 ]),
                 
-                EditorQuestion(difficulty: "EASY", completed: false, estimatedCompletionTime: 4, title: "Conversione", prompt:
+                EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
                                 "Prova a convertire la seguente frase in cheneso", solution: FormalData(propositions: [
                                     Proposition(content: Statement(content: "Something something", formula: "A"))
                                 ]))
@@ -66,7 +64,7 @@ struct CompendiumData {
         entries.append(conjunction)
         
         let disjunction = CompendiumEntry(
-            title: "Disjunctions",
+            title: "Frasi logiche",
             tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
             requiredKnowladge: [],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A v B", "t", "t", "t", "f"]]),
@@ -79,7 +77,7 @@ struct CompendiumData {
         entries.append(disjunction)
         
         let conditional = CompendiumEntry(
-            title: "Conditionals",
+            title: "Inferenze",
             tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
             requiredKnowladge: [],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
@@ -92,7 +90,7 @@ struct CompendiumData {
         entries.append(conditional)
         
         let negation = CompendiumEntry(
-            title: "Negations",
+            title: "Ragionamenti",
             tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
             requiredKnowladge: [],
             body: [Table(content: [["A", "t", "f"], ["~A", "f", "t"]]),
@@ -104,8 +102,14 @@ struct CompendiumData {
         )
         entries.append(negation)
         
-        let whatever = CompendiumEntry(
-            title: "Whatever",
+        return entries
+    }
+    
+    static func generateSecondSection() -> [CompendiumEntry] {
+        var entries: [CompendiumEntry] = []
+        
+        let introduction = CompendiumEntry(
+            title: "Semplici",
             tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
             requiredKnowladge: [],
             body: [Paragraph(
@@ -114,18 +118,159 @@ struct CompendiumData {
             )],
             exercises: []
         )
-        entries.append(whatever)
+        entries.append(introduction)
         
-        if !entries.count.isMultiple(of: 2) {
-            rows.append(Row(firstEntry: entries.first!, secondEntry: nil))
-            entries.remove(at: 0)
-        }
+        let simple = CompendiumEntry(
+            title: "Negazioni",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            )],
+            exercises: []
+        )
+        entries.append(simple)
         
-        for index in 0..<entries.count where index.isMultiple(of: 2) {
-            rows.append(Row(firstEntry: entries[index], secondEntry: index + 1 < entries.count ? entries[index + 1] : nil))
-        }
+        let conjunction = CompendiumEntry(
+            title: "Congiunzioni",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A · B", "t", "f", "f", "f"]]),
+                Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            ), Paragraph(
+                title: "From conversation to structure",
+                body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+        )],
+            exercises: [
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
+                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
+                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
+                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
+                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                ]),
+                
+                EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
+                                "Prova a convertire la seguente frase in cheneso", solution: FormalData(propositions: [
+                                    Proposition(content: Statement(content: "Something something", formula: "A"))
+                                ]))
+            ]
+        )
+        entries.append(conjunction)
         
-        return rows
+        let disjunction = CompendiumEntry(
+            title: "Disgiunzioni",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A v B", "t", "t", "t", "f"]]),
+                   Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            )],
+            exercises: []
+        )
+        entries.append(disjunction)
+        
+        let conditional = CompendiumEntry(
+            title: "Condizionali",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
+                   Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            )],
+            exercises: []
+        )
+        entries.append(conditional)
+        
+        let n6 = CompendiumEntry(
+            title: "Combinazioni",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
+                   Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            )],
+            exercises: []
+        )
+        entries.append(n6)
+        
+        return entries
+    }
+    
+    static func generateThirdSection() -> [CompendiumEntry] {
+        var entries: [CompendiumEntry] = []
+        
+        let introduction = CompendiumEntry(
+            title: "Modus Ponens",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            )],
+            exercises: []
+        )
+        entries.append(introduction)
+        
+        let simple = CompendiumEntry(
+            title: "Modus Tollens",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            )],
+            exercises: []
+        )
+        entries.append(simple)
+        
+        let conjunction = CompendiumEntry(
+            title: "Sillogismo disgiuntivo",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A · B", "t", "f", "f", "f"]]),
+                Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            ), Paragraph(
+                title: "From conversation to structure",
+                body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+        )],
+            exercises: [
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
+                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
+                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
+                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
+                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                ]),
+                
+                EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
+                                "Prova a convertire la seguente frase in cheneso", solution: FormalData(propositions: [
+                                    Proposition(content: Statement(content: "Something something", formula: "A"))
+                                ]))
+            ]
+        )
+        entries.append(conjunction)
+        
+        let disjunction = CompendiumEntry(
+            title: "Sillogismo ipotetico",
+            tldr: "Una congiunzione di due proposizioni è vera se e solo se entrambi i termini congiunti sono veri",
+            requiredKnowladge: [],
+            body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A v B", "t", "t", "t", "f"]]),
+                   Paragraph(
+                    title: nil,
+                    body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
+            )],
+            exercises: []
+        )
+        entries.append(disjunction)
+        
+        return entries
     }
 }
 

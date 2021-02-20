@@ -155,7 +155,7 @@ struct PropositionView: View {
     
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
-            StatementView(statement: proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: expanded)
+            StatementView(statement: proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: expanded, forceBranching: false)
                 .offset(x: expanded ? 0 : calculateOffset(proposition.content))
             
             propositionDetailView

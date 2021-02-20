@@ -9,55 +9,12 @@ import SwiftUI
 
 struct ArgumentBrowser: View {
     @State var arguments: [Argument]
-    @State var hideSearch = false
+    @State var hideSearch = true
     @State var selection: UUID? = nil
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text("My Arguments")
-                            .font(.custom("SabonBold", size: 30))
-                            .foregroundColor(Color("MainText"))
-                            .padding(.leading, 30)
-                        
-                        Spacer()
-                        
-                        
-                        
-                    }
-                    //.padding(.top, 60)
-                    .padding(.bottom, 20)
-                    
-                    Button(action: {
-                        print("Favorites tapped!")
-                    }) {
-                        ZStack(alignment: .leading) {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color("BoxGrey").opacity(0.3))
-                                .frame(height: 40)
-                            
-                            HStack() {
-                                Image("search")
-                                    .font(Font.system(size: 17, weight: .regular))
-                                    .padding(.leading, 10)
-                                    .foregroundColor(Color("MainText"))
-                                Text("Tocca per cercare")
-                                    .foregroundColor(Color("BoxGrey"))
-                            }
-                            
-                        }
-                        .padding(.horizontal, 30)
-                        .onAppear() {
-                            hideSearch = true
-                        }
-                        .onDisappear() {
-                            hideSearch = false
-                        }
-                        .padding(.bottom, 20)
-                        
-                    }
-                }
+                header
                 
                 LazyVStack(alignment: .leading, spacing: 0) {
                     ForEach(arguments) { argument in
@@ -69,7 +26,8 @@ struct ArgumentBrowser: View {
                         }
                     }
                 }
-                .frame(width: 380)
+                .padding(.horizontal, 15)
+                .padding(.top, -20)
             }
             .navigationBarTitle("")
             //.navigationBarHidden(false)
@@ -119,11 +77,53 @@ struct ArgumentBrowser: View {
         return argument
     }
     
+    var header: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text("My Arguments")
+                    .font(.custom("SabonBold", size: 30))
+                    .foregroundColor(Color("MainText"))
+                    .padding(.leading, 30)
+                
+                Spacer()
+                
+                
+                
+            }
+            //.padding(.top, 60)
+            .padding(.bottom, 20)
+            
+            Button(action: {
+                print("Favorites tapped!")
+            }) {
+                ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color("BoxGrey").opacity(0.3))
+                        .frame(height: 40)
+                    
+                    HStack() {
+                        Image("search")
+                            .font(Font.system(size: 17, weight: .regular))
+                            .padding(.leading, 10)
+                            .foregroundColor(Color("BoxGrey"))
+                        Text("Tocca per cercare")
+                            .foregroundColor(Color("BoxGrey"))
+                    }
+                    
+                }
+                .padding(.horizontal, 30)
+                .padding(.bottom, 20)
+                
+            }
+        }
+    }
+    
     var searchBtn: some View {
         VStack {
             if !hideSearch {
                 Image("search")
                     .font(Font.system(size: 20, weight: .regular))
+                    .foregroundColor(Color("BoxGrey"))
             }
         }
     }
@@ -132,12 +132,13 @@ struct ArgumentBrowser: View {
 
 struct ArgumentPreviewCell: View {
     
-    var argument: Argument
+    @ObservedObject var argument: Argument
     
     var body: some View {
-        HStack(alignment: .top, spacing: 20) {
+        HStack(alignment: .top, spacing: 10) {
             Text("2d")
                 .foregroundColor(Color("BoxGrey"))
+                .padding(.top, 3)
             
             VStack(alignment: .leading) {
                 Text(argument.title)
@@ -154,8 +155,12 @@ struct ArgumentPreviewCell: View {
                         .allowsHitTesting(false)
                         .offset(x: calculateOffset(conclusion.content))
                         .font(.custom("AvenirNext-Medium", size: 17))
-                        .foregroundColor(Color("MainText"))
+                        .foregroundColor(Color("MainText").opacity(0.8))
                         //.opacity(0.8)
+                    
+//                    Text(conclusion.content.content)
+//                        .font(.custom("AvenirNext-Medium", size: 17))
+//                        .foregroundColor(Color("MainText").opacity(0.6))
                 } else {
                     Text(argument.description)
                         .font(.custom("AvenirNext-Medium", size: 17))
@@ -164,11 +169,11 @@ struct ArgumentPreviewCell: View {
                 }
                 
                 Divider()
-                    .padding(.top, 15)
+                    .padding(.top, 20)
                 
             }
         }
-        .padding(10)
+        .padding(.top, 23)
         
         //.frame(width: 350)
     }
@@ -182,11 +187,11 @@ struct ArgumentPreviewCell: View {
     func calculateOffset(_ forStatement: Statement) -> CGFloat {
         var offset: CGFloat = 0
         if forStatement.type == .negation {
-            offset = -15
+            offset = -10
         } else if let cod = forStatement as? JunctureStatement {
             if cod.type != .conditional {
                 if cod.firstChild.type != .simple || cod.secondChild.type != .simple {
-                    offset = -15
+                    offset = -10
                 }
             }
         }

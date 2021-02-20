@@ -19,6 +19,20 @@ struct CompendiumEntry: Identifiable, Equatable {
     let body: [EntryComponent]
     let exercises: [Exercise]
     
+    var allExercisesCompleted: Bool {
+        if exercises.isEmpty {
+            return false
+        }
+        
+        for exercise in exercises {
+            if exercise.completed == false {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
 }
 
 protocol EntryComponent {
