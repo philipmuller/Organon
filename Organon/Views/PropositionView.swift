@@ -53,12 +53,24 @@ struct PropositionView: View {
             
             if !expanded {
                 ZStack(alignment: .center) {
-                    iconAndNumber
-                        .rotationEffect(Angle(degrees: Double(swipeAmount)), anchor: UnitPoint(x: 0.5, y: 0.5))
-                        .opacity(Double(1-(swipeAmount/50)))
+                    //Text("H: \(proposition.highlight ? "y" : "n")")
+                    
+                    if proposition.highlight {
+                        if selectedJustificationReferences.contains(index) {
+                            Image(systemName: "checkmark.square.fill")
+                        } else {
+                            Image(systemName: "square")
+                        }
+                        
+                        
+                    } else {
+                        iconAndNumber
+                            .rotationEffect(Angle(degrees: Double(swipeAmount)), anchor: UnitPoint(x: 0.5, y: 0.5))
+                            .opacity(Double(1-(swipeAmount/50)))
+                    }
                     
                     Button(action: {
-                        self.onDelete(proposition)
+                        print("This should take you to the library")
                     }) {
                         Image(systemName: swipeAmount < swipeTreshhold ? "xmark.circle" : "xmark.circle.fill")
                             .resizable()
@@ -125,6 +137,8 @@ struct PropositionView: View {
                                 }
                             }
                             
+                            var shinyNewReferences: [UUID] = []
+                            
                             if isAlreadyPresent {
                                 selectedJustificationReferences.removeAll(where: { idx in
                                     if idx == index {
@@ -135,9 +149,26 @@ struct PropositionView: View {
                                 })
                             } else {
                                 selectedJustificationReferences.append(index)
+                                shinyNewReferences.append(proposition.id)
                             }
                             selectedProposition?.type = .step
-                            selectedProposition?.justification = Justification(type: newJustificationRequest!, references: [proposition.id])
+                            
+                            if var selectedPropJR = selectedProposition?.justification?.references {
+                                if shinyNewReferences.isEmpty {
+                                    selectedPropJR.removeAll(where: { uuid in
+                                        if uuid == proposition.id {
+                                            return true
+                                        } else {
+                                            return false
+                                        }
+                                    })
+                                    shinyNewReferences = selectedPropJR
+                                } else {
+                                    selectedPropJR.append(proposition.id)
+                                    shinyNewReferences = selectedPropJR
+                                }
+                            }
+                            selectedProposition?.justification = Justification(type: newJustificationRequest!, references: shinyNewReferences)
                             impactHeavy.impactOccurred()
                         }
                     }
@@ -155,8 +186,12 @@ struct PropositionView: View {
     
     var content: some View {
         return VStack(alignment: .leading, spacing: 5) {
-            StatementView(statement: proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: expanded, forceBranching: false)
-                .offset(x: expanded ? 0 : calculateOffset(proposition.content))
+            if newJustificationRequest != nil && expanded {
+                inferenceEditor
+            } else {
+                StatementView(statement: proposition.content, deleteCount: $count, isEditing: $editedStatementID, selectedProposition: $selectedProposition, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, editable: expanded, forceBranching: false, dim: false)
+                    .offset(x: expanded ? 0 : calculateOffset(proposition.content))
+            }
             
             propositionDetailView
                 .frame(width: expanded ? nil : 0, height: expanded ? nil : 0)
@@ -178,10 +213,31 @@ struct PropositionView: View {
         }
     }
     
+    var inferenceEditor: some View {
+        HStack {
+            if let justificationRequest = newJustificationRequest {
+                Text(justificationRequest.extendedTextITA() + ": ")
+                Text(selectedJustificationReferences.first != nil ? "\(selectedJustificationReferences.first!)" : "seleziona")
+                    .padding(.horizontal , 6)
+                    .padding(.vertical , 1)
+                    .background(inferenceSelectorBubbleBackground(selected: selectedJustificationReferences.first != nil ? true : false))
+                Text(selectedJustificationReferences.count == 2 ? "\(selectedJustificationReferences.last!)" : "seleziona")
+                    .padding(.horizontal , 6)
+                    .padding(.vertical , 1)
+                    .background(inferenceSelectorBubbleBackground(selected: selectedJustificationReferences.count == 2 ? true : false))
+            }
+        }
+    }
+    
+    func inferenceSelectorBubbleBackground(selected: Bool) -> some View {
+        RoundedRectangle(cornerRadius: 5)
+            .fill(Color(selected ? "AccentColor" : "BoxGrey"))
+    }
+    
     var formula: some View {
         HStack(alignment: .firstTextBaseline) {
             
-            Text("FORMULA: ")
+            Text("STRUTTURA: ")
                 .font(.custom("AvenirNext-Medium", size: 14))
                 .foregroundColor(Color("BoxGrey"))
             
@@ -228,9 +284,13 @@ struct PropositionView: View {
         }
     }
     
+    var propositionIcon: some View {
+        PropositionIcon(justification: proposition.justification, propositionType: proposition.type, references: references, expanded: expanded)
+    }
+    
     var background: some View {
         RoundedRectangle(cornerRadius: 10)
-            .foregroundColor(proposition.highlight ? .green : .white)
+            .foregroundColor(.white)
             .opacity(expanded || dragState.isActive ? 1 : 0.1)
             .shadow(color: Color("BoxGrey"), radius: expanded || dragState.isActive ? 10 : 0)
             .animation(.easeInOut(duration: 0.5), value: dragState.isActive)
@@ -259,52 +319,7 @@ struct PropositionView: View {
             .opacity(proposition.type == .empty ? 1 : 0)
     }
     
-    var propositionIcon: some View {
-        ZStack {
-            let lBackground = RoundedRectangle(cornerRadius: 3)
-                .foregroundColor(boxColor(type: proposition.type))
     
-            Text(justificationText(data: (proposition.justification, references), state: expanded))
-                .padding(EdgeInsets(top: 1, leading: 5, bottom: 1, trailing: 5))
-                .background(lBackground)
-                .font(.custom("AvenirNext-DemiBold", size: expanded ? 13 : 11))
-                .foregroundColor(.white)
-        }
-    }
-    
-    func justificationText(data: (Justification?, [Int]?), state: Bool) -> String {
-        if let j = data.0 {
-            if let r = data.1 {
-                if state == true {
-                    if let eText = j.type?.extendedText() {
-                        return r.count < 2 ? eText + ": \(r.first!)" : eText + ": \(r.first!), \(r.last!)"
-                    }
-                } else {
-                    if let cText = j.type?.text() {
-                        return cText
-                    }
-                }
-            }
-            if let type = j.type {
-                return state ? type.extendedText() : type.text()
-            }
-        }
-        
-        return state ? "Premise" : "Pr"
-    }
-    
-    func boxColor(type: PropositionType) -> Color {
-        switch type {
-        case .conclusion:
-            return Color("Conclusion")
-        case .premise:
-            return Color("Premise")
-        case .step:
-            return Color("BoxGrey")
-        default:
-            return Color("BoxGrey")
-        }
-    }
     
     var swipe: some Gesture {
             DragGesture()
@@ -349,6 +364,68 @@ struct PropositionView: View {
                 
                 print("ENDED")
             }
+    }
+    
+}
+
+struct PropositionIcon: View {
+    var explicitColor: Color?
+    var justification: Justification?
+    var propositionType: PropositionType
+    var references: [Int]?
+    var expanded: Bool
+    
+    var body: some View {
+        ZStack {
+            let lBackground = RoundedRectangle(cornerRadius: 3)
+                .foregroundColor(explicitColor == nil ? boxColor(type: propositionType) : explicitColor)
+    
+            Text(justificationText(data: (justification, references), state: expanded))
+                .padding(EdgeInsets(top: 1, leading: 5, bottom: 1, trailing: 5))
+                .background(lBackground)
+                .font(.custom("AvenirNext-DemiBold", size: expanded ? 13 : 11))
+                .foregroundColor(.white)
+        }
+    }
+    
+    func justificationText(data: (Justification?, [Int]?), state: Bool) -> String {
+        if let j = data.0 {
+            if let r = data.1 {
+                if state == true {
+                    if let eText = j.type?.extendedTextITA() {
+                        if let firstNumber = r.first {
+                            if r.count == 2 {
+                                return eText + ": \(firstNumber), \(r.last!)"
+                            }
+                            
+                            return eText + ": \(firstNumber)"
+                        }
+                    }
+                } else {
+                    if let cText = j.type?.textITA() {
+                        return cText
+                    }
+                }
+            }
+            if let type = j.type {
+                return state ? type.extendedTextITA() : type.textITA()
+            }
+        }
+        
+        return state ? "Premise" : "Pr"
+    }
+    
+    func boxColor(type: PropositionType) -> Color {
+        switch type {
+        case .conclusion:
+            return Color("Conclusion")
+        case .premise:
+            return Color("Premise")
+        case .step:
+            return Color("BoxGrey")
+        default:
+            return Color("BoxGrey")
+        }
     }
     
 }

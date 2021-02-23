@@ -590,7 +590,22 @@ extension FormalData {
         }
     }
     
-    func highlight(justification: JustificationType, selectedReferences: [Int], requestedBy: UUID) {
+    func revealAll() {
+        for prop in propositions {
+            prop.invisible = false
+        }
+    }
+    
+    func hideInBetween(exempt: [UUID]) {
+        for prop in propositions {
+            if !prop.highlight && !exempt.contains(prop.id) {
+                prop.invisible = true
+            }
+            
+        }
+    }
+    
+    func highlight(justification: JustificationType, selectedReferences: [Int], requestedBy: UUID) -> Bool {
         clearHighlighting()
         var potentialReturn: Statement?
         switch justification {
@@ -631,6 +646,8 @@ extension FormalData {
         default:
             print("Justification highlights nothing")
         }
+
+        //hideInBetween(exempt: [requestedBy])
         
         if let r = potentialReturn {
             let p = proposition(for: requestedBy) ?? Proposition()
@@ -638,7 +655,12 @@ extension FormalData {
             
             if let uI = i {
                 propositions[uI].content = r
+                clearHighlighting()
+                //revealAll()
+                return true
             }
         }
+        
+        return false
     }
 }

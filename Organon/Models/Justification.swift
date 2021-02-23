@@ -174,4 +174,128 @@ enum JustificationType {
             return "Error"
         }
     }
+    
+    public func extendedTextITA() -> String {
+        switch self {
+        case .ACP:
+            return "Supposizione - Prova Condizionale"
+        case .AD:
+            return "Addizione"
+        case .AIP:
+            return "Supposizione - Dimostrazione per Assurdo"
+        case .AS:
+            return "Associazione"
+        case .CD:
+            return "Dilemma Costruttivo"
+        case .CM:
+            return "Commutazione"
+        case .CN:
+            return "Congiunzione"
+        case .CP:
+            return "Prova Condizionale"
+        case .CQ:
+            return "-------"
+        case .DIST:
+            return "Distribuzione"
+        case .DM:
+            return "Legge di De Morgan"
+        case .DN:
+            return "Doppia Negazione"
+        case .DS:
+            return "Sillogismo Disgiuntivo"
+        case .EG:
+            return "-------"
+        case .EI:
+            return "-------"
+        case .EQ:
+            return "Equivalenza Logica"
+        case .EXP:
+            return "Esportazione"
+        case .HS:
+            return "Sillogismo Ipotetico"
+        case .IMP:
+            return "----------"
+        case .IP:
+            return "Dimostrazione per Assurdo"
+        case .MP:
+            return "Modus Ponens"
+        case .MT:
+            return "Modus Tollens"
+        case .SM:
+            return "Semplificazione"
+        case .TAUT:
+            return "Tautologia"
+        case .TRAN:
+            return "Transposizione"
+        case .UG:
+            return "--------"
+        case .UI:
+            return "---------"
+            
+        default:
+            return "Error"
+        }
+    }
+    
+    public func textITA() -> String {
+        switch self {
+        case .ACP:
+            return "SPC"
+        case .AD:
+            return "AD"
+        case .AIP:
+            return "SDA"
+        case .AS:
+            return "AS"
+        case .CD:
+            return "DC"
+        case .CM:
+            return "CM"
+        case .CN:
+            return "CN"
+        case .CP:
+            return "PC"
+        case .CQ:
+            return "CQ"
+        case .DIST:
+            return "DIST"
+        case .DM:
+            return "DM"
+        case .DN:
+            return "DN"
+        case .DS:
+            return "SD"
+        case .EG:
+            return "EG"
+        case .EI:
+            return "EI"
+        case .EQ:
+            return "EL"
+        case .EXP:
+            return "ESP"
+        case .HS:
+            return "SI"
+        case .IMP:
+            return "IMP"
+        case .IP:
+            return "DA"
+        case .MP:
+            return "MP"
+        case .MT:
+            return "MT"
+        case .SM:
+            return "SM"
+        case .TAUT:
+            return "TAUT"
+        case .TRAN:
+            return "TRAN"
+        case .UG:
+            return "UG"
+        case .UI:
+            return "UI"
+            
+        default:
+            return "Error"
+        }
+    }
 }

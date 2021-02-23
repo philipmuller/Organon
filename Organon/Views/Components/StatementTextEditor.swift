@@ -83,6 +83,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
     @State var previousJustificationRequestState: JustificationType? = nil
     @State var previousSelectedJustificationReferences: [Int] = []
     let forceBranching: Bool
+    
+    @State var textView: UITextView?
 
     func makeUIView(context: UIViewRepresentableContext<UITextViewWrapper>) -> UITextView {
         let textField = UITextView()
@@ -99,11 +101,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
         }
         textField.returnKeyType = UIReturnKeyType.done
         
-        let bar = UIToolbar()
-        let reset = UIBarButtonItem(title: "Reset", style: .plain, target: self, action: nil)
-        bar.items = [reset, reset, reset]
-        bar.sizeToFit()
-        textField.inputAccessoryView = bar
+        
+        
 
         textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         
@@ -122,10 +121,6 @@ private struct UITextViewWrapper: UIViewRepresentable {
         
         UITextViewWrapper.recalculateHeight(view: textField, result: $calculatedHeight)
         return textField
-    }
-    
-    func resetTapped() {
-        
     }
     
     func stringFromStatement(_ theStatement: Statement) -> NSMutableAttributedString {
@@ -151,6 +146,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 text += "\(reference)"
             }
             uiView.text = text
+            
         }
 
         print("UPDATE VIEW GOT CALLED")
@@ -210,8 +206,12 @@ private struct UITextViewWrapper: UIViewRepresentable {
         
         var targetedHalf: Int?
         
-        let typesForTags = ["and" : StatementType.conjunction, "or" : StatementType.disjunction, "then" : StatementType.conditional, "not" : StatementType.negation]
+        weak var managedView: UITextView?
+        
+        let typesForTags = ["and" : StatementType.conjunction, "or" : StatementType.disjunction, "then" : StatementType.conditional, "not" : StatementType.negation, "e" : StatementType.conjunction, "o" : StatementType.disjunction, "oppure" : StatementType.disjunction, "allora" : StatementType.conditional, "segue" : StatementType.conditional, "non" : StatementType.negation, "no" : StatementType.negation]
         let tagsForTypes = [StatementType.conjunction : "and", StatementType.disjunction: "or", StatementType.conditional : "then", StatementType.negation : "not"]
+        let tagsForTypesITA = [StatementType.conjunction : "e", StatementType.disjunction: "o", StatementType.conditional : "allora", StatementType.negation : "non"]
+        let tagsForTypesITAv2 = [StatementType.conjunction : "e", StatementType.disjunction: "oppure", StatementType.conditional : "segue", StatementType.negation : "no"]
         let imageNames = [StatementType.conjunction : "and", StatementType.disjunction : "or", StatementType.conditional : "then", StatementType.negation : "not"]
 
         init(deleteWrapper: Binding<Int>, statement: Statement, height: Binding<CGFloat>, onDone: (() -> Void)? = nil, isEditing: Binding<UUID?>, selectedProposition: Binding<Proposition?>, newJustificationRequest: Binding<JustificationType?>, selectedJustificationReferences: Binding<[Int]>, forceBranching: Bool) {
@@ -228,8 +228,192 @@ private struct UITextViewWrapper: UIViewRepresentable {
         }
 
         func textViewDidChange(_ uiView: UITextView) {
-            
             UITextViewWrapper.recalculateHeight(view: uiView, result: calculatedHeight)
+        }
+        
+        func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+            print("SHOULD BEGIN EDITING")
+            
+            let bar = UIToolbar()
+            bar.isTranslucent = true
+            bar.barStyle = .default
+            //bar.backgroundColor = UIColor.white.withAlphaComponent(1)
+            bar.barTintColor = UIColor.white.withAlphaComponent(1)
+            
+            let imageConfig = UIImage.SymbolConfiguration(textStyle: UIFont.TextStyle.body, scale: UIImage.SymbolScale.medium)
+            let imageConfig2 = UIImage.SymbolConfiguration(pointSize: 24, weight: .medium)
+            //let reset = UIBarButtonItem(title: "Prova", style: .plain, target: self, action: nil)
+            
+            let notImage = UIImage(named: "not", in: Bundle.main, with: imageConfig)!.applyingSymbolConfiguration(imageConfig2)
+            let orImage = UIImage(named: "or", in: Bundle.main, with: imageConfig)!.applyingSymbolConfiguration(imageConfig2)
+            let andImage = UIImage(named: "and", in: Bundle.main, with: imageConfig)!.applyingSymbolConfiguration(imageConfig2)
+            let thenImage = UIImage(named: "then", in: Bundle.main, with: imageConfig)!.applyingSymbolConfiguration(imageConfig2)
+            
+            let targetImage = UIImage(named: "target", in: Bundle.main, with: imageConfig)!.applyingSymbolConfiguration(imageConfig2)
+            let deleteImage = UIImage(named: "delete", in: Bundle.main, with: imageConfig)!.applyingSymbolConfiguration(imageConfig2)
+            
+            let not = UIBarButtonItem(image: notImage, style: .plain, target: self, action: #selector(self.notTapped))
+            let or = UIBarButtonItem(image: orImage, style: .plain, target: self, action: #selector(self.orTapped))
+            let and = UIBarButtonItem(image: andImage, style: .plain, target: self, action: #selector(self.andTapped))
+            let then = UIBarButtonItem(image: thenImage, style: .plain, target: self, action: #selector(self.thenTapped))
+            
+            or.width = 30
+            
+            let separator = UIBarButtonItem(systemItem: UIBarButtonItem.SystemItem.fixedSpace)
+            let rectangle = UIView(frame: CGRect(x: 0, y: 0, width: 2, height: 30))
+            
+            rectangle.backgroundColor = UIColor.black
+            separator.customView = rectangle
+            separator.tintColor = UIColor.black
+            
+            let target = UIBarButtonItem(image: targetImage, style: .plain, target: self, action: #selector(self.targetTapped))
+            let delete = UIBarButtonItem(image: deleteImage, style: .plain, target: self, action: #selector(self.deleteTapped))
+            
+            target.tintColor = UIColor(named: "MainText")?.withAlphaComponent(0.5)
+            delete.tintColor = UIColor(named: "False")
+            
+            let space = UIBarButtonItem(systemItem: UIBarButtonItem.SystemItem.flexibleSpace)
+            
+            let fixedSpace = UIBarButtonItem(systemItem: UIBarButtonItem.SystemItem.fixedSpace)
+            fixedSpace.width = 20
+
+            bar.items = [fixedSpace, not, space, or, space, and, space, then, space, separator, space, target, space, delete, fixedSpace]
+            bar.sizeToFit()
+            
+            bar.standardAppearance = UIToolbarAppearance(barAppearance: UIBarAppearance(idiom: UIUserInterfaceIdiom.phone))
+            
+            textView.inputAccessoryView = bar
+            managedView = textView
+            
+            return true
+        }
+        
+        @objc func andTapped() {
+            print("And")
+            if managedView != nil {
+                //managedView?.insertText(":")
+                if let selectedRange = managedView?.selectedTextRange {
+                    var result = false
+                    if targetingSymbolsCount == 0 {
+                        result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: ":")
+                        if result {
+                            managedView?.insertText(":")
+                        }
+                    }
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: "e")
+                    if result {
+                        managedView?.insertText("e")
+                    }
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: " ")
+                    if result {
+                        managedView?.insertText(" ")
+                    }
+                }
+                
+//                managedView?.insertText(" ")
+            }
+        }
+        
+        @objc func orTapped() {
+            print("Or")
+            if managedView != nil {
+                if let selectedRange = managedView?.selectedTextRange {
+                    var result = false
+                    if targetingSymbolsCount == 0 {
+                        result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: ":")
+                        if result {
+                            managedView?.insertText(":")
+                        }
+                    }
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: "o")
+                    if result {
+                        managedView?.insertText("o")
+                    }
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: " ")
+                    if result {
+                        managedView?.insertText(" ")
+                    }
+                }
+            }
+        }
+        
+        @objc func notTapped() {
+            print("Not")
+            if managedView != nil {
+                if let selectedRange = managedView?.selectedTextRange {
+                    var result = false
+                    if targetingSymbolsCount == 0 {
+                        result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: ":")
+                        if result {
+                            managedView?.insertText(":")
+                        }
+                    }
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: "non")
+                    if result {
+                        managedView?.insertText("non")
+                    }
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: " ")
+                    if result {
+                        managedView?.insertText(" ")
+                    }
+                }
+            }
+        }
+        
+        @objc func thenTapped() {
+            print("Then")
+            if managedView != nil {
+                if let selectedRange = managedView?.selectedTextRange {
+                    var result = false
+                    if targetingSymbolsCount == 0 {
+                        result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: ":")
+                        if result {
+                            managedView?.insertText(":")
+                        }
+                    }
+                    
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: "allora")
+                    if result {
+                        managedView?.insertText("allora")
+                    }
+                    
+                    result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: " ")
+                    if result {
+                        managedView?.insertText(" ")
+                    }
+                }
+            }
+        }
+        
+        @objc func targetTapped() {
+            print("Then")
+            if managedView != nil {
+                if let selectedRange = managedView?.selectedTextRange {
+                    var result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: ":")
+                    if result {
+                        managedView?.insertText(":")
+                    }
+                }
+            }
+        }
+        
+        @objc func deleteTapped() {
+            print("Then")
+            if managedView != nil {
+                if let selectedRange = managedView?.selectedTextRange {
+                    var result = self.textView(managedView!, shouldChangeTextIn: managedView!.selectedRange, replacementText: "-")
+                    if result {
+                        managedView?.insertText("-")
+                    }
+                }
+            }
         }
         
         func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -273,7 +457,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
             }
             
             if text == "?" {
-                print("content: \(statement.content), formula: \(statement.formula), structure: \(statement.structure), id: \(statement.id)")
+                print("STATEMENT REPORT! content: \(statement.content), formula: \(statement.formula), structure: \(statement.structure), id: \(statement.id)")
             }
             
             if text == ":" || text == "-" {
@@ -323,10 +507,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
                 let textViewText = textView.text ?? ""
                 if textViewText == "@MP" {
                     newJustificationRequest.wrappedValue = JustificationType.MP
-                    
-                    textView.textColor = UIColor.blue
-                    
-                    justificationEditingMode = true
+                    textView.text = ""
+                    textView.resignFirstResponder()
                 }
                 
                 if targetingSymbolsCount > 0 {
@@ -437,6 +619,7 @@ private struct UITextViewWrapper: UIViewRepresentable {
             
             //user is done editing
             if text == "\n" {
+                shouldStopEditing = true
                 textView.resignFirstResponder()
                 return false
             }
@@ -444,6 +627,8 @@ private struct UITextViewWrapper: UIViewRepresentable {
             
             return true
         }
+        
+        
         
         func textViewDidEndEditing(_ textView: UITextView) {
             print("Text view DID end editing (resigned first responder). about to call update statement. shouldStopEditing \(shouldStopEditing)")
@@ -458,7 +643,10 @@ private struct UITextViewWrapper: UIViewRepresentable {
             if shouldStopEditing {
                 print("Setting isEditing to nil.")
                 print("IS EDITING CHANGED from: \(isEditing.wrappedValue), to: nil, editedStatementID: \(statement.id)")
-                isEditing.wrappedValue = nil
+                DispatchQueue.main.async {
+                    self.isEditing.wrappedValue = nil
+                }
+                
             }
             print("shouldStopEditing is now true again!")
             //textView.text = "FUCK!"
@@ -714,7 +902,15 @@ private struct UITextViewWrapper: UIViewRepresentable {
         
         func textViewReplacementStringForSybom(oldString: NSAttributedString, currentLocation: Int, type: StatementType) -> NSAttributedString {
             let newString = NSMutableAttributedString(attributedString: oldString)
-            let tagLength = tagsForTypes[type]!.count + targetingSymbolsCount
+            var tagLength = 0
+            if let tag = tagsForTypesITA[type] {
+                tagLength = tag.count + targetingSymbolsCount
+            } else if let tag = tagsForTypesITAv2[type] {
+                tagLength = tag.count + targetingSymbolsCount
+            } else if let tag = tagsForTypes[type] {
+                tagLength = tag.count + targetingSymbolsCount
+            }
+            
             newString.replaceCharacters(in: NSRange(location: currentLocation-tagLength, length: tagLength), with: attributedStringForSymbol(type: type))
             newString.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "AvenirNext-Medium", size: 17) ?? .boldSystemFont(ofSize: 10), range: NSRange(location: 0, length: newString.string.utf16.count))
             

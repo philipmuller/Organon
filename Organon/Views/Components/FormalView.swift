@@ -37,18 +37,20 @@ struct FormalView: View {
             LazyVStack(alignment: .center, spacing: spacing) {
                 let somethingSelected = selectedProposition != nil ? true : false
                 ForEach(formalData.propositions, id: \.id) { proposition in
-                    let selected = selectedProposition?.id == proposition.id ? true : false
-                    
-                    let propIndex = formalData.propositions.firstIndex(of: proposition) ?? 0
-                    let propLevel = formalData.level(of: proposition)
-                    
-                    let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id) || selected) ? false : true
-                    
-                    
-                    Safe($formalData.propositions, index: propIndex) { binding in
-                        PropositionView(proposition: binding.wrappedValue, statement: proposition.content, selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
-                            .background(hoverTrigger(index: propIndex))
-                            .padding(.leading, selected ? 0 : CGFloat(propLevel*30))
+                    if !proposition.invisible {
+                        let selected = selectedProposition?.id == proposition.id ? true : false
+                        
+                        let propIndex = formalData.propositions.firstIndex(of: proposition) ?? 0
+                        let propLevel = formalData.level(of: proposition)
+                        
+                        let faded = !somethingSelected || ((selectedProposition?.justification?.references?.first == proposition.id || selectedProposition?.justification?.references?.last == proposition.id) || selected) ? false : true
+                        
+                        
+                        Safe($formalData.propositions, index: propIndex) { binding in
+                            PropositionView(proposition: binding.wrappedValue, statement: proposition.content, selectedProposition: $selectedProposition, editable: $isEditing, draggedIndex: $draggedIndex, draggingCoordinates: $draggingCoordinates, newJustificationRequest: $newJustificationRequest, selectedJustificationReferences: $selectedJustificationReferences, onDelete: removeView(for:), level: formalData.level(of: proposition), references: formalData.references(of: proposition), index: propIndex, expanded: selected, faded: faded)
+                                .background(hoverTrigger(index: propIndex))
+                                .padding(.leading, selected ? 0 : CGFloat(propLevel*30))
+                        }
                     }
                 }
             }
@@ -67,12 +69,24 @@ struct FormalView: View {
             }
             .onChange(of: newJustificationRequest) { justification in
                 if let j = justification, let sp = selectedProposition {
-                    formalData.highlight(justification: j, selectedReferences: selectedJustificationReferences, requestedBy: sp.id)
+                    //DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        let terminated = formalData.highlight(justification: j, selectedReferences: selectedJustificationReferences, requestedBy: sp.id)
+                        if terminated {
+                            newJustificationRequest = nil
+                            selectedJustificationReferences = []
+                        }
+                    //}
                 }
             }
             .onChange(of: selectedJustificationReferences) { value in
                 if let j = newJustificationRequest, let sp = selectedProposition {
-                    formalData.highlight(justification: j, selectedReferences: selectedJustificationReferences, requestedBy: sp.id)
+                    //DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        let terminated = formalData.highlight(justification: j, selectedReferences: selectedJustificationReferences, requestedBy: sp.id)
+                        if terminated {
+                            newJustificationRequest = nil
+                            selectedJustificationReferences = []
+                        }
+                    //}
                 }
             }
         //}

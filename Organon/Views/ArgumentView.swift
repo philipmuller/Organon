@@ -28,7 +28,7 @@ struct ArgumentView: View {
     @State var draggingCoordinates: CGPoint?
     @State var previewID: UUID?
     @State var draggedIndex: Int = 0
-    
+    @State var showExportOptions: Bool = false
     @State var newProposition: Proposition?
     
     @State var hasCompletedLongPress: Bool = false
@@ -46,6 +46,10 @@ struct ArgumentView: View {
                     //.background(Color.red)
                     //.offset(x: -15)
                     .accentColor(Color("AccentColor"))
+                
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(height: 100)
             }
             
             Button(action: {
@@ -57,7 +61,9 @@ struct ArgumentView: View {
                         .frame(width: 55, height: 55)
                         
                     
-                    Image(systemName: "plus")
+                    Image("delete")
+                        .font(.system(size: 25, weight: .thin, design: .default))
+                        .rotationEffect(Angle(degrees: 45))
                         .foregroundColor(Color.white)
                 }
                 .offset(x: buttonDragState.translation.width - 20, y: buttonDragState.translation.height - 20)
@@ -97,11 +103,11 @@ struct ArgumentView: View {
             , trailing:
                 HStack {
                     Button(action: {
-                        print("Specials tapped!")
+                        self.showExportOptions.toggle()
                     }) {
-                        Image(systemName: "ellipsis")
+                        Image(systemName: "square.and.arrow.up")
                             .font(Font.system(size: 23, weight: .light))
-                            .rotationEffect(Angle(degrees: 90))
+                            //.rotationEffect(Angle(degrees: 90))
                     }
                     
                     Button(action: {
@@ -113,6 +119,7 @@ struct ArgumentView: View {
                 }
                 .accentColor(Color("BoxGrey"))
         )
+        .overlay(ModalExportOptions(show: $showExportOptions))
     }
     
     var btnBack : some View {
@@ -152,7 +159,7 @@ struct ArgumentView: View {
             TextEditor(text: $argument.description)
                 .foregroundColor(Color("MainText"))
                 .background(GeometryReader{ geometry in
-                    Text(argument.description == "" ? "Tap to add note" : "")
+                    Text(argument.description == "" ? "Tocca per aggiungere descrizione..." : "")
                         .foregroundColor(Color("BoxGrey"))
                         .frame(alignment: .leading)
                         .padding(.top, 8)

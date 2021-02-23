@@ -251,7 +251,7 @@ class Statement: ObservableObject, Identifiable, Equatable {
     
     func propagateTargetingDownstream(value: Bool?, type: TargetingType) {
         self.targeted = value
-        self.targetingIntent = type
+        self.targetingIntent = .add
     }
     
     func findHomeFor(text: String, hotID: UUID) {

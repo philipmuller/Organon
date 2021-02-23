@@ -11,12 +11,18 @@ struct CompendiumBrowser: View {
     let firstSectionEntries = CompendiumData.generateFirstSection()
     let secondSectionEntries = CompendiumData.generateSecondSection()
     let thirdSectionEntries = CompendiumData.generateThirdSection()
+    let fourthSectionEntries = CompendiumData.generateFourthSection()
+    let fifthSectionEntries = CompendiumData.generateFifthSection()
+    let sixthSectionEntries = CompendiumData.generateSixthSection()
+    let seventhSectionEntries = CompendiumData.generateSeventhSection()
+    let eigthSectionEntries = CompendiumData.generateEigthSection()
     
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
     let imageResouceNames = ["Congiunzioni" : "and", "Disgiunzioni" : "or", "Condizionali" : "then", "Negazioni" : "not"]
+    let inferenceIcons: [String : JustificationType] = ["Modus ponens" : .MP, "Modus tollens" : .MT, "Sillogismo disgiuntivo" : .DS, "Sillogismo ipotetico" : .HS, "Addizione" : .AD, "Associazione" : .AS, "Dilemma costruttivo" : .CD, "Commutazioni" : .CM, "Congiunzione" : .CN, "Distribuzione" : .DIST, "Legge di De Morgan" : .DM, "Semplificazioni" : .SM, "Tautologia" : .TAUT, "Trasposizione" : .TRAN, "Implicazione materiale" : .IMP, "Doppia negazione" : .DN, "Esportazione" : .EXP, "Prova condizionale" : .CP, "Dimostrazione per assurdo" : .IP]
     
     var body: some View {
         ScrollView {
@@ -24,8 +30,13 @@ struct CompendiumBrowser: View {
                 header
                 
                 section(entries: firstSectionEntries, title: "Le basi")
-                section(entries: secondSectionEntries, title: "Frasi")
+                section(entries: secondSectionEntries, title: "Tipi di proposizioni")
                 section(entries: thirdSectionEntries, title: "Sillogismi")
+                section(entries: fourthSectionEntries, title: "Altre inferenze")
+                section(entries: fifthSectionEntries, title: "Prove")
+                section(entries: sixthSectionEntries, title: "Fallacie")
+                section(entries: seventhSectionEntries, title: "Fallacie formali")
+                section(entries: eigthSectionEntries, title: "Fallacie informali")
 
             }
             
@@ -51,7 +62,7 @@ struct CompendiumBrowser: View {
                 .padding(.bottom, 15)
             sectionContent(entries)
         }
-        .padding(.horizontal, 36)
+        .padding(.horizontal, 34)
         .padding(.bottom, 30)
     }
     
@@ -133,7 +144,7 @@ struct CompendiumBrowser: View {
                     }
                     
                     .padding(17)
-                    .frame(width: 150, height: 134)
+                    .frame(width: 153, height: 134)
                     .background(
                         GeometryReader { geometry in
                             
@@ -142,11 +153,18 @@ struct CompendiumBrowser: View {
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(color.opacity(entry.allExercisesCompleted ? 0.08 : 0.2))
                             
-                            Image(imageResouceNames[entry.title] ?? "")
-                                .font(.system(size: 30))
-                                .foregroundColor(color)
-                                .position(x: geometry.size.width-5, y: 0+5)
-                                //.foregroundColor(Color.red)
+                            if let symbol = imageResouceNames[entry.title] {
+                                Image(symbol)
+                                    .font(.system(size: 30))
+                                    .foregroundColor(color)
+                                    .position(x: geometry.size.width-5, y: 0+5)
+                                    //.foregroundColor(Color.red)
+                            } else if let icon = inferenceIcons[entry.title] {
+                                PropositionIcon(explicitColor: color, justification: Justification(type: icon, references: []), propositionType: .step, references: nil, expanded: false)
+                                    .font(.system(size: 30))
+                                    .position(x: geometry.size.width-5, y: 0+5)
+                            }
+                            
                         }
                         
                     )

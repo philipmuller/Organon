@@ -16,6 +16,7 @@ class Proposition: ObservableObject, Identifiable, Equatable {
     @Published var highlight: Bool = false
     
     @Published var content: Statement
+    @Published var invisible: Bool = false
     
     init() {
         type = .empty

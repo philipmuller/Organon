@@ -61,7 +61,9 @@ struct ArgumentBrowser: View {
                         .frame(width: 55, height: 55)
                         
                     
-                    Image(systemName: "plus")
+                    Image("delete")
+                        .font(.system(size: 25, weight: .thin, design: .default))
+                        .rotationEffect(Angle(degrees: 45))
                         .foregroundColor(Color.white)
                 }
                 .offset(x: -20, y: -20)
@@ -80,7 +82,7 @@ struct ArgumentBrowser: View {
     var header: some View {
         VStack(alignment: .leading) {
             HStack {
-                Text("My Arguments")
+                Text("Ragionamenti")
                     .font(.custom("SabonBold", size: 30))
                     .foregroundColor(Color("MainText"))
                     .padding(.leading, 30)
@@ -136,7 +138,7 @@ struct ArgumentPreviewCell: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            Text("2d")
+            Text("2g")
                 .foregroundColor(Color("BoxGrey"))
                 .padding(.top, 3)
             
@@ -155,7 +157,7 @@ struct ArgumentPreviewCell: View {
                         .allowsHitTesting(false)
                         .offset(x: calculateOffset(conclusion.content))
                         .font(.custom("AvenirNext-Medium", size: 17))
-                        .foregroundColor(Color("MainText").opacity(0.8))
+                        .foregroundColor(Color("MainText").opacity(0.2))
                         //.opacity(0.8)
                     
 //                    Text(conclusion.content.content)
@@ -169,11 +171,11 @@ struct ArgumentPreviewCell: View {
                 }
                 
                 Divider()
-                    .padding(.top, 20)
+                    .padding(.top, 12)
                 
             }
         }
-        .padding(.top, 23)
+        .padding(.top, 15)
         
         //.frame(width: 350)
     }
