@@ -10,7 +10,7 @@ import SwiftUI
 struct ConnectiveLines: View {
     let geometry: GeometryProxy
     let preferences: [StatementPreferenceData]
-    var depth: Int = 5
+    var depth: CGFloat = 4
     
     var body: some View {
         var yValues: [CGFloat] = []

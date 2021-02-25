@@ -85,7 +85,7 @@ struct Quiz: Exercise {
     var title: String
     var estimatedCompletionTime: Int
     
-    let qa: [String : [String]]
+    let questions: [QuizQuestion]
 }
 
 struct EditorQuestion: Exercise {
@@ -101,6 +101,21 @@ struct EditorQuestion: Exercise {
     let prompt: String
     
     let solution: FormalData
+}
+
+struct QuizQuestion {
+    let id: UUID = UUID()
+    let prompt: String
+    let availableSolutions: [(String, Bool)]
+    var solution: String {
+        for answer in availableSolutions {
+            if answer.1 == true {
+                return answer.0
+            }
+        }
+        
+        return "No solution"
+    }
 }
 
 enum ExerciseType {

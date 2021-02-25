@@ -10,6 +10,7 @@ import SwiftUI
 struct CompendiumDetail: View {
     var data: CompendiumEntry
     
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         ScrollView {
@@ -39,6 +40,21 @@ struct CompendiumDetail: View {
         }
         .font(.custom("AvenirNext-Medium", size: 17))
         .foregroundColor(Color("MainText"))
+        .navigationBarBackButtonHidden(true)
+        .navigationBarItems(leading: btnBack
+            .accentColor(Color("BoxGrey"))
+        )
+    }
+    
+    var btnBack : some View {
+        Button(action: {
+            self.presentationMode.wrappedValue.dismiss()
+            
+        }) {
+            Image(systemName: "chevron.backward")
+                .font(Font.system(size: 23, weight: .light))
+            
+        }
     }
     
     var header: some View {
@@ -69,6 +85,22 @@ struct CompendiumDetail: View {
         }
         .padding(.trailing, 30)
         .padding(.bottom, 30)
+        .background(relatedTags)
+    }
+    
+    var relatedTags: some View {
+        GeometryReader { geometry in
+            HStack {
+                ForEach(data.requiredKnowladge, id: \.self) { knowledgeTitle in
+                    Text(knowledgeTitle)
+                        .font(.custom("AvenirNext-Medium", size: 14))
+                        .foregroundColor(Color.accentColor)
+                        .underline()
+                }
+            }
+            .offset(y: -30)
+        }
+        
     }
     
     var exerciseBrowser: some View {
@@ -96,7 +128,7 @@ struct CompendiumDetail: View {
                                         .foregroundColor(colour)
                                     
                                     VStack(alignment: .leading) {
-                                        Text("\(quiz.qa.count) domande")
+                                        Text("\(quiz.questions.count) domande")
                                             .font(.custom("AvenirNext-Medium", size: 17))
                                             .foregroundColor(Color("MainText"))
                                         
@@ -115,7 +147,7 @@ struct CompendiumDetail: View {
                             .buttonStyle(PlainButtonStyle())
                         } else if let translation = exercise as? EditorQuestion {
                             NavigationLink(
-                                destination: ArgumentView(argument: Argument(title: translation.title, propositions: []))
+                                destination: ArgumentView(argument: Argument(title: translation.title, propositions: [], lastModified: "1d"))
                             ) {
                                 VStack(alignment: .leading) {
                                     Text(translation.title)
@@ -168,14 +200,14 @@ struct CompendiumDetail: View {
             
             
             ZStack {
-                VStack(spacing: separationAmountY) {
-                    ForEach(1..<numberOfRows) { index in
-                        Rectangle()
-                            .fill(Color("BoxGrey"))
-                            .frame(width: geometry.size.width, height: 1)
-                    }
-                }
-                .offset(y: 8)
+//                VStack(spacing: separationAmountY) {
+//                    ForEach(1..<numberOfRows) { index in
+//                        Rectangle()
+//                            .fill(Color("BoxGrey"))
+//                            .frame(width: geometry.size.width, height: 1)
+//                    }
+//                }
+//                .offset(y: 8)
                 
                 HStack() {
                     ForEach(0..<table.content.count) { index in
@@ -200,12 +232,14 @@ struct CompendiumDetail: View {
             ForEach(items, id: \.self) { item in
                 if item == "t" {
                     Circle()
-                        .fill(Color("Conclusion"))
+                        .fill(Color.accentColor)
                         .frame(width: 10, height: 10)
                 } else if item == "f" {
                     Circle()
-                        .fill(Color("False"))
-                        .frame(width: 10, height: 10)
+                        //.fill(Color("False"))
+                        .stroke(lineWidth: 2)
+                        .foregroundColor(Color("MainText").opacity(0.8))
+                        .frame(width: 9, height: 9)
                 } else {
                     Text(item)
                         .font(.custom("SabonBold", size: 20))

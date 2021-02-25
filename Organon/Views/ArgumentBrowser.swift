@@ -11,10 +11,17 @@ struct ArgumentBrowser: View {
     @State var arguments: [Argument]
     @State var hideSearch = true
     @State var selection: UUID? = nil
+    @State var scrollOffset: CGFloat = 0
+    
+    @State var showTitleInBar = false
+    
+    @State var settingsPresented: Bool = false
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
                 header
+                    .background(BackgroundFrameGetter())
                 
                 LazyVStack(alignment: .leading, spacing: 0) {
                     ForEach(arguments) { argument in
@@ -29,29 +36,35 @@ struct ArgumentBrowser: View {
                 .padding(.horizontal, 15)
                 .padding(.top, -20)
             }
-            .navigationBarTitle("")
+            .onPreferenceChange(ScrollViewDataKey.self) { values in
+                for value in values {
+                    if value.offset < -17 {
+                        hideSearch = false
+                        showTitleInBar = true
+                    } else {
+                        hideSearch = true
+                        showTitleInBar = false
+                    }
+                    
+                    //print(scrollOffset)
+                }
+            }
+            .navigationBarTitle(showTitleInBar ? "Ragionamenti" : "")
             //.navigationBarHidden(false)
             .navigationBarItems(leading: searchBtn
                 .accentColor(Color("BoxGrey"))
                 , trailing:
-                    NavigationLink(
-                        destination: SettingsView()
-                    ) {
+                    Button(action: {
+                        settingsPresented.toggle()
+                    }, label: {
                         Image("settings")
                             .font(Font.system(size: 20, weight: .regular))
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    .accentColor(Color("BoxGrey"))
+                            .foregroundColor(Color("BoxGrey"))
+                    }).sheet(isPresented: $settingsPresented) { SettingsView() }
             )
-//            NavigationLink(
-//                destination: ArgumentView(argument: addNewArgument())
-//            ) {
-//
-//            }
-//            .buttonStyle(PlainButtonStyle())
             
             Button(action: {
-                let argument = Argument(title: "", propositions: [])
+                let argument = Argument(title: "", propositions: [], lastModified: "1d")
                 arguments.append(argument)
                 selection = argument.id
             }) {
@@ -69,10 +82,11 @@ struct ArgumentBrowser: View {
                 .offset(x: -20, y: -20)
             }
         }
+        
     }
     
     func addNewArgument() -> Argument {
-        let argument = Argument(title: "\(UUID())", propositions: [])
+        let argument = Argument(title: "\(UUID())", propositions: [], lastModified: "1d")
         DispatchQueue.main.async {
             self.arguments.append(argument)
         }
@@ -138,7 +152,7 @@ struct ArgumentPreviewCell: View {
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
-            Text("2g")
+            Text(argument.lastModified)
                 .foregroundColor(Color("BoxGrey"))
                 .padding(.top, 3)
             

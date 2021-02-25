@@ -11,14 +11,16 @@ import Combine
 class Argument: ObservableObject, Identifiable {
     @Published var title: String
     var id = UUID()
+    var lastModified: String
     @Published var description: String = ""
     @Published var formalData: FormalData
     @Published var sLibrary: SimpleLibrary
     
-    init(title: String, propositions: [Proposition]) {
+    init(title: String, propositions: [Proposition], lastModified: String) {
         self.title = title
         self.formalData = FormalData(propositions: propositions)
         self.sLibrary = SimpleLibrary()
+        self.lastModified = lastModified
         
         for proposition in formalData.propositions {
             proposition.content.setPublishClosure(closure: sLibrary.publishRequest(text:symbol:))

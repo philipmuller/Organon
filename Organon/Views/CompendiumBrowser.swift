@@ -17,6 +17,8 @@ struct CompendiumBrowser: View {
     let seventhSectionEntries = CompendiumData.generateSeventhSection()
     let eigthSectionEntries = CompendiumData.generateEigthSection()
     
+    
+    
     let columns = [
         GridItem(.flexible()),
         GridItem(.flexible())
@@ -24,10 +26,16 @@ struct CompendiumBrowser: View {
     let imageResouceNames = ["Congiunzioni" : "and", "Disgiunzioni" : "or", "Condizionali" : "then", "Negazioni" : "not"]
     let inferenceIcons: [String : JustificationType] = ["Modus ponens" : .MP, "Modus tollens" : .MT, "Sillogismo disgiuntivo" : .DS, "Sillogismo ipotetico" : .HS, "Addizione" : .AD, "Associazione" : .AS, "Dilemma costruttivo" : .CD, "Commutazioni" : .CM, "Congiunzione" : .CN, "Distribuzione" : .DIST, "Legge di De Morgan" : .DM, "Semplificazioni" : .SM, "Tautologia" : .TAUT, "Trasposizione" : .TRAN, "Implicazione materiale" : .IMP, "Doppia negazione" : .DN, "Esportazione" : .EXP, "Prova condizionale" : .CP, "Dimostrazione per assurdo" : .IP]
     
+    @State var showSearchIcon = false
+    @State var showTitleInBar = false
+    @State var settingsPresented: Bool = false
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
                 header
+                    .background(BackgroundFrameGetter())
+                    
                 
                 section(entries: firstSectionEntries, title: "Le basi")
                 section(entries: secondSectionEntries, title: "Tipi di proposizioni")
@@ -37,23 +45,57 @@ struct CompendiumBrowser: View {
                 section(entries: sixthSectionEntries, title: "Fallacie")
                 section(entries: seventhSectionEntries, title: "Fallacie formali")
                 section(entries: eigthSectionEntries, title: "Fallacie informali")
+                
+                Button("hello") {
+                    settingsPresented = true
+                }
+                
+                
+                
 
             }
             
             
+            
         }
-        .navigationBarTitle("")
+        .onPreferenceChange(ScrollViewDataKey.self) { values in
+            for value in values {
+                if value.offset < -17 {
+                    showSearchIcon = true
+                    showTitleInBar = true
+                } else {
+                    showSearchIcon = false
+                    showTitleInBar = false
+                }
+                
+                //print(scrollOffset)
+            }
+        }
+        
+        
+        .navigationBarTitle(showTitleInBar ? "Biblioteca" : "")
         //.navigationBarHidden(false)
-        .navigationBarItems(trailing:
-                NavigationLink(
-                    destination: SettingsView()
-                ) {
+        .navigationBarItems(leading: searchBtn
+                                .accentColor(Color("BoxGrey"))
+            ,trailing:
+                Button(action: {
+                    settingsPresented.toggle()
+                }, label: {
                     Image("settings")
                         .font(Font.system(size: 20, weight: .regular))
-                }
-                .buttonStyle(PlainButtonStyle())
-                .accentColor(Color("BoxGrey"))
+                        .foregroundColor(Color("BoxGrey"))
+                }).sheet(isPresented: $settingsPresented) { SettingsView() }
         )
+    }
+    
+    var searchBtn: some View {
+        VStack {
+            if showSearchIcon {
+                Image("search")
+                    .font(Font.system(size: 20, weight: .regular))
+                    .foregroundColor(Color("BoxGrey"))
+            }
+        }
     }
     
     func section(entries: [CompendiumEntry], title: String) -> some View {

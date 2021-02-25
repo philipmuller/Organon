@@ -153,16 +153,31 @@ struct PropositionPreferenceKey: PreferenceKey {
     }
 }
 
-//struct BackgroundFrameGetter: View {
-//    let destination: Int
-//    var body: some View {
-//        GeometryReader { geometry in
-//           Rectangle()
-//            .fill(Color.clear)
-//            .preference(key: DestinationDataKey.self, value: [DestinationData(destination: self.destination, min: geometry.frame(in: .global).minY, max: geometry.frame(in: .global).maxY)])
-//        }
-//    }
-//}
+struct BackgroundFrameGetter: View {
+    var body: some View {
+        GeometryReader { geometry in
+           Rectangle()
+            .fill(Color.clear)
+            .preference(key: ScrollViewDataKey.self, value: [ScrollViewData(offset: geometry.frame(in: .global).minY)])
+        }
+    }
+}
+
+struct ScrollViewDataKey: PreferenceKey {
+    typealias Value = [ScrollViewData]
+
+    static var defaultValue: [ScrollViewData] = []
+
+    static func reduce(value: inout [ScrollViewData], nextValue: () -> [ScrollViewData]) {
+        value.append(contentsOf: nextValue())
+    }
+}
+
+struct ScrollViewData: Identifiable, Equatable {
+    let id = UUID()
+    let offset: CGFloat
+    //let proxy: GeometryProxy
+}
 
 struct DestinationDataKey: PreferenceKey {
     typealias Value = [DestinationData]

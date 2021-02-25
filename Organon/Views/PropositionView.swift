@@ -218,10 +218,12 @@ struct PropositionView: View {
             if let justificationRequest = newJustificationRequest {
                 Text(justificationRequest.extendedTextITA() + ": ")
                 Text(selectedJustificationReferences.first != nil ? "\(selectedJustificationReferences.first!)" : "seleziona")
+                    .foregroundColor(.white)
                     .padding(.horizontal , 6)
                     .padding(.vertical , 1)
                     .background(inferenceSelectorBubbleBackground(selected: selectedJustificationReferences.first != nil ? true : false))
                 Text(selectedJustificationReferences.count == 2 ? "\(selectedJustificationReferences.last!)" : "seleziona")
+                    .foregroundColor(.white)
                     .padding(.horizontal , 6)
                     .padding(.vertical , 1)
                     .background(inferenceSelectorBubbleBackground(selected: selectedJustificationReferences.count == 2 ? true : false))
@@ -418,9 +420,9 @@ struct PropositionIcon: View {
     func boxColor(type: PropositionType) -> Color {
         switch type {
         case .conclusion:
-            return Color("Conclusion")
+            return Color("AccentColor")
         case .premise:
-            return Color("Premise")
+            return Color("AccentColor").opacity(0.6)
         case .step:
             return Color("BoxGrey")
         default:

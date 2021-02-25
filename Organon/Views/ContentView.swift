@@ -9,7 +9,7 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
-    
+    //@State var settingsPresented: Bool = false
     var body: some View {
         TabView {
             NavigationView {
@@ -39,6 +39,8 @@ struct ContentView: View {
                 
                 
             }
+            
+            
         }
         
     }
@@ -98,7 +100,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth, sixth, seventh, eight, ninth, tenth, eleventh, twelfth]//.shuffled()
         
-        let argument = Argument(title: "Stupidity doesn't justify killing", propositions: prop)
+        let argument = Argument(title: "Stupidity doesn't justify killing", propositions: prop, lastModified: "1d")
         argument.description = "This is not an argument for veganism. This is an argument that wants to illustrate how the common justification for killing animals because they are stupid is inconsistent."
         return argument
     }
@@ -158,7 +160,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth, sixth, seventh, eight, ninth, tenth, eleventh, twelfth]//.shuffled()
         
-        let argument = Argument(title: "Mangiare animali perché stupidi non è giustificato", propositions: prop)
+        let argument = Argument(title: "Mangiare animali perché stupidi non è giustificato", propositions: prop, lastModified: "1d")
         argument.description = "Questo non è un ragionamento diretto per il veganesimo, ma dimostra che la stupidità degli animali non è giustificazione sufficiente per mangiarli."
         return argument
     }
@@ -181,7 +183,7 @@ struct ContentView: View {
         
         let prop = [first, second, third]//.shuffled()
         
-        let argument = Argument(title: "La Bibbia non è inerrante", propositions: prop)
+        let argument = Argument(title: "La Bibbia non è inerrante", propositions: prop, lastModified: "2d")
         argument.description = "Questo ragionamento affronta solo interpretazioni letterali di inerrante. La Bibbia potrebbe essere comunque inerrante in interpretazioni non-letterali."
         return argument
     }
@@ -204,7 +206,7 @@ struct ContentView: View {
         
         let prop = [first, second, third]//.shuffled()
         
-        let argument = Argument(title: "The Bible is not inerrant", propositions: prop)
+        let argument = Argument(title: "The Bible is not inerrant", propositions: prop, lastModified: "2d")
         argument.description = "Of course, some version of inerrancy might escape this argument. Premise 1 might need further clarification and defence."
         return argument
     }
@@ -237,7 +239,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth, sixth]//.shuffled()
         
-        let argument = Argument(title: "Rational belief can be justified even without demonstration", propositions: prop)
+        let argument = Argument(title: "Rational belief can be justified even without demonstration", propositions: prop, lastModified: "2d")
         argument.description = "A very common argument by atheists that I find irritating. Here is why it doesn't work."
         return argument
     }
@@ -267,7 +269,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth]//.shuffled()
         
-        let argument = Argument(title: "La morte non va temuta", propositions: prop)
+        let argument = Argument(title: "La morte non va temuta", propositions: prop, lastModified: "2d")
         return argument
     }
     
@@ -296,7 +298,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth]//.shuffled()
         
-        let argument = Argument(title: "Death shouldn't be feared", propositions: prop)
+        let argument = Argument(title: "Death shouldn't be feared", propositions: prop, lastModified: "2d")
         return argument
     }
     
@@ -318,7 +320,7 @@ struct ContentView: View {
         
         let prop = [first, second, third]//.shuffled()
         
-        let argument = Argument(title: "J. L. Schellenberg", propositions: prop)
+        let argument = Argument(title: "J. L. Schellenberg", propositions: prop, lastModified: "3d")
         return argument
     }
     
@@ -340,7 +342,7 @@ struct ContentView: View {
         
         let prop = [first, second, third]//.shuffled()
         
-        let argument = Argument(title: "The hiddenness argument", propositions: prop)
+        let argument = Argument(title: "The hiddenness argument", propositions: prop, lastModified: "2d")
         return argument
     }
     
@@ -372,7 +374,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth]//.shuffled()
         
-        let argument = Argument(title: "Apollo", propositions: prop)
+        let argument = Argument(title: "Apollo", propositions: prop, lastModified: "5d")
         return argument
     }
     
@@ -403,7 +405,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth]//.shuffled()
         
-        let argument = Argument(title: "Il colonnello è innocente", propositions: prop)
+        let argument = Argument(title: "Il colonnello è innocente", propositions: prop, lastModified: "1d")
         return argument
     }
     
@@ -435,7 +437,7 @@ struct ContentView: View {
         
         let prop = [first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelvth, thirtinth, fourteenth, fifteenth]//.shuffled()
         
-        let argument = Argument(title: "Il problema del male", propositions: prop)
+        let argument = Argument(title: "Il problema del male", propositions: prop, lastModified: "1d")
         return argument
     }
     

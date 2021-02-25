@@ -239,7 +239,7 @@ struct StatementView: View {
                         Image(junction.type == .conditional ? "then" : junction.type == .conjunction ? "and" : "or").foregroundColor(Color.accentColor)
                             .fixedSize()
                             .rotationEffect(Angle(degrees: 90))
-                            .padding(1)
+                            //.padding(1)
                             .background(Color.white)
                             .anchorPreference(key: StatementPreferenceKey.self, value: .bounds) {
                                 return [StatementPreferenceData(bounds: $0, statementId: statement.id, modifier: 0)]
@@ -456,7 +456,7 @@ struct StatementView: View {
         ForEach(preferences, id: \.id) { statementPreference in
             if statementPreference.statementId == childStatement.id {
                 Image("not")
-                    .padding(.bottom, 2)
+                //.padding(.bottom, 2)
                     .background(Color.white)
                     .foregroundColor(Color.accentColor)
                     .position(y: geometry[statementPreference.bounds].midY)

@@ -26,7 +26,7 @@ struct CompendiumData {
         let simple = CompendiumEntry(
             title: "Ragionamenti",
             tldr: "Un ragionamento è una serie di premesse che portano ad una conclusione",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Introduzione"],
             body: [Paragraph(
                     title: nil,
                     body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
@@ -38,7 +38,7 @@ struct CompendiumData {
         let conjunction = CompendiumEntry(
             title: "Proposizioni",
             tldr: "Frasi che possono essere vere o false. La struttura logica delle proposizioni è determinata da operatori logici",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Introduzione"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A · B", "t", "f", "f", "f"]]),
                 Paragraph(
                     title: nil,
@@ -48,11 +48,11 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
-                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, questions: [
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame e sete\"?", availableSolutions: [("A v B", false), ("A -> B", false), ("A · B", true), ("B v A", false)]),
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame, sete e sonno\"?", availableSolutions: [("A v (B · C)", false), ("A -> (B · A)", false), ("A · B", false), ("(A · B) · C", true)]),
+                    QuizQuestion(prompt: "Le frasi: \"Marco ha fame e sete\" e \"Marco ha sete e fame\" sono logicamente equivalenti?", availableSolutions: [("Sì", true), ("No", false)]),
+                    QuizQuestion(prompt: "Una congiunzione è vera solo se:", availableSolutions: [("Entrambi i termini sono veri", true), ("Almeno uno dei termini è vero", false), ("Almeno uno dei termini è falso", false), ("Entrambi i termini sono falsi", false)])
                 ]),
                 
                 EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
@@ -66,7 +66,7 @@ struct CompendiumData {
         let disjunction = CompendiumEntry(
             title: "Inferenze",
             tldr: "Schemi di ragionamento che permettono di trarre proposizioni da proposizioni già stabilite",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Introduzione"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A v B", "t", "t", "t", "f"]]),
                    Paragraph(
                     title: nil,
@@ -85,7 +85,7 @@ struct CompendiumData {
         let introduction = CompendiumEntry(
             title: "Semplici",
             tldr: "Frasi che possono essere vere o false, solitamente espresse in senso positivo.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Proposizioni"],
             body: [Paragraph(
                     title: nil,
                     body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
@@ -97,7 +97,7 @@ struct CompendiumData {
         let simple = CompendiumEntry(
             title: "Negazioni",
             tldr: "La negazione di una proposizione inverte il valore della frase negata.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Proposizioni"],
             body: [Paragraph(
                     title: nil,
                     body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
@@ -109,7 +109,7 @@ struct CompendiumData {
         let conjunction = CompendiumEntry(
             title: "Congiunzioni",
             tldr: "La congiunzione di due proposizioni è vera soltanto quando entrambe le proposizioni sono vere",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Proposizioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A · B", "t", "f", "f", "f"]]),
                 Paragraph(
                     title: nil,
@@ -119,11 +119,11 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
-                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, questions: [
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame e sete\"?", availableSolutions: [("A v B", false), ("A -> B", false), ("A · B", true), ("B v A", false)]),
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame, sete e sonno\"?", availableSolutions: [("A v (B · C)", false), ("A -> (B · A)", false), ("A · B", false), ("(A · B) · C", true)]),
+                    QuizQuestion(prompt: "Le frasi: \"Marco ha fame e sete\" e \"Marco ha sete e fame\" sono logicamente equivalenti?", availableSolutions: [("Sì", true), ("No", false)]),
+                    QuizQuestion(prompt: "Una congiunzione è vera solo se:", availableSolutions: [("Entrambi i termini sono veri", true), ("Almeno uno dei termini è vero", false), ("Almeno uno dei termini è falso", false), ("Entrambi i termini sono falsi", false)])
                 ]),
                 
                 EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
@@ -137,7 +137,7 @@ struct CompendiumData {
         let disjunction = CompendiumEntry(
             title: "Disgiunzioni",
             tldr: "La disgiunzione di due proposizioni è falsa soltanto quando entrambe le proposizioni sono false.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Proposizioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A v B", "t", "t", "t", "f"]]),
                    Paragraph(
                     title: nil,
@@ -150,7 +150,7 @@ struct CompendiumData {
         let conditional = CompendiumEntry(
             title: "Condizionali",
             tldr: "La proposizione condizionale è falsa solo quando l’antecedente è vero e il conseguente è falso. La proposizione “se” è l’antecedente, la proposizione “allora” è il conseguente.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Proposizioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -163,7 +163,7 @@ struct CompendiumData {
         let n6 = CompendiumEntry(
             title: "Proposizioni comuni",
             tldr: "Le frasi nella lingua parlata possono essere espresse con combinazioni di congiunzioni logiche.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Proposizioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -182,7 +182,7 @@ struct CompendiumData {
         let introduction = CompendiumEntry(
             title: "Modus ponens",
             tldr: "Se A è vero, allora B è vero. A è vero. Quindi, B è vero.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Condizionali"],
             body: [Paragraph(
                     title: nil,
                     body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
@@ -194,7 +194,7 @@ struct CompendiumData {
         let simple = CompendiumEntry(
             title: "Modus tollens",
             tldr: "Se A è vero, allora B è vero. B è falso. Quindi, A è falso.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Condizionali"],
             body: [Paragraph(
                     title: nil,
                     body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
@@ -206,7 +206,7 @@ struct CompendiumData {
         let conjunction = CompendiumEntry(
             title: "Sillogismo disgiuntivo",
             tldr: "A e B non sono entrambi falsi. B è falso. Quindi, A è vero.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Disgiunzioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A · B", "t", "f", "f", "f"]]),
                 Paragraph(
                     title: nil,
@@ -216,11 +216,11 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
-                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, questions: [
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame e sete\"?", availableSolutions: [("A v B", false), ("A -> B", false), ("A · B", true), ("B v A", false)]),
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame, sete e sonno\"?", availableSolutions: [("A v (B · C)", false), ("A -> (B · A)", false), ("A · B", false), ("(A · B) · C", true)]),
+                    QuizQuestion(prompt: "Le frasi: \"Marco ha fame e sete\" e \"Marco ha sete e fame\" sono logicamente equivalenti?", availableSolutions: [("Sì", true), ("No", false)]),
+                    QuizQuestion(prompt: "Una congiunzione è vera solo se:", availableSolutions: [("Entrambi i termini sono veri", true), ("Almeno uno dei termini è vero", false), ("Almeno uno dei termini è falso", false), ("Entrambi i termini sono falsi", false)])
                 ]),
                 
                 EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
@@ -234,7 +234,7 @@ struct CompendiumData {
         let disjunction = CompendiumEntry(
             title: "Sillogismo ipotetico",
             tldr: "Se A è vero, allora B è vero. Se B è vero, allora C è vero. Quindi, se A è vero, allora C è vero",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Condizionali"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A v B", "t", "t", "t", "f"]]),
                    Paragraph(
                     title: nil,
@@ -253,7 +253,7 @@ struct CompendiumData {
         let introduction = CompendiumEntry(
             title: "Addizione",
             tldr: "A è vero. Quindi A o B è vero.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Disgiunzioni"],
             body: [Paragraph(
                     title: nil,
                     body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
@@ -265,7 +265,7 @@ struct CompendiumData {
         let simple = CompendiumEntry(
             title: "Associazione",
             tldr: "L’ordine di congiunzioni o disgiunzioni concatenate è irrilevante.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Inferenze"],
             body: [Paragraph(
                     title: nil,
                     body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
@@ -277,7 +277,7 @@ struct CompendiumData {
         let conjunction = CompendiumEntry(
             title: "Dilemma costruttivo",
             tldr: "Se A è vero allora B è vero e se C è vero allora D è vero. A e C non sono entrambi falsi. Quindi, B e D non sono entrambi falsi.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Condizionali"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A · B", "t", "f", "f", "f"]]),
                 Paragraph(
                     title: nil,
@@ -287,11 +287,11 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
-                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, questions: [
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame e sete\"?", availableSolutions: [("A v B", false), ("A -> B", false), ("A · B", true), ("B v A", false)]),
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame, sete e sonno\"?", availableSolutions: [("A v (B · C)", false), ("A -> (B · A)", false), ("A · B", false), ("(A · B) · C", true)]),
+                    QuizQuestion(prompt: "Le frasi: \"Marco ha fame e sete\" e \"Marco ha sete e fame\" sono logicamente equivalenti?", availableSolutions: [("Sì", true), ("No", false)]),
+                    QuizQuestion(prompt: "Una congiunzione è vera solo se:", availableSolutions: [("Entrambi i termini sono veri", true), ("Almeno uno dei termini è vero", false), ("Almeno uno dei termini è falso", false), ("Entrambi i termini sono falsi", false)])
                 ]),
                 
                 EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
@@ -305,7 +305,7 @@ struct CompendiumData {
         let disjunction = CompendiumEntry(
             title: "Commutazioni",
             tldr: "L’ordine delle proposizioni collegate da una congiunzione o disgiunzione può essere invertito.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Inferenze"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A v B", "t", "t", "t", "f"]]),
                    Paragraph(
                     title: nil,
@@ -318,7 +318,7 @@ struct CompendiumData {
         let conditional = CompendiumEntry(
             title: "Congiunzione",
             tldr: "A è vero. B è vero. Quindi, A e B è vero.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Congiunzioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -331,7 +331,7 @@ struct CompendiumData {
         let n6 = CompendiumEntry(
             title: "Distribuzione",
             tldr: "Le regole sulla distribuzione affrontano relazioni tra congiunzioni e disgiunzioni.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Inferenze"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -344,7 +344,7 @@ struct CompendiumData {
         let n7 = CompendiumEntry(
             title: "Legge di De Morgan",
             tldr: "Non è vero che almeno uno tra A e B è vero. Quindi, A è falso e B è falso. Non è vero che A e B sono entrambi veri. Quindi, A è falso e B è falso non sono entrambe affermazioni false.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Disgiunzioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -357,7 +357,7 @@ struct CompendiumData {
         let n8 = CompendiumEntry(
             title: "Tautologia",
             tldr: "La tautologia come inferenza viene usata molto raramente, e quando viene usata è solitamente solo per soddisfare alcuni criteri necessari alla continuazione di altre inferenze. A è vero e A è vero è equivalente a A è vero. A e A non sono entrambi falsi è equivalente a A è vero.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Inferenze"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -370,7 +370,7 @@ struct CompendiumData {
         let n20 = CompendiumEntry(
             title: "Semplificazioni",
             tldr: "A e B sono entrambi veri. Quindi, B è vero (B può essere sostituito da A, considerando la commutazione)",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Congiunzioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -383,7 +383,7 @@ struct CompendiumData {
         let n9 = CompendiumEntry(
             title: "Trasposizione",
             tldr: "Se A è vero allora B è vero è equivalente a se B non è vero allora A non è vero.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Condizionali"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -396,7 +396,7 @@ struct CompendiumData {
         let n11 = CompendiumEntry(
             title: "Doppia negazione",
             tldr: "La doppia negazione di una proposizione può essere ignorata. Non è vero che A è falso. Quindi, A è vero.",
-            requiredKnowladge: [],
+            requiredKnowladge: ["Negazioni"],
             body: [Table(content: [["A", "t", "t", "f", "f"],["B", "t", "f", "t", "f"],["A -> B", "t", "f", "t", "t"]]),
                    Paragraph(
                     title: nil,
@@ -505,11 +505,11 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
-                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, questions: [
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame e sete\"?", availableSolutions: [("A v B", false), ("A -> B", false), ("A · B", true), ("B v A", false)]),
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame, sete e sonno\"?", availableSolutions: [("A v (B · C)", false), ("A -> (B · A)", false), ("A · B", false), ("(A · B) · C", true)]),
+                    QuizQuestion(prompt: "Le frasi: \"Marco ha fame e sete\" e \"Marco ha sete e fame\" sono logicamente equivalenti?", availableSolutions: [("Sì", true), ("No", false)]),
+                    QuizQuestion(prompt: "Una congiunzione è vera solo se:", availableSolutions: [("Entrambi i termini sono veri", true), ("Almeno uno dei termini è vero", false), ("Almeno uno dei termini è falso", false), ("Entrambi i termini sono falsi", false)])
                 ]),
                 
                 EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
@@ -563,11 +563,11 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
-                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, questions: [
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame e sete\"?", availableSolutions: [("A v B", false), ("A -> B", false), ("A · B", true), ("B v A", false)]),
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame, sete e sonno\"?", availableSolutions: [("A v (B · C)", false), ("A -> (B · A)", false), ("A · B", false), ("(A · B) · C", true)]),
+                    QuizQuestion(prompt: "Le frasi: \"Marco ha fame e sete\" e \"Marco ha sete e fame\" sono logicamente equivalenti?", availableSolutions: [("Sì", true), ("No", false)]),
+                    QuizQuestion(prompt: "Una congiunzione è vera solo se:", availableSolutions: [("Entrambi i termini sono veri", true), ("Almeno uno dei termini è vero", false), ("Almeno uno dei termini è falso", false), ("Entrambi i termini sono falsi", false)])
                 ]),
                 
                 EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
@@ -621,11 +621,11 @@ struct CompendiumData {
                 body: "Phasellus purus. Etiam sapien. Duis diam urna, iaculis ut, vehicula ac, varius sit amet, mi. Donec id nisl. Aliquam erat volutpat. Integer fringilla. Duis lobortis, quam non volutpat suscipit, magna sem consequat libero, ac hendrerit urna ante id mi. Quisque commodo facilisis tellus. Integer sodales lorem sed nisl. Morbi consectetuer mauris quis odio. Ut dolor lorem, viverra vitae, viverra eu, euismod nec, enim. Lorem ipsum dolor sit amet, consectetuer adipiscing elit."
         )],
             exercises: [
-                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, qa: [
-                    "Domanda 1" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 2" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 3" : ["Risposta 1", "Risposta 2", "Risposta 3"],
-                    "Domanda 4" : ["Risposta 1", "Risposta 2", "Risposta 3"]
+                Quiz(difficulty: "EASY", completed: true, title: "Quiz", estimatedCompletionTime: 4, questions: [
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame e sete\"?", availableSolutions: [("A v B", false), ("A -> B", false), ("A · B", true), ("B v A", false)]),
+                    QuizQuestion(prompt: "Quale schema logico corrisponde alla frase: \"Marco ha fame, sete e sonno\"?", availableSolutions: [("A v (B · C)", false), ("A -> (B · A)", false), ("A · B", false), ("(A · B) · C", true)]),
+                    QuizQuestion(prompt: "Le frasi: \"Marco ha fame e sete\" e \"Marco ha sete e fame\" sono logicamente equivalenti?", availableSolutions: [("Sì", true), ("No", false)]),
+                    QuizQuestion(prompt: "Una congiunzione è vera solo se:", availableSolutions: [("Entrambi i termini sono veri", true), ("Almeno uno dei termini è vero", false), ("Almeno uno dei termini è falso", false), ("Entrambi i termini sono falsi", false)])
                 ]),
                 
                 EditorQuestion(difficulty: "EASY", completed: true, estimatedCompletionTime: 4, title: "Conversione", prompt:
